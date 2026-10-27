@@ -1,0 +1,40 @@
+{
+	http_port {$HTTP_PORT:80}
+	https_port {$HTTPS_PORT:443}
+	import caddy/{$TLS_MODE:public}.global
+}
+
+(shelfy) {
+	encode zstd gzip
+	log {
+		output stdout
+		format filter {
+			wrap json
+			fields {
+				request>uri delete
+				request>headers>Authorization delete
+				request>headers>Cookie delete
+			}
+		}
+	}
+	log_append request_path {http.request.uri.path}
+
+	@api path /api/* /uploads/* /actuator/health /.well-known/webfinger /.well-known/nodeinfo /.well-known/host-meta /nodeinfo/* /ap/*
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+	}
+	handle @api {
+		header Referrer-Policy "no-referrer"
+		reverse_proxy backend:8082 {
+			header_up X-Shelfy-Client-IP {client_ip}
+		}
+	}
+	handle {
+		import caddy/{$FRONTEND_HOSTING:bundled}.frontend
+	}
+}
+
+import caddy/{$TLS_MODE:public}.sites

@@ -1,0 +1,2274 @@
+{
+  "adult": {
+    "hidden": "18+ title",
+    "gate_title": "Adults only",
+    "gate_body": "This title is rated 18+. It can only be shown to adults who have turned on the “Adult content” option in their settings. By turning it on, you certify that you are 18 or older and agree to see content that may be disturbing.",
+    "gate_cta": "Open settings",
+    "unlock": "Unlock"
+  },
+  "volume": {
+    "label": "Volume",
+    "mute": "Mute",
+    "unmute": "Unmute"
+  },
+  "dialog": {
+    "close": "Close",
+    "confirm_title": "Are you sure?",
+    "stay": "Cancel",
+    "leave": "Leave",
+    "external_link": "You are about to leave Shelfy for {{host}}. Check the full address before you continue.",
+    "external_link_title": "Open this link?",
+    "open_link": "Open link"
+  },
+  "auth": {
+    "tagline": "Everything you watch, play and read, on one shelf.",
+    "show_password": "Show password",
+    "hide_password": "Hide password",
+    "sign_in": "Sign in",
+    "sign_in_desc": "Welcome back. Pick up right where you left off.",
+    "create_account": "Create account",
+    "create_account_desc": "Keep your films, shows, and games in one place.",
+    "email": "Email",
+    "password": "Password",
+    "confirm_password": "Confirm password",
+    "username": "Username *",
+    "no_account": "Don't have an account?",
+    "already_account": "Already have an account?",
+    "registration_closed_title": "Sign-ups are closed",
+    "registration_closed_desc": "This instance is not taking new accounts. Ask the person who runs it if you would like to join.",
+    "sign_out": "Sign out",
+    "sign_out_confirm_title": "Sign out?",
+    "sign_out_confirm_body": "Are you sure you want to sign out?",
+    "sign_out_cancel": "Cancel",
+    "forgot_password": "Forgot password?",
+    "forgot_password_desc": "Enter your email and we'll send you a link to reset your password.",
+    "send_reset_link": "Send reset link",
+    "reset_link_sent": "If an account exists for that email, a reset link is on its way.",
+    "back_to_sign_in": "Back to sign in",
+    "reset_password": "Reset password",
+    "reset_password_desc": "Choose a new password for your account.",
+    "new_password": "New password",
+    "password_reset_success": "Your password has been reset. You can now sign in.",
+    "session_expired": "Your session has expired. Please sign in again.",
+    "remote_follow": {
+      "title": "Follow {{username}}",
+      "body": "Choose where your account lives.",
+      "divider": "Have an account on another server?",
+      "label": "Your address",
+      "continue": "Continue",
+      "errors": {
+        "invalid_address": "Enter your address on another server, like @you@mastodon.social.",
+        "account_not_found": "We couldn't find that account. Check the address and try again.",
+        "server_unreachable": "We couldn't reach that server. Try again in a moment.",
+        "unsupported": "That server can't follow from another site. Search for this profile from your own server instead."
+      }
+    },
+    "login_required_title": "Sign in required",
+    "login_required_body": "You need an account to do that. Sign in or create one to continue.",
+    "verify_email": "Verify your email",
+    "verify_email_verifying": "Confirming your email address…",
+    "verify_email_success": "Your email has been verified. You can now sign in.",
+    "verify_email_no_token": "This verification link is missing its token.",
+    "confirm_email_change": "Confirm your new email",
+    "confirm_email_change_confirming": "Confirming your new email address…",
+    "confirm_email_change_success": "Your email address has been updated.",
+    "confirm_email_change_no_token": "This confirmation link is missing its token.",
+    "verification_email_sent": "Check your inbox! We've sent you a link to verify your email address.",
+    "account_ready": "Your account is ready. Sign in to start your shelf.",
+    "resend_verification_prompt": "Didn't get the email?",
+    "resend_verification": "Resend verification email",
+    "terms_prefix": "I agree to the",
+    "terms_privacy_policy": "Privacy Policy",
+    "terms_and": "and the",
+    "terms_of_service": "Terms of Service",
+    "errors": {
+      "field_required": "This field is required.",
+      "terms_required": "You must accept the Privacy Policy and Terms of Service.",
+      "weak_password": "Password must be at least 12 characters.",
+      "password_too_long": "This password is too long. Please choose a shorter one.",
+      "passwords_mismatch": "Passwords do not match.",
+      "username_format": "Username must be 3–50 characters (letters, numbers, and underscores only).",
+      "username_taken": "This username is already taken.",
+      "invalid_email": "Invalid email address.",
+      "invalid_credentials": "Invalid email or password.",
+      "email_already_used": "This email is already in use.",
+      "registration_closed": "Sign-ups are closed on this instance.",
+      "unauthorized": "Unauthorized. Please log in again.",
+      "user_not_found": "User not found.",
+      "validation_failed": "Validation failed. Check your input.",
+      "reset_token_invalid": "This reset link is invalid or has expired. Please request a new one.",
+      "email_not_verified": "Please verify your email before signing in.",
+      "verification_token_invalid": "This verification link is invalid or has expired. Please request a new one.",
+      "email_change_token_invalid": "This confirmation link is invalid or has expired. Please request a new one."
+    }
+  },
+  "errors": {
+    "internal_server_error": "An unexpected error occurred. Please try again.",
+    "unknown_error": "An error occurred. Please try again."
+  },
+  "entity": {
+    "filmography_sort": {
+      "popularity": "Popularity",
+      "releaseDate": "Release date"
+    },
+    "no_results": "No results found",
+    "load_more": "Load more",
+    "title_one": "title",
+    "title_many": "titles",
+    "born": "Born {{date}}",
+    "search": "Search these titles",
+    "show": {
+      "label": "Show",
+      "all": "All titles",
+      "shelf": "On my shelf"
+    },
+    "direction": {
+      "popularity": {
+        "desc": "Most popular first",
+        "asc": "Least popular first"
+      },
+      "releaseDate": {
+        "desc": "Newest first",
+        "asc": "Oldest first"
+      }
+    },
+    "empty": {
+      "search_title": "No matching title",
+      "search_body": "No title here contains “{{query}}”.",
+      "shelf_title": "None on your shelf yet",
+      "shelf_body": "Add a title from this page and it will show up here.",
+      "show_all": "Show all titles"
+    }
+  },
+  "media": {
+    "load_error": "We couldn't load this title. Check your connection and try again.",
+    "friend_awards": {
+      "others_one": "{{count}} other",
+      "others_other": "{{count}} others"
+    },
+    "release_date": "Release date",
+    "end_date": "End date",
+    "country": "Country of origin",
+    "votes_count_one": "{{count}} vote",
+    "votes_count_other": "{{count}} votes",
+    "tracking": {
+      "title": "Your shelf"
+    },
+    "history": {
+      "section": "Your history",
+      "show_all": "Show all ({{count}})",
+      "show_less": "Show less",
+      "empty": {
+        "watch": "No viewing logged",
+        "read": "No reading logged",
+        "play": "No session logged"
+      }
+    },
+    "reviews": "Reviews",
+    "see_more": "See more",
+    "see_less": "See less",
+    "visuals": "Visuals",
+    "open_image": "Enlarge image",
+    "close_image": "Close image",
+    "previous_image": "Previous image",
+    "next_image": "Next image",
+    "your_rating": "Your rating",
+    "details": "Details",
+    "storyline": "Storyline",
+    "original_title": "Original title",
+    "platforms": "Platforms",
+    "themes": "Themes",
+    "game_modes": "Game modes",
+    "format": "Format",
+    "source": "Source",
+    "season": "Season",
+    "volumes": "Volumes",
+    "votes": "Votes",
+    "cast": "Cast",
+    "characters": "Characters",
+    "authors": "Authors",
+    "developers": "Developers",
+    "publishers": "Publishers",
+    "studios": "Studios",
+    "networks": "Networks",
+    "director": "Director",
+    "franchise": "Franchise",
+    "dlcs": "DLCs",
+    "trailer": "Trailer",
+    "adult_content": "Adult content",
+    "anilist": {
+      "format": {
+        "TV": "TV series",
+        "TV_SHORT": "TV short",
+        "MOVIE": "Movie",
+        "SPECIAL": "Special",
+        "OVA": "OVA",
+        "ONA": "ONA (web)",
+        "MUSIC": "Music video",
+        "MANGA": "Manga",
+        "NOVEL": "Novel",
+        "ONE_SHOT": "One-shot"
+      },
+      "source": {
+        "ORIGINAL": "Original",
+        "MANGA": "Manga",
+        "LIGHT_NOVEL": "Light novel",
+        "VISUAL_NOVEL": "Visual novel",
+        "VIDEO_GAME": "Video game",
+        "OTHER": "Other",
+        "NOVEL": "Novel",
+        "DOUJINSHI": "Doujinshi",
+        "ANIME": "Anime",
+        "WEB_NOVEL": "Web novel",
+        "LIVE_ACTION": "Live action",
+        "GAME": "Game",
+        "COMIC": "Comic",
+        "MULTIMEDIA_PROJECT": "Multimedia project",
+        "PICTURE_BOOK": "Picture book"
+      },
+      "season": {
+        "WINTER": "Winter",
+        "SPRING": "Spring",
+        "SUMMER": "Summer",
+        "FALL": "Fall"
+      }
+    },
+    "related": {
+      "loading": "Loading recommendations",
+      "similar": "More like this",
+      "franchise": "From the same franchise",
+      "more_from": "More from {{name}}",
+      "directed_by": "Directed by {{name}}",
+      "works_and_adaptations": "{{name}}: works and adaptations",
+      "also_on": "Also on {{name}}"
+    },
+    "view_details": "View details",
+    "progress": {
+      "count": "{{watched}} / {{total}} episodes watched",
+      "season_count": "{{watched}} / {{total}} watched"
+    },
+    "stat_tmdb": "TMDB",
+    "stat_runtime": "Runtime",
+    "stat_budget": "Budget",
+    "stat_revenue": "Revenue",
+    "stat_igdb": "IGDB",
+    "stat_anilist": "AniList",
+    "you": "You",
+    "stat_seasons": "Seasons",
+    "stat_episodes": "Episodes",
+    "stat_chapters": "Chapters",
+    "stat_status": "Status",
+    "status": {
+      "releasing": "Releasing",
+      "finished": "Finished",
+      "not_yet_released": "Not yet released",
+      "cancelled": "Cancelled",
+      "hiatus": "On hiatus",
+      "ongoing": "Ongoing",
+      "completed": "Completed"
+    },
+    "meta": {
+      "seasons_one": "{{count}} season",
+      "seasons_other": "{{count}} seasons",
+      "episodes_one": "{{count}} episode",
+      "episodes_other": "{{count}} episodes",
+      "chapters_one": "{{count}} chapter",
+      "chapters_other": "{{count}} chapters"
+    },
+    "more_details": "More details",
+    "fewer_details": "Fewer details",
+    "about": "About",
+    "friends": {
+      "have_it_one": "has it shelved",
+      "have_it_other": "have it shelved",
+      "average": "average",
+      "title": "People you follow and this title",
+      "views": {
+        "watch": "watched {{count}} times",
+        "read": "read {{count}} times",
+        "play": "played {{count}} times"
+      }
+    },
+    "tracker": {
+      "title": "Episode tracking",
+      "watched": "Watched",
+      "not_watched": "Not watched",
+      "mark_watched": "Mark as watched",
+      "mark_all": "Mark everything watched",
+      "clear_all": "Mark everything unwatched",
+      "clear_confirm_title": "Mark everything unwatched?",
+      "clear_confirm_message": "Your watched episodes and episode ratings will be cleared.",
+      "stats": "Stats",
+      "progress": "Progress",
+      "your_average": "Your average",
+      "best": "Best episode",
+      "average": "Average",
+      "season_short": "S{{season}}",
+      "rate_episode": "Rate episode {{episode}}",
+      "episodes": "Episodes",
+      "source": {
+        "mine": "My ratings",
+        "community": "Community",
+        "tmdb": "TMDB"
+      },
+      "friends": "Ratings from people you follow",
+      "no_episodes": "No known episodes yet.",
+      "not_trackable": "Episode tracking applies to series and anime.",
+      "previous_episode": "Previous episode",
+      "next_episode": "Next episode",
+      "mark_season_n": "Mark season {{season}} as watched",
+      "unmark_season_n": "Mark season {{season}} as unwatched",
+      "not_aired": "Not aired yet",
+      "ratings_title": "Episode ratings",
+      "add_to_rate": "Shelf {{title}} to mark this episode watched and rate it.",
+      "seasons": "Seasons",
+      "season_long": "Season {{season}}",
+      "show": "Show",
+      "ratings_short": "Ratings",
+      "stat_watched": "episodes watched",
+      "stat_average": "average",
+      "stat_your_average": "your average",
+      "stat_best": "Best:"
+    },
+    "sections": {
+      "friends": "Following",
+      "information": "Information"
+    },
+    "view_poster": "View the poster",
+    "open_poster": "Open the poster",
+    "page": {
+      "back": "Back",
+      "by": "By {{name}}",
+      "on_source": "on {{source}}",
+      "votes": "({{count}} votes)",
+      "in_library": "In your library",
+      "overview": "Overview",
+      "episodes": "Episodes",
+      "reviews": "Reviews",
+      "about": "About",
+      "tabs": "Sections",
+      "trailer": "Trailer",
+      "on_shelf": "On your shelf",
+      "no_reviews": "No reviews yet. Be the first to write one."
+    }
+  },
+  "not_found": {
+    "title": "Page not found",
+    "heading": "This slot is empty.",
+    "hint": "The link may be broken, or the page was moved or removed.",
+    "to_shelf": "Back to my shelf",
+    "to_discover": "Back to Discover"
+  },
+  "nav": {
+    "breadcrumb": "Breadcrumb",
+    "admin": "Administration",
+    "discover": "Home",
+    "shelf": "Library",
+    "collection": "My library",
+    "lists": "Lists",
+    "versus": "Versus",
+    "reviews": "Reviews",
+    "profile": "Profile",
+    "go_discover": "Go to discover",
+    "search": "Search",
+    "search_label": "Search Shelfy",
+    "main": "Main",
+    "more": "More",
+    "quick_add": "Search and add",
+    "settings": "Settings",
+    "sections": {
+      "community": "Community",
+      "me": "My space"
+    },
+    "desc": {
+      "discover": "Trending, top rated and new",
+      "collection": "Your shelf and your backlog",
+      "profile": "Your public page",
+      "settings": "Account, data and privacy",
+      "admin": "Federation, blocked instances and reports",
+      "creations": "Reviews, lists and versus from everyone",
+      "people": "Who you follow, your followers and suggestions",
+      "notifications": "Requests, replies, likes and federation",
+      "my_reviews": "Everything you have reviewed",
+      "my_lists": "The lists you have put together",
+      "my_versus": "The duels you have created",
+      "explore": "Browse every catalogue by genre and filters"
+    },
+    "account_menu": "Account menu",
+    "unread_count": "{{count}} new",
+    "creations": "Community",
+    "people": "Social",
+    "explore": "Explore",
+    "notifications": "Notifications",
+    "back": "Back",
+    "my_reviews": "My reviews",
+    "my_lists": "My lists",
+    "my_versus": "My versus"
+  },
+  "profile": {
+    "title": "Profile",
+    "stats": {
+      "average_rating": "Average rating",
+      "titles": "Titles",
+      "average": "Average",
+      "followers": "Followers",
+      "reviews": "Reviews",
+      "lists": "Lists",
+      "versus": "Versus"
+    },
+    "edit": "Edit profile",
+    "my_collection": "My collection",
+    "compare": "Compare",
+    "states": {
+      "private": {
+        "title": "This profile is private",
+        "text": "Only the people they let in can see this shelf."
+      },
+      "not_found": {
+        "title": "No one by that name",
+        "text": "This profile doesn’t exist, or the username has changed."
+      },
+      "error": {
+        "title": "Couldn’t load this profile",
+        "text": "Something went wrong on our side. Try again in a moment."
+      }
+    },
+    "follow": {
+      "action": "Follow",
+      "following": "Following",
+      "followed": "You are now following this user.",
+      "unfollow": "Unfollow",
+      "unfollowed": "You are no longer following this user.",
+      "cannot_follow_self": "You cannot follow yourself.",
+      "already_following": "You are already following this user."
+    },
+    "collection": {
+      "short": "Collection",
+      "cta": "See the shelf"
+    },
+    "banner": {
+      "picker_title": "Profile banner",
+      "preview_empty": "Pick a backdrop below to see it here.",
+      "count_one": "{{count}} banner",
+      "count_other": "{{count}} banners",
+      "none": "No banner",
+      "shelf_heading": "From your shelf",
+      "shelf_empty": "Your shelf is empty. Search any title to find a backdrop.",
+      "backdrops_heading": "Backdrops",
+      "choose_another": "Choose another title",
+      "reposition": "Drag to reposition",
+      "use_banner": "Use this banner",
+      "cancel": "Cancel",
+      "preview_alt": "Banner preview",
+      "search_placeholder": "Search for a title…",
+      "partial_results": "Some catalog sources are temporarily unavailable. The displayed results are still usable.",
+      "no_results": "No title was found.",
+      "load_more": "Show more titles",
+      "loading_more": "Loading…",
+      "no_images": "No images are available for this title."
+    },
+    "ongoing": {
+      "title": "Currently enjoying"
+    },
+    "words": {
+      "title": "In their words"
+    },
+    "made": {
+      "title": "Made by {{name}}",
+      "title_owner": "Made by you"
+    },
+    "rail": {
+      "view_all": "See all",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "essentials": {
+      "title": "Essentials",
+      "owner_hint": "Five titles that say who you are.",
+      "add": "Add a title",
+      "edit": "Edit",
+      "save": "Save",
+      "picker_placeholder": "Search your shelf",
+      "picker_in_essentials": "In your essentials",
+      "picker_selected": "{{count}}/{{max}} selected",
+      "picker_full": "You already have five essentials. Unselect a title to add another.",
+      "picker_empty": "Your shelf is empty.",
+      "picker_no_match": "No title matches “{{query}}”.",
+      "picker_error": "Couldn’t load your shelf.",
+      "picker_count_one": "{{count}} title",
+      "picker_count_other": "{{count}} titles",
+      "save_error": "Couldn’t update your essentials. Try again.",
+      "hint": "Five titles that say who {{name}} is."
+    },
+    "now": {
+      "sub_owner": "What you are in the middle of",
+      "sub": "What {{name}} is in the middle of",
+      "started": "Started {{date}}",
+      "title": "Right now",
+      "also": "Also in progress",
+      "empty": "Nothing in progress. Pick your next one from the backlog, and it shows up here.",
+      "open_backlog": "Open the backlog"
+    },
+    "finished": {
+      "title": "Recently finished",
+      "full_shelf": "Full shelf",
+      "empty": "Titles you finish land here, with your rating."
+    },
+    "latest_review": {
+      "title_plural": "Latest reviews",
+      "title": "Latest review",
+      "all": "All {{count}}",
+      "empty": "Your reviews show up here.",
+      "write": "Write a review"
+    },
+    "creations": {
+      "title": "Lists & versus",
+      "all": "All"
+    },
+    "line": {
+      "titles": "titles",
+      "reviews": "reviews",
+      "lists": "lists",
+      "versus": "versus",
+      "followers": "followers"
+    }
+  },
+  "comments": {
+    "title": "Comments",
+    "add_label": "Leave a comment",
+    "add_placeholder": "Share your thoughts…",
+    "send": "Post comment",
+    "post": "Post",
+    "empty": "No comments yet.",
+    "load_more": "Load more comments",
+    "edit": "Edit comment",
+    "delete": "Delete comment",
+    "delete_confirm": "Delete this comment? This cannot be undone.",
+    "deleted": "Comment deleted.",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edited": "Edited",
+    "sort": {
+      "relevance": "Top",
+      "recent": "Recent",
+      "label": "Sort comments"
+    },
+    "low_voted": "Low-voted comment",
+    "vote": {
+      "up": "More helpful",
+      "down": "Less helpful"
+    },
+    "reply": "Reply",
+    "reply_label": "Reply to {{username}}",
+    "reply_placeholder": "Write a reply…",
+    "deleted_comment": "Deleted comment",
+    "collapse_thread": "Collapse thread",
+    "replies_count_one": "{{count}} reply",
+    "replies_count_other": "{{count}} replies",
+    "in_reply_to": "In reply to",
+    "login_to_comment": "Log in to comment.",
+    "errors": {
+      "not_found": "This comment no longer exists."
+    },
+    "more": "More actions",
+    "send_hint": "Post (Ctrl+Enter)"
+  },
+  "review": {
+    "spoiler_warning": "This review contains spoilers.",
+    "spoiler_reveal": "Show anyway",
+    "viewings": {
+      "watch": "Viewings",
+      "read": "Readings",
+      "play": "Sessions"
+    },
+    "list": {
+      "title": "Reviews",
+      "load_more": "Load more"
+    },
+    "tabs": {
+      "review": "Review",
+      "discussion": "Discussion"
+    },
+    "panel": {
+      "rating": "Rating",
+      "edited": "Edited"
+    },
+    "open": "Read {{name}}'s review",
+    "by": "Review by {{name}}",
+    "studio": {
+      "edit": "Edit my review",
+      "text": "Your review",
+      "placeholder": "What did {{title}} leave you with?",
+      "visible_to": "Visible to: {{who}}",
+      "write_first": "Write a few words to publish",
+      "new_hint": "Not published yet · nothing is saved until you publish",
+      "published": "Review published",
+      "log_new_hint": "Nothing is saved until you log it",
+      "log_edit_hint": "Changes are saved when you are done"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "Nothing new.",
+    "empty_hint": "Likes, replies, follows and requests show up here.",
+    "all_read": "All caught up",
+    "open": "Open notifications",
+    "open_unread": "Open notifications, {{count}} unread",
+    "requests": "Requests",
+    "today": "Today",
+    "this_week": "This week",
+    "earlier": "Earlier",
+    "mark_all_read": "Mark all as read",
+    "see_all": "See all",
+    "settings": "Notification settings",
+    "accept": "Accept",
+    "decline": "Decline",
+    "load_error": "Notifications could not load.",
+    "others_one": "and 1 other",
+    "others_many": "and {{count}} others",
+    "filters": {
+      "all": "All",
+      "RELATIONS": "People",
+      "COMMENTS": "Comments",
+      "LIKES": "Likes",
+      "COLLABORATION": "Co-authoring",
+      "FEDIVERSE": "Fediverse",
+      "MODERATION": "Moderation"
+    },
+    "types": {
+      "new_follower": "started following you",
+      "comment_on_creation": "commented on {{title}}",
+      "comment_reply": "replied to your comment on {{title}}",
+      "comment_mention": "mentioned you on {{title}}",
+      "comment_in_thread": "also commented on {{title}}",
+      "creation_liked": "liked {{title}}",
+      "comment_upvoted": "upvoted your comment on {{title}}",
+      "list_collaboration_invite": "invited you to co-author {{title}}",
+      "list_collaboration_invite_accepted": "added you as a co-author of {{title}}",
+      "list_collaboration_invite_declined": "invited you to co-author {{title}}. You declined.",
+      "versus_collaboration_invite": "invited you to co-author {{title}}",
+      "versus_collaboration_invite_accepted": "added you as a co-author of {{title}}",
+      "versus_collaboration_invite_declined": "invited you to co-author {{title}}. You declined.",
+      "list_collaboration_accepted": "joined {{title}} as a co-author",
+      "versus_collaboration_accepted": "joined {{title}} as a co-author",
+      "collaboration_declined": "declined your invite to {{title}}",
+      "collaboration_removed": "removed you from {{title}}",
+      "collaboration_left": "left {{title}}",
+      "collaboration_edited": "edited {{title}}",
+      "versus_played": "played {{title}}",
+      "remote_follow_accepted": "accepted your follow request",
+      "remote_follow_rejected": "declined your follow request",
+      "account_moved": "moved to {{name}}. You now follow the new account.",
+      "remote_account_deleted": "deleted their account",
+      "import_finished": "Your {{source}} import is done: {{imported}} titles added.",
+      "import_failed": "Your {{source}} import failed. Try again from settings.",
+      "report_received": "New report from {{domain}}",
+      "delivery_failing": "{{domain}} stopped receiving updates"
+    },
+    "stat_unread": "unread",
+    "stat_total": "notifications",
+    "stat_total_one": "notification",
+    "stat_requests": "requests",
+    "stat_requests_one": "request",
+    "show_label": "Show",
+    "unread_label": "Unread",
+    "show_all": "Show all notifications",
+    "clear": "Clear",
+    "clear_all": "Clear all",
+    "clear_all_title": "Clear all notifications?",
+    "clear_all_message": "Pending requests stay until you answer them."
+  },
+  "lists": {
+    "empty_title": "No titles yet",
+    "filters": {
+      "all": "All",
+      "lists": "Lists",
+      "versus": "Versus"
+    },
+    "new": "New list",
+    "creations_one": "{{count}} creation",
+    "creations_other": "{{count}} creations",
+    "library_empty_title": "No lists yet.",
+    "library_empty_hint": "Start your first selection when you're ready.",
+    "profile_library_empty_title": "{{username}} has no public lists yet.",
+    "profile_library_empty_hint": "Check back later for their selections.",
+    "load_error": "We couldn't load these lists. Check your connection and try again.",
+    "detail_empty": "This list is still empty.",
+    "title": "Title",
+    "title_placeholder": "E.g. Films that haunt me",
+    "public": "Public — everyone",
+    "link": "With the link",
+    "private": "Private — only me",
+    "private_shared": "Private — you and co-authors",
+    "tags": "Tags",
+    "panel": {
+      "about": "About",
+      "contributors": "Co-authors",
+      "titles": "Titles",
+      "created": "Created",
+      "updated": "Updated",
+      "visibility": "Visibility"
+    },
+    "tag_placeholder": "Add a tag",
+    "cancel": "Cancel",
+    "remove": "Remove {{title}}",
+    "element_one": "{{count}} item",
+    "element_other": "{{count}} items",
+    "collab": {
+      "title": "Co-authors",
+      "invite_button": "Invite a co-author",
+      "invite": "Invite",
+      "invite_panel_title": "Invite a follower as co-author",
+      "invite_sent": "Invitation sent.",
+      "no_followers_available": "All your followers are already co-authors or invited, or nobody follows you yet.",
+      "empty": "No co-authors yet.",
+      "pending_title": "Pending invitations",
+      "pending_badge": "pending",
+      "cancel_invite": "Cancel invitation",
+      "invite_cancelled": "Invitation cancelled.",
+      "pending_banner": "You've been invited to co-author this list.",
+      "accept": "Accept",
+      "accepted": "You are now a co-author of this list.",
+      "decline": "Decline",
+      "declined": "Invitation declined.",
+      "leave": "Leave list",
+      "left": "You left the list.",
+      "remove": "Remove",
+      "removed": "Co-author removed.",
+      "errors": {
+        "cannot_invite_self": "You cannot invite yourself.",
+        "must_follow": "You can only invite people who follow you.",
+        "already_invited": "This person is already invited or a co-author.",
+        "not_found": "Invitation or co-author not found.",
+        "item_not_found": "This media is no longer in the list.",
+        "item_already_exists": "This media is already in the list.",
+        "too_large": "A list holds at most 200 titles.",
+        "order_stale": "Someone changed this list meanwhile. It has been reloaded, try again."
+      },
+      "search_followers": "Search your followers",
+      "author": "Author"
+    },
+    "manage": {
+      "add_titles": "Add titles",
+      "draft": "Draft · only you",
+      "not_saved": "Not saved",
+      "undo": "Undo",
+      "removed_title": "“{{title}}” removed",
+      "removed_titles": "{{count}} titles removed",
+      "remove_title": "Remove {{title}} from the list",
+      "confirm_remove_one": "Remove “{{title}}” from the list?",
+      "confirm_remove_many": "Remove {{count}} titles from the list?",
+      "remove_tag": "Remove the tag {{tag}}",
+      "added_by": "Added by {{user}}",
+      "empty_hint": "Search any film, series, game or anime to start the list."
+    },
+    "edit": "Edit",
+    "search_placeholder": "Search by name",
+    "search_empty": "Nothing called “{{query}}”"
+  },
+  "collection": {
+    "backlog": {
+      "add": "Backlog",
+      "added": "Added to your backlog.",
+      "removed": "Removed from your backlog."
+    },
+    "views": {
+      "shelf": "Shelf",
+      "backlog": "Backlog"
+    },
+    "title": "My shelf",
+    "add": "Shelf it",
+    "in_shelf": "Shelved",
+    "toast_status": "{{title}} → {{status}}",
+    "toast_rated": "{{title}} rated {{rating}}/5",
+    "toast_rating_cleared": "Rating removed from {{title}}",
+    "rating_mine": "You",
+    "search": "Search",
+    "search_placeholder": "Search a movie or TV show…",
+    "empty": "Your shelf is empty. Shelf your first title!",
+    "empty_cta": "Find something to add",
+    "load_error": "We couldn't load your shelf. Check your connection and try again.",
+    "retry": "Try again",
+    "no_matches": "Nothing matches these filters.",
+    "clear_filters": "Clear filters",
+    "empty_games": "Your game shelf is empty.",
+    "empty_games_steam_cta": "Import your library from Steam",
+    "add_sheet": {
+      "title": "Shelf it"
+    },
+    "added": "Shelved.",
+    "removed": "Removed from your shelf.",
+    "status_label": "Status",
+    "add_to_shelf": "Shelf it",
+    "note": "Review",
+    "note_placeholder": "Write your review of this title…",
+    "history": {
+      "empty": {
+        "watch": "No viewing logged yet.",
+        "read": "No reading logged yet.",
+        "play": "No session logged yet."
+      },
+      "edit_title": {
+        "watch": "Edit the viewing",
+        "read": "Edit the reading",
+        "play": "Edit the session"
+      },
+      "delete_entry": "Delete",
+      "delete_title": "Delete this entry?",
+      "delete_message": "Its date, rating and review will be removed. This cannot be undone.",
+      "delete_confirm": "Confirm deletion",
+      "date_required": "Pick a valid date.",
+      "repeat_hint": {
+        "watch": "You had already seen it before this time.",
+        "read": "You had already read it before this time.",
+        "play": "You had already played it before this time."
+      },
+      "spoiler_hint": "Hides the review behind a warning.",
+      "title": "History",
+      "no_entries": "No entries yet.",
+      "date": "Date",
+      "name": "Name",
+      "name_placeholder": "Optional, e.g. Director's cut or Co-op with Sam",
+      "rating": "Rating",
+      "review": "Review",
+      "spoiler": "Contains spoilers",
+      "add": {
+        "watch": "Log a watch",
+        "read": "Log a read",
+        "play": "Log a playthrough"
+      },
+      "entry": {
+        "watch": "Watched",
+        "read": "Read",
+        "play": "Played"
+      },
+      "repeat": {
+        "watch": "Rewatch",
+        "read": "Reread",
+        "play": "Replay"
+      },
+      "edit": "Edit"
+    },
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Remove",
+    "delete_confirm_title": "Remove this media?",
+    "delete_confirm_message": "\"{{title}}\" will be removed from your shelf. This action cannot be undone.",
+    "edit": "Edit",
+    "bulk": {
+      "select_button": "Select",
+      "exit_button": "Cancel",
+      "selected_count": "{{count}} selected",
+      "select_all": "Select all",
+      "edit": "Edit",
+      "delete": "Delete",
+      "title_one": "Edit {{count}} title",
+      "title_other": "Edit {{count}} titles",
+      "no_change": "No change",
+      "apply_one": "Apply to {{count}} title",
+      "apply_other": "Apply to {{count}} titles",
+      "delete_confirm_title": "Delete {{count}} items?",
+      "delete_confirm_message": "This can't be undone.",
+      "updated": "{{count}} items updated.",
+      "deleted": "{{count}} items removed.",
+      "select_item": "Select {{title}}",
+      "unselect_all": "Unselect all"
+    },
+    "media_type": {
+      "book": "Books",
+      "movie": "Movies",
+      "tv_show": "TV shows",
+      "game": "Games",
+      "anime": "Anime",
+      "manga": "Manga",
+      "webtoon": "Webtoon"
+    },
+    "filters": {
+      "sort_prefix": "Sort",
+      "search_placeholder": "Search…",
+      "unrated": "Unrated",
+      "clear_all": "Reset",
+      "clear_search": "Clear search",
+      "has_notes": "Has a note",
+      "all": "All",
+      "rating_range": "Rating",
+      "view": "View",
+      "sort_options": {
+        "addedAt_desc": "Recently added",
+        "addedAt_asc": "Oldest added",
+        "title_asc": "Title A–Z",
+        "title_desc": "Title Z–A",
+        "rating_desc": "Highest rated",
+        "rating_asc": "Lowest rated"
+      },
+      "type_label": "Media type",
+      "every_status": "All",
+      "button": "Filters",
+      "rating_min": "Lowest rating",
+      "rating_max": "Highest rating"
+    },
+    "status": {
+      "planned": "Backlog",
+      "ongoing": "Ongoing",
+      "done": "Done",
+      "dropped": "Dropped"
+    },
+    "status_done": {
+      "watched": "Watched",
+      "read": "Read",
+      "played": "Played"
+    },
+    "errors": {
+      "item_not_found": "This item is no longer on your shelf.",
+      "media_already_in_collection": "This title is already on your shelf.",
+      "status_not_applicable": "This status is not available for this type of media."
+    },
+    "media_type_one": {
+      "book": "Book",
+      "movie": "Movie",
+      "tv_show": "Series",
+      "game": "Game",
+      "anime": "Anime",
+      "manga": "Manga",
+      "webtoon": "Webtoon"
+    },
+    "stats": {
+      "total": "titles"
+    },
+    "sheet": {
+      "status": "Status",
+      "since": "on your shelf since {{date}}",
+      "not_shelved": "Not on your shelf yet",
+      "saving": "Saving…",
+      "saved": "Saved",
+      "rating": "Rating",
+      "rating_step_one": "{{value}} star",
+      "rating_step_other": "{{value}} stars",
+      "remove_rating": "Clear rating",
+      "open_editor": "Open the editor",
+      "back": "Back",
+      "done": "Done",
+      "words": "{{count}} words",
+      "write": "Write",
+      "add": "Add",
+      "give": "Give",
+      "remove": "Remove from shelf",
+      "remove_short": "Remove",
+      "remove_backlog": "Remove from backlog",
+      "full_editor": "Open the full editor",
+      "history_summary": "Last on {{date}} · {{count}} in total",
+      "write_review": "Write a review",
+      "edit_review": "Edit review",
+      "log_viewing": "Log a viewing"
+    },
+    "verdict": {
+      "none": "Not rated yet",
+      "masterpiece": "Masterpiece",
+      "amazing": "Amazing",
+      "great": "Great",
+      "good": "Good",
+      "okay": "Okay",
+      "weak": "Weak",
+      "bad": "Bad"
+    },
+    "sort": {
+      "label": "Sort",
+      "fields": {
+        "addedAt": "Date added",
+        "title": "Title",
+        "rating": "Rating"
+      }
+    },
+    "results_one": "{{count}} result",
+    "results_other": "{{count}} results"
+  },
+  "search": {
+    "title": "Search",
+    "no_results": "No results found.",
+    "close": "Close",
+    "clear": "Clear search",
+    "sort_prefix": "Sort",
+    "sort_relevance": "Relevance",
+    "sort_rating": "Rating",
+    "sort_year": "Year",
+    "sort_title": "Title",
+    "selection": {
+      "selected_count": "{{count}} selected",
+      "clear": "Clear"
+    }
+  },
+  "discover": {
+    "add_to_shelf": "Shelf it",
+    "end_of_list": "You've reached the end of the list.",
+    "load_error": "We couldn't load these titles. Check your connection and try again.",
+    "empty": "Nothing to show for {{type}} right now.",
+    "filters": "Discover filters",
+    "media_label": "Medium",
+    "media": {
+      "tv_show": "TV shows",
+      "movie": "Movies",
+      "game": "Games",
+      "anime": "Anime",
+      "manga": "Manga",
+      "webtoon": "Webtoons"
+    },
+    "rows": {
+      "trending": "Trending this week",
+      "mood": "This week’s mood · {{genre}}",
+      "top_rated": "Top rated {{type}}"
+    },
+    "browse_all": "Browse all {{type}}",
+    "media_plural": {
+      "tv_show": "TV shows",
+      "movie": "movies",
+      "game": "games",
+      "anime": "anime",
+      "manga": "manga",
+      "webtoon": "webtoons"
+    },
+    "genre": {
+      "tmdb": {
+        "12": "Adventure",
+        "14": "Fantasy",
+        "16": "Animation",
+        "18": "Drama",
+        "27": "Horror",
+        "28": "Action",
+        "35": "Comedy",
+        "36": "History",
+        "37": "Western",
+        "53": "Thriller",
+        "80": "Crime",
+        "99": "Documentary",
+        "878": "Sci-Fi",
+        "9648": "Mystery",
+        "10402": "Music",
+        "10749": "Romance",
+        "10751": "Family",
+        "10752": "War",
+        "10759": "Action & Adventure",
+        "10762": "Kids",
+        "10763": "News",
+        "10764": "Reality",
+        "10765": "Sci-Fi & Fantasy",
+        "10766": "Soap",
+        "10767": "Talk",
+        "10768": "War & Politics",
+        "10770": "TV movie"
+      },
+      "igdb": {
+        "5": "Shooter",
+        "9": "Puzzle",
+        "10": "Racing",
+        "12": "RPG",
+        "14": "Sport",
+        "15": "Strategy",
+        "31": "Adventure",
+        "32": "Indie"
+      },
+      "name": {
+        "action": "Action",
+        "romance": "Romance",
+        "comedy": "Comedy",
+        "fantasy": "Fantasy",
+        "sci_fi": "Sci-Fi",
+        "slice_of_life": "Slice of life",
+        "mystery": "Mystery",
+        "drama": "Drama",
+        "science_fiction": "Science fiction",
+        "history": "History",
+        "thriller": "Thriller",
+        "horror": "Horror",
+        "biography": "Biography"
+      }
+    }
+  },
+  "friends": {
+    "empty_cta": "Find people to follow",
+    "tabs": {
+      "following": "Following",
+      "followers": "Followers"
+    },
+    "following": {
+      "empty": "You are not following anyone yet."
+    },
+    "followers": {
+      "empty": "No one is following you yet."
+    },
+    "search": {
+      "no_results": "No users found."
+    },
+    "load_more": "Load more",
+    "profile": {
+      "not_found": "This profile isn't available.",
+      "compare_no_common_items": "You don't have any titles in common yet."
+    },
+    "shelf": {
+      "title": "{{name}}'s library",
+      "search": "Search this library",
+      "in_common": "in common with you",
+      "show": "Show",
+      "everything": "Whole library",
+      "common": "In common with you",
+      "show_everything": "Show the whole library",
+      "common_empty_title": "Nothing in common yet",
+      "rating": "Their rating",
+      "mine": "You: {{value}}",
+      "empty_title": "An empty library",
+      "empty_body": "{{name}} hasn't added any title yet.",
+      "search_title": "Not in this library",
+      "search_body": "No title on {{name}}'s shelf contains “{{query}}”."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "sections": {
+      "profile": "Profile",
+      "preferences": "Preferences",
+      "notifications": "Notifications",
+      "connections": "Imports",
+      "account": "Account",
+      "privacy": "Privacy & data",
+      "danger": "Danger zone"
+    },
+    "panels": {
+      "display": "Display",
+      "fediverse": "Fediverse"
+    },
+    "preferences_hint": {
+      "time_format": "Show 14:30 instead of 2:30 PM.",
+      "adult_content": "Show 18+ rated titles in Discover and search.",
+      "federation_share": "People on other servers can follow you and see your public activity. Turn it off to keep your account on this server only."
+    },
+    "cancel": "Cancel",
+    "invalid_hint": "Fix the fields in red to save",
+    "profile": {
+      "email": {
+        "change": "Change",
+        "title": "Email address",
+        "not_verified": "Not verified",
+        "pending": "Confirmation pending for {{email}}. Check that inbox to finish the change.",
+        "new_email": "New email address",
+        "send_confirmation": "Send confirmation link",
+        "request_sent": "Check the new address's inbox to confirm the change."
+      }
+    },
+    "avatar_banner": {
+      "banner": {
+        "title": "Banner",
+        "change": "Change banner",
+        "remove": "Remove banner",
+        "add": "Add a banner",
+        "hint": "Shown at the top of your profile and of this page."
+      },
+      "avatar": {
+        "title": "Avatar",
+        "hint": "JPEG, PNG or WebP, up to 2 MB.",
+        "upload": "Upload avatar",
+        "remove": "Remove avatar",
+        "errors": {
+          "invalid_type": "Only JPEG, PNG and WebP images are allowed.",
+          "too_large": "The image must be 2 MB or smaller.",
+          "upload_failed": "The avatar could not be uploaded. Please try again."
+        }
+      }
+    },
+    "display_name": "Display name",
+    "bio": "Bio",
+    "collection_visibility": "Shelf visibility",
+    "visibility": {
+      "public": "Public",
+      "private": "Private"
+    },
+    "allow_adult_content": "Show adult content",
+    "federation_share": "Share on the Fediverse",
+    "migration": {
+      "title": "Move your account",
+      "description": "Switch to another server, or bring an account here, and keep your followers.",
+      "manage": "Manage",
+      "your_address": "Your address on this server",
+      "moved_to": "This account has moved to {{target}}.",
+      "alias_hint": "Moving here from another server? Add that account as an alias, then start the move there.",
+      "alias_label": "Account you are moving from",
+      "save_alias": "Save alias",
+      "remove_alias": "Remove alias",
+      "alias_saved": "Alias saved.",
+      "alias_removed": "Alias removed.",
+      "move_hint": "Moving to another server? First add your address above as an alias on the new account. Followers are told to follow it, and this cannot be undone.",
+      "move_label": "Account you are moving to",
+      "move": "Move account",
+      "moved": "Your account has moved.",
+      "confirm_title": "Move your account?",
+      "confirm_message": "Your followers will be asked to follow {{handle}}. This cannot be undone."
+    },
+    "preferences": "Preferences",
+    "use_24_hour_format": "Use 24-hour time format",
+    "save": "Save",
+    "saved": "Settings saved.",
+    "errors": {
+      "display_name_too_long": "Display name must be at most 50 characters.",
+      "bio_too_long": "Bio must be at most 500 characters.",
+      "adult_content_confirmation_required": "You must confirm your age to enable adult content."
+    },
+    "adult_content_confirm": {
+      "title": "Confirm your age",
+      "body": "Adult content includes titles rated for mature audiences (18+). By enabling this, you confirm that you are an adult under the laws of your country of residence.",
+      "confirm": "I confirm, enable it"
+    },
+    "anilist": {
+      "title": "AniList"
+    },
+    "import": {
+      "title": "Import",
+      "steam": {
+        "title": "Steam",
+        "description": "Connect your Steam library to import your games.",
+        "connect": "Connect Steam",
+        "disconnect": "Disconnect",
+        "connected_as": "Connected as",
+        "connected": "Steam account connected.",
+        "disconnected": "Steam account disconnected.",
+        "connect_error": "Could not connect your Steam account.",
+        "connect_error_already_linked": "This Steam account is already linked to another Shelfy account.",
+        "import_library": "Import library",
+        "importing": "Importing… {{imported}}/{{total}} games processed",
+        "import_completed": "Import complete: {{imported}} games added, {{skipped}} skipped.",
+        "import_failed": "The Steam import failed. Please try again.",
+        "view_details": "View details",
+        "hide_details": "Hide details",
+        "no_entries": "No games processed yet.",
+        "skipped_count": "Skipped ({{count}})",
+        "imported_count": "Imported ({{count}})",
+        "reasons": {
+          "no_igdb_match": "Not found on IGDB",
+          "invalid_game_type": "Not a full game (edition, DLC…)",
+          "already_in_collection": "Already shelved"
+        }
+      },
+      "letterboxd": {
+        "title": "Letterboxd",
+        "description": "Import your Letterboxd export (diary, ratings, reviews, watchlist).",
+        "import_library": "Import export",
+        "importing": "Importing… {{imported}}/{{total}} films processed",
+        "import_completed": "Import complete: {{imported}} films added, {{skipped}} skipped.",
+        "import_failed": "The Letterboxd import failed. Please try again.",
+        "view_details": "View details",
+        "hide_details": "Hide details",
+        "no_entries": "No films processed yet.",
+        "skipped_count": "Skipped ({{count}})",
+        "imported_count": "Imported ({{count}})",
+        "reasons": {
+          "no_tmdb_match": "Not found on TMDB",
+          "processing_error": "Could not be processed"
+        },
+        "errors": {
+          "invalid_file": "Please upload your Letterboxd export as a .zip file."
+        }
+      },
+      "errors": {
+        "not_connected": "Connect your Steam account before importing.",
+        "already_linked": "This Steam account is already linked to another Shelfy account.",
+        "in_progress": "An import is already in progress.",
+        "provider_unavailable": "Steam is temporarily unavailable. Please try again."
+      }
+    },
+    "danger_zone": {
+      "title": "Danger zone",
+      "clear_collection": "Clear shelf",
+      "clear_collection_description": "Remove every item from your shelf. Your account and connections are kept.",
+      "clear_collection_confirm_title": "Clear your shelf?",
+      "clear_collection_confirm_body": "This permanently removes every title from your shelf. This cannot be undone.",
+      "collection_cleared": "Your shelf has been cleared.",
+      "delete_account": "Delete account",
+      "delete_account_description": "Permanently delete your account, shelf, and connections.",
+      "delete_account_confirm_title": "Delete your account?",
+      "delete_account_confirm_body": "This permanently deletes your account, your shelf, your awards, and your AniList/Steam connections. This cannot be undone.",
+      "password_label": "Enter your password to confirm",
+      "confirm_input_label": "Type {{username}} to confirm",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    },
+    "privacy": {
+      "title": "Privacy & data",
+      "export_data": "Download my data",
+      "export_data_description": "Get a copy of your profile, shelf, awards, follows and Steam import history as a JSON file.",
+      "policy_link": "Privacy Policy",
+      "legal_title": "Legal"
+    },
+    "admin": {
+      "title": "Instance administration",
+      "description": "Federation status, other instances, blocks and reports.",
+      "open": "Open"
+    },
+    "visibility_hint": {
+      "public": "Anyone can see your shelf.",
+      "public_federated": "Anyone can see your shelf, including people on other instances and the Fediverse. When you delete something, those servers are asked to remove their copy, but this cannot be guaranteed.",
+      "private": "Only you can see your shelf.",
+      "private_federated": "Only you can see your shelf. Nothing leaves this instance."
+    },
+    "notifications": {
+      "families": {
+        "RELATIONS": "People",
+        "COMMENTS": "Comments",
+        "LIKES": "Likes",
+        "COLLABORATION": "Co-authoring",
+        "VERSUS": "Versus",
+        "FEDIVERSE": "Fediverse",
+        "ACCOUNT": "Account",
+        "MODERATION": "Moderation"
+      },
+      "families_hint": {
+        "RELATIONS": "New followers",
+        "COMMENTS": "On your creations, replies and mentions",
+        "LIKES": "Always grouped per creation",
+        "COLLABORATION": "Invites and changes on shared lists and versus",
+        "VERSUS": "When people play your versus",
+        "FEDIVERSE": "Follows on other servers and moved accounts",
+        "ACCOUNT": "Steam and Letterboxd imports",
+        "MODERATION": "Reports and servers that stop answering"
+      },
+      "settings": {
+        "NEW_FOLLOWERS": "New followers",
+        "COMMENTS_ON_CREATIONS": "Comments on my lists, reviews and versus",
+        "REPLIES_AND_MENTIONS": "Replies and mentions",
+        "THREAD_ACTIVITY": "Conversations I commented in",
+        "CREATION_LIKES": "Likes on my lists, reviews and versus",
+        "COMMENT_UPVOTES": "Upvotes on my comments",
+        "COLLABORATION_INVITES": "Invites and new co-authors",
+        "COLLABORATION_CHANGES": "Edits, declines and departures",
+        "VERSUS_PLAYED": "Someone played my versus",
+        "REMOTE_FOLLOW_ANSWERS": "Follow requests answered on other servers",
+        "ACCOUNT_MOVES": "Accounts I follow that moved",
+        "REMOTE_ACCOUNT_DELETED": "Remote accounts that were deleted",
+        "IMPORTS": "Finished or failed imports",
+        "ADMIN_REPORTS": "New reports",
+        "DELIVERY_FAILURES": "Servers that stopped receiving updates"
+      },
+      "families_title": "What notifies you",
+      "audience_title": "Who can notify you",
+      "audience_hint": "Applies to likes, comments, mentions and follows. Requests always reach you.",
+      "audience": {
+        "EVERYONE": "Everyone",
+        "CONNECTIONS": "People I follow"
+      }
+    },
+    "groups": {
+      "personal": "Your Shelfy",
+      "account": "Account & data"
+    },
+    "section_hints": {
+      "profile": "How you appear to others on Shelfy.",
+      "preferences": "How Shelfy looks and what it shows you.",
+      "notifications": "Choose what Shelfy tells you about.",
+      "connections": "Bring your games and films over from other services.",
+      "account": "Your sign-in email and where your account lives.",
+      "privacy": "Get a copy of your data and read how it is handled.",
+      "danger": "Permanent actions. They cannot be undone."
+    }
+  },
+  "legal": {
+    "title": "Legal",
+    "notice": {
+      "title": "Legal Notice",
+      "intro": "Information about the publisher and host of this Shelfy instance, as required by French law (LCEN).",
+      "publisher_heading": "Publisher",
+      "publisher_body": "This site is published by {{controller}}. Contact: {{email}}.",
+      "director_heading": "Publication director",
+      "director_body": "The publication director is {{controller}}.",
+      "hosting_heading": "Hosting provider",
+      "hosting_body": "This site is hosted by {{name}}, {{address}}.",
+      "credits_heading": "Credits and attributions",
+      "credits_intro": "This app relies on the following third-party data sources:",
+      "credits_tmdb": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+      "credits_igdb": "Game data provided by IGDB.com.",
+      "credits_steam": "Steam library data is retrieved via the Steam Web API."
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "intro": "This page explains what data Shelfy collects, why, and what rights you have over it.",
+      "controller_heading": "Data controller",
+      "controller_body": "This Shelfy instance is operated by {{controller}}, who acts as the data controller for your personal data under the GDPR. Contact: {{email}}.",
+      "data_heading": "Data we collect",
+      "data_intro": "To run your account, we collect:",
+      "data_account": "Account: email address, username, password (hashed), optional display name and bio.",
+      "data_profile": "Preferences: profile visibility, adult-content preference.",
+      "data_steam": "Steam integration (optional): Steam ID, display name, avatar, and the game titles imported into your library.",
+      "data_activity": "Activity: your collection (statuses, ratings, personal notes), your awards, the people you follow.",
+      "data_technical": "Technical: your IP address in the server's access logs, for security purposes.",
+      "purposes_heading": "Purposes and legal basis",
+      "purposes_body": "This data is processed to perform the contract that binds you to this service (providing your account and its features) and, for the logged IP address, on the basis of the operator's legitimate interest in keeping the service secure.",
+      "retention_heading": "How long we keep it",
+      "retention_body": "Your account data is kept for as long as your account exists. Expired authentication tokens are purged automatically. Server access logs are kept under a bounded rotation set by the operator.",
+      "processors_heading": "Processors and third-party services",
+      "processors_intro": "Some features rely on third-party services:",
+      "processors_catalogs": "TMDB, IGDB and the Steam Web API: used only to search their public catalogs; no personal data about you is sent to them.",
+      "processors_mail": "Our transactional email provider (SMTP): processes your email address to send account verification and password reset emails.",
+      "federation_heading": "Federation with other servers",
+      "federation_body": "This instance is federated: it exchanges data with other Shelfy instances and with Fediverse servers such as Mastodon, using the ActivityPub protocol. With a public profile, your username, display name, bio, avatar and shelf activity (additions, ratings, reviews, lists, versus pools, comments and likes) are sent to the servers of the people who follow you and the people you mention, and anyone can read them through those servers. A private profile never leaves this instance. Those servers are run by other operators, who are responsible for what they do with the copies they receive.",
+      "federation_deletion": "When you edit or delete something, or delete your account, this instance asks those servers to update or remove their copy. Most servers respect this, but because they are independent, the removal cannot be guaranteed. A server that is offline for several days may also miss the request.",
+      "no_tracking_heading": "No tracking, no non-essential cookies",
+      "no_tracking_body": "Shelfy does not use any analytics or advertising trackers. The only cookie in use is a technical cookie required for authentication (refresh token), which does not require consent under ePrivacy rules.",
+      "rights_heading": "Your rights",
+      "rights_body": "Under the GDPR, you have the right to access, rectify, erase, port and object to the processing of your data. You can: edit your profile and download a copy of your data from the Settings page; permanently delete your account and all associated data from the Settings page; or contact us at {{email}} for any other request.",
+      "complaint_heading": "Filing a complaint",
+      "complaint_body": "You can lodge a complaint with the competent supervisory authority if you believe your rights are not being respected: {{jurisdiction}}."
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "intro": "By creating an account on this Shelfy instance, you agree to the following terms.",
+      "service_heading": "The service",
+      "service_body": "Shelfy is a personal tracker for movies, TV shows, video games, anime, manga and webtoons. Catalog data comes from third-party providers (TMDB, IGDB, AniList, Steam) and is provided for reference only.",
+      "account_heading": "Your account",
+      "account_body": "You're responsible for keeping your credentials confidential and for the accuracy of the information you provide. You must meet the legal age required in your jurisdiction to create an account.",
+      "content_heading": "Content and use",
+      "content_body": "Content you add to your collection (notes, ratings) remains yours. Don't use the service for unlawful purposes or to disrupt its operation.",
+      "availability_heading": "Availability",
+      "availability_body": "The service is provided \"as is\", without any guarantee of continuous availability, by the operator of this instance.",
+      "termination_heading": "Termination",
+      "termination_body": "You can delete your account at any time from the Settings page. The operator may suspend an account in case of abusive use.",
+      "contact_heading": "Contact",
+      "contact_body": "For any question about these terms, contact {{email}}."
+    }
+  },
+  "versus": {
+    "clip": {
+      "paste": "Paste",
+      "paste_blocked": "Your browser blocked the clipboard: paste into the field instead.",
+      "added_count": "{{count}} added",
+      "done": "Done",
+      "edit": "Edit the clip",
+      "edit_title": "Edit the clip",
+      "save": "Save",
+      "play": "Play the clip",
+      "stop": "Stop the clip",
+      "video": "Video",
+      "sheet_title": "Add a YouTube video",
+      "link_label": "Link",
+      "link_hint": "A YouTube link. On the cards, ▶ plays it with sound.",
+      "linked_label": "Linked title",
+      "linked_hint": "Optional. The card keeps the video name and takes the linked title's poster.",
+      "link_button": "Link to a title",
+      "unlink": "Remove",
+      "add": "Add to the pool",
+      "open_source": "Open “{{title}}” in a new tab"
+    },
+    "pools": {
+      "title": "Versus",
+      "load_error": "We couldn't load these pools. Check your connection and try again."
+    },
+    "detail": {
+      "item_count": "{{count}} media in this pool",
+      "play": "Play",
+      "empty_title": "This pool is still empty.",
+      "empty_hint": "Add at least 4 media to start a game.",
+      "results_title": "Community ranking",
+      "results_empty": "No completed game yet. Play the pool to build a ranking.",
+      "stat_line": "{{winRate}}% win rate · {{appearances}} duels",
+      "edit": "Edit",
+      "edited_ago": "Edited {{when}}",
+      "see_all": "Show all {{count}}",
+      "see_less": "Show less",
+      "resume": "Resume · round {{current}} of {{total}}",
+      "new_game": "New game"
+    },
+    "play": {
+      "round": "Round {{current}} of {{total}}",
+      "choices_remaining": "{{count}} choice(s) left",
+      "vs": "VS",
+      "no_match": "No active duel.",
+      "choose": "Pick",
+      "choose_title": "Pick “{{title}}”",
+      "preview": "See “{{title}}” up close",
+      "playing": "Playing",
+      "quit": "Leave the game",
+      "quit_short": "Quit",
+      "keys_hint": "to pick",
+      "undo": "Undo the last pick",
+      "undo_hint": "Undo the last pick (Backspace)",
+      "quit_hint": "Leave the game, you can pick it up later",
+      "open_bracket": "See the whole bracket",
+      "bracket_title": "Bracket",
+      "final": "Final",
+      "semi_final": "Semi-finals",
+      "round_of": "Round of {{count}}",
+      "bye": "Through without a duel"
+    },
+    "errors": {
+      "pool_not_found": "This versus pool no longer exists.",
+      "pool_too_small": "You need at least 4 media in the pool before you can play.",
+      "item_already_exists": "This media is already in the pool.",
+      "item_not_found": "This media isn't part of the pool.",
+      "session_not_found": "This game session no longer exists.",
+      "session_already_completed": "This game is already finished.",
+      "match_not_found": "This duel no longer exists.",
+      "invalid_pick": "That pick isn't valid for the current duel.",
+      "clip_invalid_url": "Paste a YouTube link.",
+      "clip_unavailable": "This video or track can't be found or isn't allowed to be embedded."
+    },
+    "form": {
+      "title": "New pool",
+      "cancel": "Cancel"
+    },
+    "collab": {
+      "pending_banner": "You've been invited to build this versus together."
+    },
+    "result": {
+      "back": "Back to the versus",
+      "byline": "{{name}}'s podium",
+      "podium_title": "Podium",
+      "place_1": "Winner",
+      "place_2": "Runner-up",
+      "place_3": "Semi-finalist",
+      "community_rank": "#{{rank}} for the community",
+      "community_unranked": "Not ranked yet",
+      "community_title": "You and the community",
+      "first_game": "You are the first to finish this versus. Your podium sets the first ranking.",
+      "agreement": "{{shared}} of your {{total}} finalists are also at the top for the community.",
+      "community_games_one": "Based on {{count}} finished game",
+      "community_games_other": "Based on {{count}} finished games",
+      "gaps_title": "Where you disagree the most",
+      "gap": "You: #{{mine}} · Community: #{{community}}",
+      "friends_title": "From people you follow",
+      "friends_empty": "Nobody you follow has finished this versus yet. Send them the link.",
+      "play_again": "Play again",
+      "play_yours": "Play it yourself",
+      "download_card": "Download the card",
+      "card_failed": "Couldn't create the image. Try again.",
+      "unavailable": "This result isn't available.",
+      "place_3_many": "Semi-finalists"
+    },
+    "manage": {
+      "add_clips": "Add clips",
+      "removed_many": "{{count}} contenders removed",
+      "remove_entry": "Remove {{title}} from the versus",
+      "confirm_remove_one": "Remove “{{title}}” from the versus?",
+      "confirm_remove_many": "Remove {{count}} contenders from the versus?",
+      "edit_clip": "Edit the clip {{title}}",
+      "empty_hint": "Pick titles or paste video links. A game needs at least 4 contenders."
+    }
+  },
+  "shared": {
+    "scroll_top": "Back to top",
+    "media_picker": {
+      "title": "Add titles",
+      "review_title": "Pick a title to review",
+      "link_title": "Link a title",
+      "confirm": "Add {{count}}"
+    },
+    "clear": "Clear",
+    "dismiss": "Dismiss",
+    "loading": "Loading",
+    "previous_image": "Previous image",
+    "next_image": "Next image"
+  },
+  "dev_ui": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "title": "UI bench",
+    "subtitle": "Every shared/ui component in its states. Dev builds only.",
+    "buttons": "Buttons",
+    "toolbar": "Toolbar controls",
+    "menus": "Menus and popovers",
+    "fields": "Form fields",
+    "surfaces": "Surfaces",
+    "cards": "Cards",
+    "feedback": "Feedback",
+    "states": "States",
+    "loading": "Saving",
+    "disabled": "Disabled",
+    "link": "Open title",
+    "type": "Type",
+    "label": "Display name",
+    "hint": "Shown on your public profile and to the people who follow you.",
+    "error": "This name is already taken. Try another one.",
+    "password": "Password",
+    "hover_hint": "hover and focus each card",
+    "toast_short": "Shelved.",
+    "toast_long": "Your Steam library import finished: 214 games added, 12 already on your shelf, 3 could not be matched.",
+    "dialog_title": "Edit profile",
+    "cancel": "Cancel",
+    "save": "Save",
+    "motion": "Motion",
+    "motion_collapse": "Collapsible zone (0fr to 1fr, 400ms)",
+    "motion_toggle": "Toggle",
+    "motion_list": "List with enter and leave",
+    "motion_add": "Add a row",
+    "motion_remove": "Remove",
+    "motion_skeleton": "Skeleton to content",
+    "social": "Social"
+  },
+  "social": {
+    "like": "Like",
+    "unlike": "Unlike",
+    "likes_one": "{{count}} like",
+    "likes_other": "{{count}} likes",
+    "comments_one": "{{count}} comment",
+    "comments_other": "{{count}} comments",
+    "comments_jump": "Comments"
+  },
+  "edit": {
+    "done": "Done",
+    "autosaving": "Saving…",
+    "autosaved": "All changes saved",
+    "unsaved_changes": "You have unsaved changes. Leave this page anyway?",
+    "saved": "Saved",
+    "selection": {
+      "to_top": "Move to top",
+      "up": "Move up",
+      "down": "Move down",
+      "to_bottom": "Move to bottom",
+      "remove": "Remove"
+    }
+  },
+  "community": {
+    "from": "From",
+    "show_results": "Show {{count}} results",
+    "create_hint": {
+      "list": "Group titles under a theme or a mood",
+      "versus": "Pit titles against each other, people vote",
+      "review": "Say what you thought of a title"
+    },
+    "title": "Community",
+    "landing": {
+      "popular_reviews": "Popular reviews",
+      "friends_reviews": "From people you follow",
+      "popular_lists": "Lists in the spotlight",
+      "popular_versus": "Versus of the moment",
+      "remote_reviews": "From the Fediverse",
+      "mine": "Your creations"
+    },
+    "titles_count_one": "{{count}} title",
+    "titles_count_other": "{{count}} titles",
+    "contenders_count_one": "{{count}} contender",
+    "contenders_count_other": "{{count}} contenders",
+    "create_list": "New list",
+    "create_versus": "New versus",
+    "create_review": "Write a review",
+    "tabs": {
+      "overview": "Overview",
+      "reviews": "Reviews",
+      "lists": "Lists",
+      "versus": "Versus"
+    },
+    "search_placeholder": {
+      "reviews": "Title or author…",
+      "lists": "Name, author or a title inside…",
+      "versus": "Name, author or a contender…"
+    },
+    "scope_label": "From",
+    "scope": {
+      "ALL": "Everyone",
+      "CIRCLE": "Following",
+      "REMOTE": "Fediverse",
+      "MINE": "Mine"
+    },
+    "sort_prefix": "Sort",
+    "sort": {
+      "RECENT": "Recent",
+      "POPULAR": "Popular"
+    },
+    "results": "{{count}} results",
+    "end": "You're all caught up.",
+    "load_error": "Couldn't load the community. Check your connection and try again.",
+    "list": {
+      "all": "All",
+      "unseen": "Not finished",
+      "filter_label": "Filter the list",
+      "all_seen": "You've finished everything in this list."
+    },
+    "people": {
+      "title": "My connections",
+      "search": "Find someone by username…",
+      "unfollow": "Unfollow",
+      "follow_back": "Follow back",
+      "mutual": "You follow each other",
+      "follows_you": "Follows you",
+      "you_follow": "You follow",
+      "discover_empty": "No one new to suggest right now. Check back later.",
+      "titles_count_one": "{{count}} title",
+      "titles_count_other": "{{count}} titles",
+      "followers_label_one": "follower",
+      "followers_label_other": "followers",
+      "titles_label_one": "title",
+      "titles_label_other": "titles"
+    },
+    "empty": {
+      "browse_title": "Nothing to show",
+      "browse_hint": "No results with these filters.",
+      "browse_mine_lists": "You haven't created a list yet.",
+      "browse_mine_versus": "You haven't created a versus yet.",
+      "browse_mine_reviews": "You haven't written a review yet.",
+      "browse_circle": "The people you follow haven't shared anything yet.",
+      "browse_remote": "Nothing from other servers yet. Follow people on other servers to see their shelves here.",
+      "everyone_reviews": "No one has written a review yet.",
+      "everyone_lists": "No one has shared a list yet.",
+      "everyone_versus": "No one has shared a versus yet."
+    },
+    "following_count_one": "{{count}} following",
+    "following_count_other": "{{count}} following",
+    "sheet": {
+      "name": "Name",
+      "description": "Description",
+      "versus_placeholder": "The best Miyazaki…"
+    },
+    "versus": {
+      "entries": "Contenders"
+    },
+    "review": {
+      "open_media": "Open title",
+      "the_title": "The title",
+      "rating_by": "{{name}}'s rating"
+    },
+    "likes_count_one": "{{count}} like",
+    "likes_count_other": "{{count}} likes",
+    "comments_count_one": "{{count}} comment",
+    "comments_count_other": "{{count}} comments",
+    "liked": "Liked",
+    "like": "Like",
+    "contributors_two": "{{name}} and {{other}}",
+    "contributors_many": "{{name}} and {{count}} others",
+    "visibility": {
+      "public": "Public",
+      "link": "With the link",
+      "private": "Private"
+    },
+    "search_open": "Search the community",
+    "guest": {
+      "title": "See what the people you follow are up to",
+      "hint": "Sign in to follow people and get their reviews, lists and versus in one timeline.",
+      "cta": "Sign in"
+    },
+    "intro_guest": "Reviews, lists and versus shared by everyone.",
+    "today_count_one": "{{count}} new today",
+    "today_count_other": "{{count}} new today",
+    "create": "Create",
+    "show_label": "Show",
+    "stat_following": "following",
+    "stat_today": "new today"
+  },
+  "explore": {
+    "titles": "titles",
+    "title": "Explore",
+    "without": "No",
+    "all_types": "All",
+    "categories": "Categories",
+    "placeholder": "A genre, a mood, a year, a title…",
+    "all_titles": "See all titles",
+    "add_placeholder": "Add a filter…",
+    "suggestions": "Suggestions",
+    "search_titles": "Search titles for “{{query}}”",
+    "remove": "Remove",
+    "count_one": "{{count}} title",
+    "count_other": "{{count}} titles",
+    "count_more_one": "{{count}} title, more as you scroll",
+    "count_more_other": "{{count}} titles, more as you scroll",
+    "skipped": "No {{types}}: one of your filters doesn’t exist in their catalog.",
+    "partial": "Catalog temporarily unavailable: {{providers}}. Results are incomplete.",
+    "failed_title": "The search didn’t go through",
+    "failed": "Your filters are kept. Try again in a moment.",
+    "retry": "Try again",
+    "empty_title": "Nothing matches",
+    "empty_hint": "Remove a filter or widen the period to see more titles.",
+    "empty_owned": "Everything that matches is already on your shelf.",
+    "remove_named": "Remove {{label}}",
+    "show_owned": "Show my library",
+    "reset": "Clear everything",
+    "load_more": "Show more",
+    "loading": "Searching…",
+    "sort": {
+      "popular": "Popular",
+      "rating": "Top rated",
+      "recent": "Newest"
+    },
+    "kind": {
+      "category": "Category",
+      "genre": "Genre",
+      "theme": "Theme",
+      "platform": "Platform",
+      "streaming": "Streaming",
+      "keyword": "Keyword"
+    },
+    "filters": {
+      "title": "Filters",
+      "clear": "Clear all",
+      "show_results": "Show results",
+      "hide_owned": "Hide what I already have",
+      "genres": "Genres",
+      "themes": "Themes",
+      "period": "Period",
+      "from": "From",
+      "to": "To",
+      "streaming": "Streaming",
+      "streaming_hint": "Movies and series on subscription in {{region}}.",
+      "platforms": "Platforms",
+      "catalog_tags": "{{type}} tags",
+      "catalog_empty": "No tag found.",
+      "expand_all": "Expand all",
+      "collapse_all": "Collapse all",
+      "hint_cycle": "Tap to include, tap again to exclude.",
+      "hide_owned_short": "Hide mine"
+    },
+    "decades": {
+      "before_1980": "Before 1980",
+      "1980s": "1980s",
+      "1990s": "1990s",
+      "2000s": "2000s",
+      "2010s": "2010s",
+      "2020s": "2020s"
+    },
+    "criteria": {
+      "action": "Action",
+      "adventure": "Adventure",
+      "comedy": "Comedy",
+      "drama": "Drama",
+      "fantasy": "Fantasy",
+      "science-fiction": "Science fiction",
+      "horror": "Horror",
+      "mystery": "Mystery",
+      "thriller": "Thriller",
+      "romance": "Romance",
+      "crime": "Crime",
+      "war": "War",
+      "history": "History",
+      "family": "Family",
+      "music": "Music",
+      "documentary": "Documentary",
+      "western": "Western",
+      "psychological": "Psychological",
+      "slice-of-life": "Slice of life",
+      "sports": "Sports",
+      "supernatural": "Supernatural",
+      "mecha": "Mecha",
+      "time-travel": "Time travel",
+      "time-loop": "Time loop",
+      "space": "Space",
+      "dystopia": "Dystopia",
+      "cyberpunk": "Cyberpunk",
+      "post-apocalyptic": "Post-apocalyptic",
+      "zombies": "Zombies",
+      "vampires": "Vampires",
+      "superheroes": "Superheroes",
+      "artificial-intelligence": "Artificial intelligence",
+      "robots": "Robots",
+      "aliens": "Aliens",
+      "magic": "Magic",
+      "dragons": "Dragons",
+      "mythology": "Mythology",
+      "witches": "Witches",
+      "isekai": "Isekai",
+      "martial-arts": "Martial arts",
+      "samurai": "Samurai",
+      "pirates": "Pirates",
+      "heist": "Heist",
+      "detective": "Detective",
+      "serial-killer": "Serial killer",
+      "espionage": "Espionage",
+      "military": "Military",
+      "survival": "Survival",
+      "revenge": "Revenge",
+      "school": "School",
+      "coming-of-age": "Coming of age",
+      "found-family": "Found family",
+      "video-games": "Video games",
+      "open-world": "Open world",
+      "cozy": "Cozy"
+    },
+    "sections": {
+      "people": "People",
+      "lists": "Lists",
+      "versus": "Versus",
+      "reviews": "Reviews"
+    }
+  },
+  "creation": {
+    "menu": {
+      "copy_link": "Copy link"
+    },
+    "link_copied": "Link copied",
+    "link_copy_failed": "Couldn't copy the link.",
+    "tabs": {
+      "titles": "Titles",
+      "discussion": "Discussion",
+      "ranking": "Ranking",
+      "review": "Review"
+    }
+  },
+  "studio": {
+    "untitled_list": "Untitled list",
+    "description_placeholder": "Add a description…",
+    "publish": "Publish",
+    "keep_private": "Keep private",
+    "save_visibility": "Save",
+    "change_visibility": "Change who can see it",
+    "close": "Close",
+    "publish_title": "Who can see it?",
+    "visibility": {
+      "public": "Everyone",
+      "public_hint": "Shown in Community and on your profile",
+      "link": "With the link",
+      "link_hint": "Anyone with the address, listed nowhere",
+      "private": "Only me",
+      "private_hint": "Stays a draft nobody else can see",
+      "private_shared": "You and co-authors",
+      "private_shared_hint": "Only you and the co-authors can see it"
+    },
+    "copied_from": "Based on {{name}} by {{user}}",
+    "delete": "Delete",
+    "delete_title": "Delete this list?",
+    "delete_message": "“{{name}}”, its titles and its discussion will be gone for good.",
+    "deleted": "List deleted",
+    "untitled_versus": "Untitled versus",
+    "delete_versus_title": "Delete this versus?",
+    "delete_versus_message": "“{{name}}”, its contenders, its games and its discussion will be gone for good.",
+    "versus_deleted": "Versus deleted",
+    "versus_min": "Add at least {{min}} contenders to publish ({{count}}/{{min}})"
+  },
+  "collect": {
+    "action": "Add to a list",
+    "title": "Add to…",
+    "many": "{{count}} titles",
+    "hint": "Keep it in your own lists.",
+    "none": "Not in any of your lists yet.",
+    "more": "+{{count}} more",
+    "lists": "Lists",
+    "versus": "Versus",
+    "contenders": "{{count}} contenders",
+    "clips_only": "Video clips only",
+    "shared": "Shared with you",
+    "no_lists": "No list yet. Start one with this title.",
+    "no_versus": "No versus yet. Start one with this title.",
+    "load_error": "We couldn't load your lists. Try again in a moment.",
+    "new_list": "New list",
+    "new_versus": "New versus",
+    "added": "Added to “{{name}}”",
+    "open": "Open"
+  },
+  "rich_text": {
+    "toolbar": "Text formatting",
+    "heading": "Heading {{level}}",
+    "bold": "Bold",
+    "italic": "Italic",
+    "underline": "Underline",
+    "strike": "Strikethrough",
+    "spoiler": "Spoiler",
+    "spoiler_reveal": "Hidden spoiler, show it",
+    "bullet_list": "Bulleted list",
+    "ordered_list": "Numbered list",
+    "quote": "Quote",
+    "add_link": "Add link",
+    "remove_link": "Remove link",
+    "link_label": "Link address",
+    "link_apply": "Add link",
+    "link_cancel": "Cancel",
+    "link_invalid": "Enter a full https:// address."
+  },
+  "admin": {
+    "title": "Administration",
+    "cancel": "Cancel",
+    "retry": "Try again",
+    "forbidden_title": "Admins only",
+    "forbidden_hint": "This page is for accounts whose verified email is listed in FEDERATION_ADMINS on this instance.",
+    "error_title": "Administration could not load",
+    "error_hint": "Check that the server is running, then try again.",
+    "federation": {
+      "title": "Federation",
+      "hint": "How this instance talks to other Shelfy instances and the Fediverse.",
+      "status": "Status",
+      "on": "On",
+      "off": "Off",
+      "on_hint": "People on other instances can follow your members, and your members can follow them.",
+      "off_hint": "This instance stays on its own. Set FEDERATION_ENABLED to change it.",
+      "mode": "Mode",
+      "mode_open": "Open",
+      "mode_allowlist": "Allowlist",
+      "mode_open_hint": "Talks to every instance except the blocked ones.",
+      "mode_allowlist_hint": "Talks only to the instances listed below.",
+      "handles": "Usernames",
+      "handles_hint": "How people elsewhere find your members."
+    },
+    "instances": {
+      "title": "Known instances",
+      "hint": "Servers your members have met, through follows, comments or mentions.",
+      "accounts_one": "{{count}} account",
+      "accounts_other": "{{count}} accounts",
+      "followed_one": "{{count}} followed here",
+      "followed_other": "{{count}} followed here",
+      "seen": "seen {{when}}",
+      "retrying_one": "{{count}} delivery retrying",
+      "retrying_other": "{{count}} deliveries retrying",
+      "retry": "Retry now",
+      "state_ok": "Delivering",
+      "state_blocked": "Blocked",
+      "retried": "Deliveries to {{domain}} will be retried now.",
+      "blocked": "blocked",
+      "allowed": "allowed",
+      "empty_title": "No other instance yet",
+      "empty_hint": "Instances appear here as soon as one of your members follows someone elsewhere."
+    },
+    "blocks": {
+      "title": "Blocked instances",
+      "hint": "Nothing is sent to or accepted from a blocked instance, including its subdomains.",
+      "domain": "Domain",
+      "reason": "Reason",
+      "reason_placeholder": "Optional, only admins see it",
+      "placeholder": "Block a server, like spam.example",
+      "block": "Block",
+      "unblock": "Unblock",
+      "since": "blocked {{date}}",
+      "empty": "No instance is blocked.",
+      "confirm_title": "Block this instance?",
+      "confirm_message": "Accounts from {{domain}} and everything copied from them will be removed from this instance, and follows with them will end.",
+      "blocked": "{{domain}} is blocked",
+      "unblocked": "{{domain}} is unblocked"
+    },
+    "allows": {
+      "title": "Allowed instances",
+      "hint_active": "Allowlist mode is on: only these instances can talk to yours.",
+      "hint_inactive": "Only used in allowlist mode (FEDERATION_MODE=allowlist). In open mode every instance is allowed.",
+      "domain": "Domain",
+      "placeholder": "Allow a server, like friends.example",
+      "allow": "Allow",
+      "remove": "Remove",
+      "since": "allowed {{date}}",
+      "empty": "No instance is on the allowlist.",
+      "allowed": "{{domain}} is allowed",
+      "removed": "{{domain}} is no longer allowed"
+    },
+    "reports": {
+      "title": "Reports",
+      "hint": "Reports other instances sent about accounts or content here.",
+      "from": "Report from {{reporter}}",
+      "about": "about {{target}} · {{when}}",
+      "empty_title": "No reports",
+      "empty_hint": "Reports sent by other instances will show up here."
+    },
+    "group": "This instance",
+    "stat": {
+      "federation_on": "Federation on",
+      "federation_off": "Federation off",
+      "instances_one": "known instance",
+      "instances_other": "known instances",
+      "blocked": "blocked",
+      "reports_one": "report",
+      "reports_other": "reports"
+    }
+  },
+  "home": {
+    "continue": "In progress",
+    "continue_sub": "What you are in the middle of",
+    "top_ten_sub": "On your instance and across the Fediverse",
+    "popular_lists_sub": "The most liked selections",
+    "trending": "Trending this week",
+    "top_rated": "Top rated",
+    "discover": "Discover",
+    "up_next": "Up next · {{code}}",
+    "episode_n": "Episode {{number}}",
+    "season_progress": "{{watched}} of {{total}} watched in season {{season}}",
+    "season_complete": "Season {{season}} complete",
+    "since": "On your shelf since {{date}}",
+    "since_short": "Since {{date}}",
+    "how_was_it": "How was it?",
+    "your_rating": "your rating",
+    "edit_on_shelf": "Edit {{title}} on your shelf",
+    "cta": {
+      "mark_episode": "Mark {{code}} watched",
+      "mark_single": "Mark episode {{number}} watched",
+      "resume": "Resume",
+      "start": {
+        "watched": "Start watching",
+        "read": "Start reading",
+        "played": "Start playing"
+      },
+      "done": {
+        "watched": "Mark as watched",
+        "read": "Mark as read",
+        "played": "Mark as played"
+      },
+      "shelve": "Add to backlog"
+    },
+    "start": {
+      "title": "Start your shelf",
+      "body": "Films, series, games, anime, manga and webtoons, all in one place. Add a title, or bring your history with you.",
+      "search": "Find a film, series, game, anime…",
+      "imports": "Or bring your history",
+      "letterboxd": "Letterboxd",
+      "steam": "Steam library"
+    },
+    "library": "Library",
+    "explore": "Explore",
+    "community": "Community",
+    "airs": "Airs {{date}}",
+    "filter_label": "Media type",
+    "filter_all": "All",
+    "explore_type": "Explore {{type}}",
+    "kicker": {
+      "all": "Trending this week",
+      "movie": "Trending movies this week",
+      "tv_show": "Trending TV shows this week",
+      "game": "Trending games this week",
+      "anime": "Trending anime this week",
+      "manga": "Trending manga this week",
+      "webtoon": "Trending webtoons this week"
+    },
+    "on_shelf": "On your shelf",
+    "add_backlog": "Add {{title}} to your backlog",
+    "next_episodes": "Your next episodes",
+    "next_episodes_sub": "From the series you are watching",
+    "tonight": "Tonight",
+    "tomorrow": "Tomorrow",
+    "tomorrow_lower": "tomorrow",
+    "in_days": "in {{count}} days",
+    "next_pick": "Your next pick",
+    "next_pick_sub": "Three titles from your backlog",
+    "shuffle": "Shuffle",
+    "backlog_since": "In your backlog since {{date}}",
+    "anticipated": "Most anticipated",
+    "anticipated_sub": "The releases everyone is waiting for",
+    "top_ten": "Top 10 this week",
+    "rank": "Number {{rank}}",
+    "mood": {
+      "kicker": "Mood of the week",
+      "title": "{{genre}} mood",
+      "lead": "A new genre every Monday, starting with",
+      "more": "More {{genre}}"
+    },
+    "coming_soon": "Coming soon",
+    "coming_soon_sub": "The next eight weeks",
+    "just_released": "Just released",
+    "out_on": "Out {{date}}",
+    "popular_reviews": "Popular reviews",
+    "popular_reviews_sub": "Most liked on Shelfy",
+    "review_spoilers": "This review contains spoilers.",
+    "popular_lists": "Popular lists",
+    "list_by": "List · by {{name}}",
+    "versus_by": "Versus · by {{name}}",
+    "nothing": "Nothing to show in {{type}} yet.",
+    "top_rated_sub": "The highest rated of all time",
+    "rated_label": "Rated {{rating}} out of 5",
+    "see_all": "See all",
+    "backlog": "Backlog",
+    "feed": {
+      "trending": "Trending this week",
+      "top_rated": "Top rated",
+      "new": "Just released",
+      "upcoming": "Most anticipated",
+      "soon": "Coming soon"
+    },
+    "feed_empty": "Nothing to show here yet."
+  },
+  "library": {
+    "clear_all": "Clear all",
+    "title": "Library",
+    "titles": "titles",
+    "in_progress": "in progress",
+    "average": "average rating",
+    "status": "Status",
+    "media": "Media",
+    "all": "All",
+    "all_media": "All media",
+    "media_count": "{{count}} media",
+    "your_rating": "Your rating",
+    "rating_any": "Any",
+    "show": "Show",
+    "include_unrated": "Unrated titles",
+    "with_review": "Only with a review",
+    "search": "Search your library",
+    "filters": "Filters",
+    "show_count": "Show {{count}} titles",
+    "sort_by": "Sort by",
+    "direction_label": "Order",
+    "sort": {
+      "addedAt": "Date added",
+      "updatedAt": "Last updated",
+      "title": "Title",
+      "rating": "Your rating"
+    },
+    "direction": {
+      "addedAt": {
+        "desc": "Newest first",
+        "asc": "Oldest first"
+      },
+      "updatedAt": {
+        "desc": "Newest first",
+        "asc": "Oldest first"
+      },
+      "title": {
+        "asc": "A to Z",
+        "desc": "Z to A"
+      },
+      "rating": {
+        "desc": "Highest first",
+        "asc": "Lowest first"
+      }
+    },
+    "size": {
+      "label": "Poster size",
+      "s": "S",
+      "m": "M",
+      "l": "L",
+      "s_long": "Small posters",
+      "m_long": "Medium posters",
+      "l_long": "Large posters"
+    },
+    "empty": {
+      "title": "Nothing matches",
+      "body": "No title fits these filters.",
+      "reset": "Reset filters",
+      "search_title": "Not in your library",
+      "search_body": "No title on your shelf contains “{{query}}”.",
+      "clear_search": "Clear search",
+      "search_shelfy": "Search Shelfy for “{{query}}”"
+    },
+    "bulk": {
+      "title": "{{count}} titles selected",
+      "mixed": "Mixed ratings",
+      "mixed_hint": "Ratings differ. Pick one to apply it to every title.",
+      "clear_ratings": "Clear ratings",
+      "no_changes": "No changes yet",
+      "of_total": "{{count}} of {{total}}"
+    }
+  },
+  "connections": {
+    "title_of": "{{name}}'s connections",
+    "suggestions": "Suggestions",
+    "stat_followers_one": "follower",
+    "stat_followers_other": "followers",
+    "count_one": "{{count}} person",
+    "count_other": "{{count}} people",
+    "see_suggestions": "See suggestions",
+    "empty": {
+      "following_title": "Not following anyone yet",
+      "following_theirs": "{{name}} isn't following anyone yet.",
+      "followers_title": "No followers yet",
+      "followers_theirs": "No one follows {{name}} yet.",
+      "suggestions_title": "No suggestions",
+      "search_title": "No one found",
+      "search_body": "No one matches “{{query}}”. Check the spelling or try their username.",
+      "favorites_title": "No favorites yet",
+      "favorites_mine": "Star the people you follow to keep them at the top. Their reviews and lists come first in your circle."
+    },
+    "favorites": "Favorites",
+    "favorite": "Favorite {{name}}",
+    "favorite_short": "Add to favorites",
+    "unfavorite": "Remove from favorites"
+  },
+  "feed": {
+    "tab": "Activity",
+    "read_review": "Read the review",
+    "empty_title": "Quiet for now",
+    "empty_body": "When people you follow rate, rewatch or review something, it shows up here.",
+    "change": {
+      "added": "Added to their library",
+      "rated": "Rated",
+      "rerated": "Rating changed",
+      "rewatched": {
+        "watch": "Rewatched",
+        "read": "Reread",
+        "play": "Replayed"
+      },
+      "reviewed": "New review",
+      "review_updated": "Review edited",
+      "status": "Status"
+    }
+  }
+}

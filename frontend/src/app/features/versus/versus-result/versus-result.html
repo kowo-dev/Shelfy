@@ -1,0 +1,183 @@
+@if (result(); as result) {
+  <main class="flex min-h-full flex-col">
+    <shelfy-page-hero [title]="result.poolName" [backdropUrl]="winnerBackdrop()">
+      <p class="text-text-muted mt-4.5 flex flex-wrap gap-x-5.5 gap-y-1.5 text-base">
+        @for (part of meta(); track $index) {
+          <span>{{ part }}</span>
+        }
+      </p>
+      @if (signedIn()) {
+        <div class="mt-7 flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            [class]="primaryPill"
+            [disabled]="starting()"
+            [attr.aria-busy]="starting() || null"
+            (click)="playAgain()"
+          >
+            <shelfy-icon name="play" size="20" [active]="true" />
+            {{ (isMine() ? 'versus.result.play_again' : 'versus.result.play_yours') | translate }}
+          </button>
+        </div>
+      }
+      <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1">
+        <button type="button" [class]="manage" (click)="copyLink()">
+          <shelfy-icon name="link" size="16" />{{ 'creation.menu.copy_link' | translate }}
+        </button>
+        <button
+          type="button"
+          [class]="manage"
+          [disabled]="rendering()"
+          [attr.aria-busy]="rendering() || null"
+          (click)="downloadCard()"
+        >
+          <shelfy-icon name="arrowDown" size="16" />{{ 'versus.result.download_card' | translate }}
+        </button>
+      </div>
+    </shelfy-page-hero>
+
+    <section aria-labelledby="result-podium" class="px-gutter w-full pt-[clamp(4.5rem,9vh,6.5rem)]">
+      <h2 id="result-podium" class="sr-only">{{ 'versus.result.podium_title' | translate }}</h2>
+      <shelfy-versus-podium
+        [podium]="result.podium"
+        [label]="'versus.result.podium_title' | translate"
+      />
+    </section>
+
+    <shelfy-shelf-section
+      [rail]="null"
+      [band]="true"
+      [title]="'versus.result.community_title' | translate"
+      [subtitle]="
+        firstGame()
+          ? null
+          : ('versus.result.community_games' | translate: { count: result.communitySessionCount })
+      "
+    >
+      @if (firstGame()) {
+        <p class="text-text-muted max-w-[60ch] text-[1.0625rem]">
+          {{ 'versus.result.first_game' | translate }}
+        </p>
+      } @else {
+        <p class="text-text max-w-[60ch] text-[1.1875rem] leading-relaxed text-pretty">
+          {{
+            'versus.result.agreement'
+              | translate: { shared: sharedCount(), total: result.podium.length }
+          }}
+        </p>
+        @if (result.gaps.length > 0) {
+          <h3 class="text-text-subtle mt-9 mb-4 text-sm font-semibold">
+            {{ 'versus.result.gaps_title' | translate }}
+          </h3>
+          <div class="v-lgrid" data-size="s">
+            @for (gap of result.gaps; track gap.entry.id) {
+              @let rank =
+                'versus.result.gap'
+                  | translate: { mine: gap.place, community: gap.communityRank ?? '–' };
+              @if (gap.entry.media; as media) {
+                <shelfy-media-card [item]="placeholder(media)" [subtitle]="rank" />
+              } @else {
+                <article class="v-poster">
+                  <span class="v-art">
+                    @if (gap.entry.coverUrl) {
+                      <img [src]="gap.entry.coverUrl" alt="" loading="lazy" draggable="false" />
+                    }
+                  </span>
+                  <span class="v-cap"
+                    ><b>{{ gap.entry.title || ('adult.hidden' | translate) }}</b></span
+                  >
+                  <span class="v-sub">{{ rank }}</span>
+                </article>
+              }
+            }
+          </div>
+        }
+      }
+    </shelfy-shelf-section>
+
+    @if (signedIn()) {
+      <shelfy-shelf-section [rail]="null" [title]="'versus.result.friends_title' | translate">
+        @if (friends().length === 0) {
+          <p class="text-text-muted text-[1.0625rem]">
+            {{ 'versus.result.friends_empty' | translate }}
+          </p>
+        } @else {
+          <ul class="grid max-w-220 gap-1" role="list">
+            @for (session of friends(); track session.sessionId) {
+              @let active = friend()?.sessionId === session.sessionId;
+              @let name = session.player.displayName || session.player.username || '';
+              <li>
+                <button
+                  type="button"
+                  class="duration-base -mx-4 flex w-[calc(100%+2rem)] cursor-pointer items-center justify-between gap-4 rounded-2xl px-4 py-3 text-left transition-colors hover:bg-white/5 disabled:cursor-progress"
+                  [class.bg-white/8]="active"
+                  [attr.aria-pressed]="active"
+                  [disabled]="friendLoading() === session.sessionId"
+                  (click)="compareWith(session)"
+                >
+                  <span class="flex min-w-0 items-center gap-3">
+                    <shelfy-avatar
+                      size="md"
+                      [displayName]="name"
+                      [avatarUrl]="session.player.avatarUrl"
+                    />
+                    <span class="min-w-0">
+                      <b class="text-text block truncate text-[0.9375rem]">{{ name }}</b>
+                      <small class="text-text-subtle block text-[0.8125rem]">{{
+                        playedLabel(session.completedAt)
+                      }}</small>
+                    </span>
+                  </span>
+                  @if (session.winner?.coverUrl; as cover) {
+                    <span class="block aspect-2/3 w-11 shrink-0 overflow-hidden rounded-lg">
+                      <img [src]="cover" alt="" loading="lazy" class="size-full object-cover" />
+                    </span>
+                  }
+                </button>
+              </li>
+            }
+          </ul>
+          @if (friend(); as other) {
+            <div class="mt-10 grid max-w-220 gap-10 sm:grid-cols-2" animate.enter="animate-rise-in">
+              <div>
+                <h3 class="text-text mb-5 text-center text-[0.9375rem] font-semibold">
+                  {{ 'versus.result.byline' | translate: { name: playerName() } }}
+                </h3>
+                <shelfy-versus-podium
+                  [podium]="result.podium"
+                  [compact]="true"
+                  [showCommunity]="false"
+                />
+              </div>
+              <div>
+                <h3 class="text-text mb-5 text-center text-[0.9375rem] font-semibold">
+                  {{
+                    'versus.result.byline'
+                      | translate: { name: other.player.displayName || other.player.username || '' }
+                  }}
+                </h3>
+                <shelfy-versus-podium
+                  [podium]="other.podium"
+                  [compact]="true"
+                  [showCommunity]="false"
+                />
+              </div>
+            </div>
+          }
+        }
+      </shelfy-shelf-section>
+    }
+    <div class="pb-28"></div>
+    <shelfy-page-footer class="mt-auto" />
+  </main>
+} @else if (failed()) {
+  <main class="px-gutter flex min-h-full items-center justify-center pt-(--nav-bar-height)">
+    <shelfy-empty-state icon="compare" [hint]="'versus.result.unavailable' | translate">
+      <a [routerLink]="['/versus', poolId]" [class]="secondaryPill">
+        {{ 'versus.result.back' | translate }}
+      </a>
+    </shelfy-empty-state>
+  </main>
+} @else {
+  <shelfy-detail-skeleton [count]="3" />
+}

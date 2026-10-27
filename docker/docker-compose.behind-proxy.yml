@@ -1,0 +1,4 @@
+services:
+  caddy:
+    ports: !override
+      - "${HTTP_PUBLISH}:${HTTP_PORT:-80}"

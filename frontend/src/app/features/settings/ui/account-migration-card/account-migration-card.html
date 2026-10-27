@@ -1,0 +1,93 @@
+<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+  <div class="min-w-0">
+    <p class="text-text text-[1.0625rem] font-bold">{{ 'settings.migration.title' | translate }}</p>
+    <p class="text-text-muted mt-0.5 text-sm leading-snug">
+      {{ 'settings.migration.description' | translate }}
+    </p>
+  </div>
+  <button
+    type="button"
+    [class]="pill"
+    aria-controls="settings-migration"
+    [attr.aria-expanded]="open()"
+    (click)="toggle()"
+  >
+    {{ 'settings.migration.manage' | translate }}
+  </button>
+</div>
+
+<div id="settings-migration" [class]="collapse(open())" [attr.inert]="open() ? null : ''">
+  <div class="flex flex-col gap-6 overflow-hidden pt-5">
+    @if (status(); as current) {
+      <p class="text-text-subtle text-sm leading-snug break-all">
+        {{ 'settings.migration.your_address' | translate }}: {{ current.actor }}
+      </p>
+
+      @if (current.movedTo; as target) {
+        <p class="text-text text-base leading-snug break-all">
+          {{ 'settings.migration.moved_to' | translate: { target } }}
+        </p>
+      } @else {
+        <form
+          class="flex flex-col items-start gap-3"
+          (submit)="$event.preventDefault(); saveAlias()"
+        >
+          <p class="text-text-muted text-sm leading-snug">
+            {{ 'settings.migration.alias_hint' | translate }}
+          </p>
+          @if (current.alias; as alias) {
+            <p class="text-text text-sm break-all">{{ alias }}</p>
+            <button
+              type="button"
+              [class]="pill"
+              [disabled]="busy() === 'alias'"
+              (click)="removeAlias()"
+            >
+              {{ 'settings.migration.remove_alias' | translate }}
+            </button>
+          } @else {
+            <shelfy-input
+              class="w-full max-w-md"
+              [label]="'settings.migration.alias_label' | translate"
+              placeholder="@you@mastodon.social"
+              autocomplete="off"
+              [formControl]="aliasHandle"
+            />
+            <button
+              type="submit"
+              [class]="pill"
+              [disabled]="busy() === 'alias' || !aliasHandle.value.trim()"
+              [attr.aria-busy]="busy() === 'alias' || null"
+            >
+              {{ 'settings.migration.save_alias' | translate }}
+            </button>
+          }
+        </form>
+
+        <form class="flex flex-col items-start gap-3" (submit)="$event.preventDefault(); move()">
+          <p class="text-text-muted text-sm leading-snug">
+            {{ 'settings.migration.move_hint' | translate }}
+          </p>
+          <shelfy-input
+            class="w-full max-w-md"
+            [label]="'settings.migration.move_label' | translate"
+            placeholder="@you@mastodon.social"
+            autocomplete="off"
+            [formControl]="moveHandle"
+          />
+          <button
+            type="submit"
+            [class]="destructive"
+            [disabled]="busy() === 'move' || !moveHandle.value.trim()"
+            [attr.aria-busy]="busy() === 'move' || null"
+          >
+            {{ 'settings.migration.move' | translate }}
+          </button>
+        </form>
+      }
+    }
+    @if (error(); as message) {
+      <p role="alert" class="text-danger text-sm">{{ message }}</p>
+    }
+  </div>
+</div>

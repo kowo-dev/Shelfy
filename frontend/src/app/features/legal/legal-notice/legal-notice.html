@@ -1,0 +1,58 @@
+<shelfy-legal-shell [title]="'legal.notice.title' | translate" active="notice">
+  <p class="text-text-muted text-base leading-relaxed">{{ 'legal.notice.intro' | translate }}</p>
+
+  <section class="flex flex-col gap-3">
+    <h2
+      class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em]"
+    >
+      {{ 'legal.notice.publisher_heading' | translate }}
+    </h2>
+    <p class="text-text-muted text-base leading-relaxed">
+      {{
+        'legal.notice.publisher_body'
+          | translate: { controller: controllerName(), email: contactEmail() }
+      }}
+    </p>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2
+      class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em]"
+    >
+      {{ 'legal.notice.director_heading' | translate }}
+    </h2>
+    <p class="text-text-muted text-base leading-relaxed">
+      {{ 'legal.notice.director_body' | translate: { controller: controllerName() } }}
+    </p>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2
+      class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em]"
+    >
+      {{ 'legal.notice.hosting_heading' | translate }}
+    </h2>
+    <p class="text-text-muted text-base leading-relaxed">
+      {{
+        'legal.notice.hosting_body'
+          | translate: { name: hostingProviderName(), address: hostingProviderAddress() }
+      }}
+    </p>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2
+      class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em]"
+    >
+      {{ 'legal.notice.credits_heading' | translate }}
+    </h2>
+    <p class="text-text-muted text-base leading-relaxed">
+      {{ 'legal.notice.credits_intro' | translate }}
+    </p>
+    <ul class="text-text-muted flex list-disc flex-col gap-1.5 pl-5 text-base leading-relaxed">
+      <li>{{ 'legal.notice.credits_tmdb' | translate }}</li>
+      <li>{{ 'legal.notice.credits_igdb' | translate }}</li>
+      <li>{{ 'legal.notice.credits_steam' | translate }}</li>
+    </ul>
+  </section>
+</shelfy-legal-shell>

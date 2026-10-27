@@ -1,0 +1,113 @@
+<label #track [class]="fieldClass()" class="flex w-full cursor-text items-center gap-2">
+  <shelfy-icon name="search" [size]="compact() ? '18' : '20'" class="text-text-subtle shrink-0" />
+  @if (showChips() && query().text; as text) {
+    <span
+      class="text-text inline-flex h-9 max-w-full shrink-0 items-center gap-1 rounded-[0.625rem] bg-white/16 pr-1 pl-3 text-sm font-semibold"
+    >
+      <span class="truncate">« {{ text }} »</span>
+      <button
+        type="button"
+        class="text-text-muted hover:text-text grid size-7 shrink-0 cursor-pointer place-items-center rounded-lg transition-colors hover:bg-white/10"
+        [attr.aria-label]="('explore.remove' | translate) + ' ' + text"
+        (click)="$event.stopPropagation(); textChanged.emit('')"
+      >
+        <shelfy-icon name="close" size="sm" />
+      </button>
+    </span>
+  }
+  @for (chip of showChips() ? chips() : []; track chip.criterion.token) {
+    <span
+      class="inline-flex h-9 max-w-full shrink-0 items-center rounded-[0.625rem] text-sm font-semibold transition-colors"
+      [class]="chip.excluded ? 'text-text-subtle bg-white/5' : 'text-text bg-white/16'"
+    >
+      <span class="truncate pl-3" [class.line-through]="chip.excluded">{{ chipLabel(chip) }}</span>
+      <button
+        type="button"
+        class="text-text-muted hover:text-text mr-1 ml-0.5 grid size-7 shrink-0 cursor-pointer place-items-center rounded-lg transition-colors hover:bg-white/10"
+        [attr.aria-label]="('explore.remove' | translate) + ' ' + catalog.label(chip.criterion)"
+        (click)="$event.stopPropagation(); removed.emit(chip)"
+      >
+        <shelfy-icon name="close" size="sm" />
+      </button>
+    </span>
+  }
+  <input
+    #field
+    type="text"
+    role="combobox"
+    autocomplete="off"
+    spellcheck="false"
+    class="text-text placeholder:text-text-subtle h-10 min-w-[12ch] flex-1 bg-transparent text-base font-medium caret-(--color-accent) focus:outline-none max-sm:min-w-[8ch]"
+    [placeholder]="placeholderKey() | translate"
+    [attr.aria-label]="'explore.placeholder' | translate"
+    [attr.aria-expanded]="expanded()"
+    [attr.aria-controls]="listboxId"
+    [attr.aria-activedescendant]="activeId()"
+    aria-autocomplete="list"
+    (input)="onInput($event)"
+    (keydown)="onKeydown($event)"
+    (focus)="onFocus()"
+  />
+</label>
+
+@if (expanded()) {
+  <div
+    [id]="listboxId"
+    role="listbox"
+    [attr.aria-label]="'explore.suggestions' | translate"
+    [class]="menuPanel + ' inset-x-0 max-h-[min(60dvh,28rem)] overflow-y-auto rounded-3xl! p-2.5!'"
+  >
+    @for (option of options(); track option.id) {
+      <div
+        role="option"
+        [id]="option.id"
+        [attr.aria-selected]="activeId() === option.id"
+        class="text-text flex min-h-13 cursor-pointer items-center gap-3 rounded-2xl px-3.5 py-1.5 transition-colors"
+        [class.bg-fill]="activeId() === option.id"
+        [class.hover:bg-fill-subtle]="activeId() !== option.id"
+        tabindex="-1"
+        (mousedown)="$event.preventDefault()"
+        (click)="activate(option)"
+        (keydown.enter)="activate(option)"
+        (mouseenter)="activeIndex.set(optionIndex(option.id))"
+      >
+        @switch (option.kind) {
+          @case ('suggestion') {
+            <span
+              class="bg-fill-subtle text-text-muted grid size-9 shrink-0 place-items-center rounded-full"
+            >
+              <shelfy-icon [name]="suggestionIcon(option.suggestion)" size="sm" />
+            </span>
+            <span class="min-w-0 flex-1 truncate text-base font-semibold">{{
+              option.suggestion.label
+            }}</span>
+            <span class="text-text-subtle shrink-0 text-sm">{{
+              suggestionHint(option.suggestion)
+            }}</span>
+          }
+          @case ('catalog') {
+            <span
+              class="bg-fill-subtle text-text-muted grid size-9 shrink-0 place-items-center rounded-full"
+            >
+              <shelfy-icon name="filter" size="sm" />
+            </span>
+            <span class="min-w-0 flex-1 truncate text-base font-semibold">{{
+              option.option.label
+            }}</span>
+            <span class="text-text-subtle shrink-0 text-sm">{{ catalogHint(option.option) }}</span>
+          }
+          @case ('text') {
+            <span
+              class="bg-text text-background grid size-9 shrink-0 place-items-center rounded-full"
+            >
+              <shelfy-icon name="search" size="sm" />
+            </span>
+            <span class="min-w-0 flex-1 truncate text-base font-semibold">
+              {{ 'explore.search_titles' | translate: { query: draft().trim() } }}
+            </span>
+          }
+        }
+      </div>
+    }
+  </div>
+}

@@ -1,0 +1,134 @@
+<div
+  #scrollContainer
+  class="page-scroll relative h-full min-h-0 overflow-x-clip overflow-y-auto pb-24 max-md:pb-(--bottom-nav-clearance)"
+  (scroll)="onScroll()"
+>
+  <h1 class="sr-only">{{ 'nav.discover' | translate }}</h1>
+
+  @if (featured(); as slide) {
+    <shelfy-home-stage
+      [slide]="slide"
+      [slides]="stage()"
+      [kicker]="kicker()"
+      [wall]="wall()"
+      (shelve)="shelve($event)"
+      (edit)="itemSheet.open($event)"
+      (activeChange)="follow($event)"
+    />
+  } @else {
+    <div
+      class="bg-background h-[min(400px,60svh)] md:h-[clamp(660px,88vh,840px)]"
+      aria-hidden="true"
+    ></div>
+  }
+
+  <div #sentinel class="mt-6 md:mt-8" aria-hidden="true"></div>
+  <div class="v-typebar" [class.stuck]="stuck()">
+    <shelfy-tabs
+      class="min-w-0 flex-1 py-2.5"
+      panelId="home-panel"
+      [tabs]="tabs()"
+      [activeId]="filter()"
+      [label]="'home.filter_label' | translate"
+      (tabSelected)="selectFilter($event)"
+    />
+    <a routerLink="/explore" [queryParams]="exploreQuery()" class="v-more">
+      {{ exploreLabel() }}
+    </a>
+  </div>
+
+  <div id="home-panel" role="tabpanel" class="relative">
+    @if (showStart()) {
+      <div class="px-gutter mx-auto mt-7 md:mt-11">
+        <shelfy-start-shelf class="block" />
+      </div>
+    }
+
+    @for (key of [shown()]; track key) {
+      @for (section of sections(); track section; let index = $index) {
+        <div
+          class="transition-[opacity,translate] duration-180 motion-reduce:transition-none"
+          [class]="leaving() ? 'translate-y-2 opacity-0' : 'animate-sec-in'"
+          [style.animation-delay.ms]="delay(index)"
+        >
+          @switch (section) {
+            @case ('continue') {
+              <shelfy-shelf-section
+                [title]="'home.continue' | translate"
+                [subtitle]="'home.continue_sub' | translate"
+                [moreLabel]="'home.library' | translate"
+                [moreRoute]="['/collection']"
+                [moreQuery]="libraryQuery('ongoing')"
+                rail="w"
+              >
+                @for (item of ongoing(); track item.id) {
+                  <shelfy-home-tile [item]="item" [art]="art" [addable]="false">
+                    <span class="v-cap2 row">
+                      <div>
+                        <b>{{ item.media.title }}</b>
+                        <span>{{ since(item) }}</span>
+                      </div>
+                      <button
+                        type="button"
+                        class="v-mini-btn"
+                        [disabled]="finishing() === item.id"
+                        [attr.aria-label]="
+                          ('home.cta.done.' + verb(item) | translate) + ' · ' + item.media.title
+                        "
+                        (click)="$event.stopPropagation(); finish(item)"
+                      >
+                        <shelfy-icon name="check" size="16" />{{ doneLabel(item) | translate }}
+                      </button>
+                    </span>
+                  </shelfy-home-tile>
+                }
+              </shelfy-shelf-section>
+            }
+            @case ('pick') {
+              <shelfy-home-pick [filter]="shown()" [items]="planned()" />
+            }
+            @case ('anticipated') {
+              <shelfy-home-anticipated [filter]="shown()" [slides]="view()!.anticipated" />
+            }
+            @case ('top') {
+              <shelfy-home-top [filter]="shown()" [items]="view()!.top" />
+            }
+            @case ('mood') {
+              <shelfy-home-mood [mood]="moodView()!" [typeLabel]="moodType()" [art]="art" />
+            }
+            @case ('soon') {
+              <shelfy-home-soon [filter]="shown()" [groups]="view()!.soon" />
+            }
+            @case ('rated') {
+              <shelfy-home-rated [filter]="shown()" [items]="view()!.rated" />
+            }
+            @case ('released') {
+              <shelfy-shelf-section
+                [title]="'home.just_released' | translate"
+                [moreLabel]="'home.see_all' | translate"
+                [moreRoute]="['/discover', 'new']"
+                [moreQuery]="feedQuery()"
+              >
+                @for (entry of released(); track entry.item.id) {
+                  <shelfy-media-card [item]="entry.item" [subtitle]="entry.subtitle" />
+                }
+              </shelfy-shelf-section>
+            }
+          }
+        </div>
+      }
+    }
+
+    @if (empty() && typePlural()) {
+      <p class="px-gutter text-text-muted mx-auto mt-10 text-[1.0625rem]">
+        {{ 'home.nothing' | translate: { type: typePlural()! } }}
+      </p>
+    }
+  </div>
+
+  @if (settled()) {
+    <shelfy-home-reviews class="empty:hidden" />
+    <shelfy-home-creations class="empty:hidden" />
+  }
+  <shelfy-page-footer />
+</div>

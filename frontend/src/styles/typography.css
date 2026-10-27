@@ -1,0 +1,28 @@
+@utility heading-page {
+  @apply font-display text-text text-display font-extrabold text-balance;
+}
+
+@utility heading-section {
+  @apply font-display text-text text-xl font-bold;
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-subtle {
+  color: var(--color-text-subtle);
+}
+
+.label {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+
+@utility heading-auth {
+  @apply font-display text-text text-[clamp(3.25rem,5.4vw,5.25rem)] leading-[0.88] font-extrabold tracking-[-0.06em] text-balance;
+}

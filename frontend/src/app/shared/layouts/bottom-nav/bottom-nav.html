@@ -1,0 +1,31 @@
+<nav
+  [attr.aria-label]="'nav.main' | translate"
+  class="bg-background/88 fixed inset-x-0 bottom-0 z-40 flex h-[calc(4.125rem+env(safe-area-inset-bottom))] items-center justify-around pb-[env(safe-area-inset-bottom)] shadow-[0_-1px_0_rgb(255_255_255/0.06)] backdrop-blur-xl [-webkit-tap-highlight-color:transparent]"
+>
+  @for (tab of tabs; track tab.path) {
+    <a
+      [routerLink]="[tab.path]"
+      class="text-text-muted [&.active]:text-text relative flex h-full flex-1 touch-manipulation flex-col items-center justify-center gap-1 transition-[color,transform] active:scale-90"
+      [style.order]="tab.order"
+      [class.active]="isActive(tab.path)"
+      [attr.aria-current]="isActive(tab.path) ? 'page' : null"
+      (click)="onTab(tab.path)"
+    >
+      <shelfy-icon [name]="tab.icon" size="lg" [active]="isActive(tab.path)" />
+      <span class="text-[0.6875rem] leading-none font-semibold">{{
+        tab.labelKey | translate
+      }}</span>
+    </a>
+  }
+
+  <div class="order-3 flex h-full w-[4.5rem] shrink-0 items-center justify-center">
+    <button
+      type="button"
+      class="satin text-on-brand ring-background -mt-[1.375rem] flex size-[3.625rem] shrink-0 cursor-pointer touch-manipulation items-center justify-center rounded-full shadow-[0_14px_30px_-10px_rgb(0_0_0/0.9)] ring-[5px] transition-transform active:scale-90"
+      [attr.aria-label]="'nav.quick_add' | translate"
+      (click)="quickAdd()"
+    >
+      <shelfy-icon name="plus" size="lg" />
+    </button>
+  </div>
+</nav>

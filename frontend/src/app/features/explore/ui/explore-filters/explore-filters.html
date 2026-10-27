@@ -1,0 +1,223 @@
+<ng-template #head let-section="section" let-title="title">
+  <button
+    type="button"
+    class="group/head mb-3 flex w-full cursor-pointer items-center justify-between gap-3 text-left"
+    [attr.aria-expanded]="isOpen(section)"
+    (click)="toggle(section)"
+  >
+    <span [class]="groupTitle + ' group-hover/head:text-text-muted mb-0! transition-colors'">{{
+      title
+    }}</span>
+    <shelfy-icon
+      name="chevronDown"
+      size="sm"
+      class="text-text-subtle group-hover/head:text-text duration-base transition"
+      [class.rotate-180]="isOpen(section)"
+    />
+  </button>
+</ng-template>
+
+<ng-template #row let-criterion="criterion" let-exclude="exclude" let-logo="logo">
+  @let current = state(criterion.token);
+  <button
+    type="button"
+    [class]="rowClass(current)"
+    [attr.aria-pressed]="current !== 'off'"
+    [attr.aria-label]="ariaLabel(criterion)"
+    [attr.title]="exclude ? ('explore.filters.hint_cycle' | translate) : null"
+    (click)="cycle(criterion, exclude)"
+  >
+    @if (logo) {
+      <img [src]="logo" alt="" loading="lazy" class="size-5 shrink-0 rounded-xs object-cover" />
+    }
+    <span class="truncate">{{ catalog.label(criterion) }}</span>
+  </button>
+</ng-template>
+
+@if (show('genre') && genres().length) {
+  <section class="mt-7 first-of-type:mt-0">
+    <ng-container
+      *ngTemplateOutlet="
+        head;
+        context: { section: 'genre', title: 'explore.filters.genres' | translate }
+      "
+    />
+    @if (isOpen('genre')) {
+      <div class="flex flex-wrap gap-2">
+        @for (genre of genres(); track genre.id) {
+          <ng-container
+            *ngTemplateOutlet="
+              row;
+              context: { criterion: shared(genre.id), exclude: true, logo: null }
+            "
+          />
+        }
+      </div>
+    }
+  </section>
+}
+
+@if (show('theme') && themes().length) {
+  <section class="mt-7 first-of-type:mt-0">
+    <ng-container
+      *ngTemplateOutlet="
+        head;
+        context: { section: 'theme', title: 'explore.filters.themes' | translate }
+      "
+    />
+    @if (isOpen('theme')) {
+      <div class="flex flex-wrap gap-2">
+        @for (theme of themes(); track theme.id) {
+          <ng-container
+            *ngTemplateOutlet="
+              row;
+              context: { criterion: shared(theme.id), exclude: true, logo: null }
+            "
+          />
+        }
+      </div>
+    }
+  </section>
+}
+
+@if (show('period')) {
+  <section class="mt-7 first-of-type:mt-0">
+    <ng-container
+      *ngTemplateOutlet="
+        head;
+        context: { section: 'period', title: 'explore.filters.period' | translate }
+      "
+    />
+    @if (isOpen('period')) {
+      <div class="flex flex-wrap gap-2">
+        @for (decade of decades; track decade.key) {
+          <button
+            type="button"
+            [class]="rowClass(decadeActive(decade) ? 'include' : 'off')"
+            [attr.aria-pressed]="decadeActive(decade)"
+            (click)="pickDecade(decade)"
+          >
+            {{ 'explore.decades.' + decade.key | translate }}
+          </button>
+        }
+      </div>
+      <div class="mt-3 flex items-center gap-2">
+        <label class="min-w-0 flex-1">
+          <span class="sr-only">{{ 'explore.filters.from' | translate }}</span>
+          <input
+            type="number"
+            inputmode="numeric"
+            min="1870"
+            [max]="currentYear + 5"
+            class="form-control h-11 rounded-[0.875rem] px-4 tabular-nums"
+            [placeholder]="'explore.filters.from' | translate"
+            [value]="query().from ?? ''"
+            (change)="setYear('from', $event)"
+          />
+        </label>
+        <span class="text-text-subtle" aria-hidden="true">–</span>
+        <label class="min-w-0 flex-1">
+          <span class="sr-only">{{ 'explore.filters.to' | translate }}</span>
+          <input
+            type="number"
+            inputmode="numeric"
+            min="1870"
+            [max]="currentYear + 5"
+            class="form-control h-11 rounded-[0.875rem] px-4 tabular-nums"
+            [placeholder]="'explore.filters.to' | translate"
+            [value]="query().to ?? ''"
+            (change)="setYear('to', $event)"
+          />
+        </label>
+      </div>
+    }
+  </section>
+}
+
+@if (show('where') && showStreaming()) {
+  <section class="mt-7 first-of-type:mt-0">
+    <ng-container
+      *ngTemplateOutlet="
+        head;
+        context: { section: 'streaming', title: 'explore.filters.streaming' | translate }
+      "
+    />
+    @if (isOpen('streaming')) {
+      <p class="text-text-subtle -mt-1 mb-3 text-sm">
+        {{ 'explore.filters.streaming_hint' | translate: { region: catalog.region() } }}
+      </p>
+      <div class="flex flex-wrap gap-2">
+        @for (service of streaming(); track service.id) {
+          <ng-container
+            *ngTemplateOutlet="
+              row;
+              context: { criterion: option(service), exclude: false, logo: logo(service) }
+            "
+          />
+        }
+      </div>
+    }
+  </section>
+}
+
+@if (show('where') && showPlatforms() && platforms().length) {
+  <section class="mt-7 first-of-type:mt-0">
+    <ng-container
+      *ngTemplateOutlet="
+        head;
+        context: { section: 'platforms', title: 'explore.filters.platforms' | translate }
+      "
+    />
+    @if (isOpen('platforms')) {
+      <div class="flex flex-wrap gap-2">
+        @for (platform of platforms(); track platform.id) {
+          <ng-container
+            *ngTemplateOutlet="
+              row;
+              context: { criterion: option(platform), exclude: false, logo: null }
+            "
+          />
+        }
+      </div>
+    }
+  </section>
+}
+
+@if (show('tag') && query().type; as type) {
+  <section class="mt-7 first-of-type:mt-0">
+    <ng-container
+      *ngTemplateOutlet="
+        head;
+        context: {
+          section: 'tag',
+          title: 'explore.filters.catalog_tags' | translate: { type: catalog.typeLabel(type) },
+        }
+      "
+    />
+    @if (isOpen('tag')) {
+      <div class="flex flex-wrap gap-2" [attr.aria-busy]="catalogLoading()">
+        @for (selection of catalogSelections(); track selection.token) {
+          <ng-container
+            *ngTemplateOutlet="row; context: { criterion: selection, exclude: true, logo: null }"
+          />
+        }
+        @for (tag of catalogOptions(); track tag.id) {
+          @if (state(tag.id) === 'off') {
+            <ng-container
+              *ngTemplateOutlet="
+                row;
+                context: { criterion: option(tag), exclude: true, logo: null }
+              "
+            />
+          }
+        } @empty {
+          @if (!catalogLoading()) {
+            <p class="text-text-subtle text-sm">
+              {{ 'explore.filters.catalog_empty' | translate }}
+            </p>
+          }
+        }
+      </div>
+    }
+  </section>
+}

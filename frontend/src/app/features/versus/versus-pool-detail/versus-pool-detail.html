@@ -1,0 +1,574 @@
+@if (loading()) {
+  <shelfy-detail-skeleton [count]="6" />
+} @else if (failed()) {
+  <main class="px-gutter flex min-h-full items-center justify-center pt-(--nav-bar-height)">
+    <shelfy-empty-state
+      role="alert"
+      icon="warningTriangle"
+      [hint]="'versus.pools.load_error' | translate"
+    >
+      <shelfy-button type="button" variant="primary" (click)="retry()">
+        {{ 'collection.retry' | translate }}
+      </shelfy-button>
+    </shelfy-empty-state>
+  </main>
+} @else if (pool(); as pool) {
+  <main class="animate-fade-in flex min-h-full flex-col motion-reduce:animate-none">
+    <shelfy-media-header
+      [title]="pool.isOwner ? edit.name() : pool.name"
+      [editable]="pool.isOwner"
+      [titleLabel]="'community.sheet.name' | translate"
+      [titlePlaceholder]="'community.sheet.versus_placeholder' | translate"
+      [customArt]="true"
+      [posterUrl]="artCovers()[0]?.coverUrl ?? null"
+      [backdropUrl]="backdrop()"
+      (titleChange)="edit.name.set($event)"
+    >
+      <div headerArt [class]="artCovers().length ? 'v-vs' : 'v-fan-empty'">
+        @for (cover of artCovers().slice(0, 2); track cover.id) {
+          <span>
+            @if (cover.adult) {
+              <span class="bg-surface-2 grid size-full place-items-center">
+                <shelfy-adult-badge size="2.5rem" />
+              </span>
+            } @else if (cover.coverUrl) {
+              <img [src]="cover.coverUrl" alt="" draggable="false" />
+            } @else {
+              <span
+                class="font-display text-text-subtle grid size-full place-items-center p-3 text-center text-sm font-bold text-balance"
+                >{{ cover.title }}</span
+              >
+            }
+          </span>
+        } @empty {
+          <shelfy-icon name="compare" size="40" aria-hidden="true" />
+        }
+        @if (artCovers().length > 1) {
+          <b class="v-vs-disc" aria-hidden="true">vs</b>
+        }
+      </div>
+
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-4 max-[900px]:justify-center">
+        @if (pool.creatorUsername; as owner) {
+          <a
+            [routerLink]="['/profile', owner]"
+            class="group/author inline-flex min-w-0 items-center gap-3 text-left"
+          >
+            <shelfy-avatar size="md" [displayName]="owner" [avatarUrl]="pool.creatorAvatarUrl" />
+            <span class="min-w-0">
+              <b class="text-text block truncate text-[1.0625rem] group-hover/author:underline">{{
+                owner
+              }}</b>
+              <small class="text-text-subtle block text-sm tabular-nums">{{
+                heroMeta().join(' · ')
+              }}</small>
+            </span>
+          </a>
+        }
+        @if (coAuthors().length > 0) {
+          <span
+            class="flex items-center"
+            [attr.aria-label]="'lists.panel.contributors' | translate"
+          >
+            @for (person of coAuthors(); track person.userId) {
+              <a
+                [routerLink]="['/profile', person.username]"
+                class="ring-background -ml-2 rounded-full ring-3 first:ml-0"
+                [title]="person.displayName || person.username"
+              >
+                <shelfy-avatar
+                  size="32"
+                  [displayName]="person.displayName || person.username"
+                  [avatarUrl]="person.avatarUrl"
+                />
+              </a>
+            }
+          </span>
+        }
+        @if (pool.isOwner) {
+          <span
+            [class]="social + ' cursor-default'"
+            [attr.aria-label]="'community.likes_count' | translate: { count: likeTotal() }"
+          >
+            <shelfy-icon name="like" size="22" />
+            <b class="tabular-nums">{{ likeTotal() }}</b>
+          </span>
+        } @else {
+          <button
+            type="button"
+            [class]="social + (pool.isLikedByViewer ? ' text-accent!' : '')"
+            [attr.aria-pressed]="pool.isLikedByViewer"
+            [attr.aria-label]="
+              (pool.isLikedByViewer ? 'community.liked' : 'community.like') | translate
+            "
+            [disabled]="liking()"
+            (click)="toggleLike()"
+          >
+            <shelfy-icon name="like" size="22" [active]="pool.isLikedByViewer" />
+            <b class="tabular-nums">{{ likeTotal() }}</b>
+          </button>
+        }
+        <button
+          type="button"
+          [class]="social"
+          [attr.aria-label]="'comments.title' | translate"
+          (click)="selectTab('discussion')"
+        >
+          <shelfy-icon name="comment" size="22" />
+          <b class="tabular-nums">{{ commentTotal() ?? pool.commentCount }}</b>
+        </button>
+      </div>
+
+      @if (pool.isOwner) {
+        <textarea
+          class="text-text-muted placeholder:text-text-subtle hover:bg-fill-subtle focus-visible:bg-fill-subtle duration-base -mx-3 mt-5 block field-sizing-content max-h-32 w-[calc(100%+1.5rem)] max-w-[62ch] resize-none overflow-y-auto rounded-xl bg-transparent px-3 py-2 text-base leading-relaxed transition-colors outline-none max-[900px]:mx-0 max-[900px]:w-full max-[900px]:text-center"
+          maxlength="280"
+          rows="1"
+          [attr.aria-label]="'community.sheet.description' | translate"
+          [placeholder]="'studio.description_placeholder' | translate"
+          [value]="edit.description()"
+          (input)="edit.description.set($any($event.target).value)"
+        ></textarea>
+      } @else if (pool.description) {
+        <p
+          #descriptionText
+          class="text-text-muted mt-5 max-w-[60ch] text-base leading-relaxed whitespace-pre-line max-[900px]:mx-auto"
+          [class.line-clamp-3]="!descriptionOpen()"
+        >
+          {{ pool.description }}
+        </p>
+        @if (pool.description.length > 180) {
+          <button
+            type="button"
+            class="text-text mt-1 cursor-pointer text-[0.9375rem] font-semibold underline-offset-3 hover:underline"
+            [attr.aria-expanded]="descriptionOpen()"
+            (click)="descriptionOpen.set(!descriptionOpen())"
+          >
+            {{ (descriptionOpen() ? 'media.see_less' : 'media.see_more') | translate }}
+          </button>
+        }
+      }
+
+      @if (pool.source; as source) {
+        <a
+          class="text-text-muted hover:text-text mt-3 inline-flex items-center gap-1.5 text-sm transition-colors"
+          [routerLink]="['/versus', source.id]"
+        >
+          <shelfy-icon name="compare" size="16" />
+          {{
+            'studio.copied_from'
+              | translate: { name: source.name, user: source.creatorUsername ?? '' }
+          }}
+        </a>
+      }
+
+      <div class="mt-7 flex flex-wrap items-center gap-3 empty:hidden max-[900px]:justify-center">
+        @switch (ctaKind()) {
+          @case ('publish') {
+            <button
+              type="button"
+              [class]="primaryButton"
+              [disabled]="!edit.nameValid()"
+              (click)="publishOpen.set(true)"
+            >
+              <shelfy-icon name="send" size="20" />{{ 'studio.publish' | translate }}
+            </button>
+          }
+          @case ('resume') {
+            @if (unfinished(); as session) {
+              <a
+                [class]="primaryButton"
+                [routerLink]="['/versus', pool.id, 'play', session.sessionId]"
+              >
+                <shelfy-icon name="play" size="20" [active]="true" />
+                {{
+                  'versus.detail.resume'
+                    | translate: { current: session.currentRound, total: session.roundsTotal }
+                }}
+              </a>
+            }
+          }
+          @case ('play') {
+            <button
+              type="button"
+              [class]="primaryButton"
+              [disabled]="starting()"
+              [attr.aria-busy]="starting() || null"
+              (click)="play()"
+            >
+              <shelfy-icon name="play" size="20" [active]="true" />
+              {{ 'versus.detail.play' | translate }}
+            </button>
+          }
+        }
+      </div>
+
+      @if (
+        pool.isOwner ||
+        isCollaborator() ||
+        ctaKind() === 'resume' ||
+        (ctaKind() === 'publish' && edit.enoughEntries())
+      ) {
+        <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 max-[900px]:justify-center">
+          @if (ctaKind() === 'resume' || (ctaKind() === 'publish' && edit.enoughEntries())) {
+            <button
+              type="button"
+              [class]="manage"
+              [disabled]="starting()"
+              [attr.aria-busy]="starting() || null"
+              (click)="play()"
+            >
+              <shelfy-icon [name]="ctaKind() === 'resume' ? 'shuffle' : 'play'" size="16" />
+              {{
+                (ctaKind() === 'resume' ? 'versus.detail.new_game' : 'versus.detail.play')
+                  | translate
+              }}
+            </button>
+          }
+          @if (pool.isOwner) {
+            @if (ctaKind() !== 'publish') {
+              <button
+                type="button"
+                [class]="manage"
+                [attr.aria-label]="'studio.change_visibility' | translate"
+                (click)="publishOpen.set(true)"
+              >
+                <shelfy-icon [name]="visibilityInfo().icon" size="16" />
+                {{ visibilityInfo().labelKey | translate }}
+              </button>
+            }
+            <button type="button" [class]="manage" (click)="collab.show()">
+              <shelfy-icon name="userAdd" size="16" />{{ 'lists.collab.invite_button' | translate }}
+            </button>
+            <button type="button" [class]="manage + ' hover:text-danger-fg'" (click)="deletePool()">
+              <shelfy-icon name="trash" size="16" />{{ 'studio.delete' | translate }}
+            </button>
+          }
+          @if (isCollaborator()) {
+            <button type="button" [class]="manage" (click)="collab.leave()">
+              <shelfy-icon name="logout" size="16" />{{ 'lists.collab.leave' | translate }}
+            </button>
+          }
+        </div>
+      }
+    </shelfy-media-header>
+
+    @if (isPendingInvite()) {
+      <div class="px-gutter mx-auto mt-8 w-full">
+        <shelfy-collab-invite-banner
+          class="block"
+          animate.enter="animate-rise-in"
+          message="versus.collab.pending_banner"
+          [answering]="collab.answering()"
+          (accept)="collab.accept()"
+          (decline)="collab.decline()"
+        />
+      </div>
+    }
+
+    <div #barSentinel aria-hidden="true"></div>
+    <div class="v-libbar" [class.stuck]="stuck()">
+      <shelfy-tabs
+        class="min-w-0"
+        [tabs]="pageTabs()"
+        [activeId]="tab()"
+        [label]="pool.name"
+        panelId="versus-tab-panel"
+        (tabSelected)="selectTab($event)"
+      />
+      @if (tab() === 'entries') {
+        <div class="v-ltools">
+          @if (hasClip()) {
+            <shelfy-clip-volume />
+          }
+          @if (pool.canEdit && edit.entries().length > 0) {
+            <shelfy-selection-toggle
+              [chip]="true"
+              [pressed]="edit.selectionMode()"
+              (toggled)="edit.toggleSelectionMode()"
+            />
+          }
+          @if (pool.canEdit && edit.entries().length === 0) {
+            <button type="button" [class]="secondaryButton" (click)="openClipSheet(null)">
+              <shelfy-icon name="link" size="18" />{{ 'versus.manage.add_clips' | translate }}
+            </button>
+          }
+          @if (pool.canEdit) {
+            <button type="button" [class]="primaryButton" (click)="openAdd()">
+              <shelfy-icon [name]="edit.kind() === 'clips' ? 'link' : 'plus'" size="20" />
+              {{ addLabel() | translate }}
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    <div
+      id="versus-tab-panel"
+      role="tabpanel"
+      class="px-gutter mx-auto w-full min-w-0 pt-4.5 pb-35"
+    >
+      @for (current of [tab()]; track current) {
+        <div class="animate-rise-in flex min-w-0 flex-col">
+          @switch (tab()) {
+            @case ('ranking') {
+              <section [attr.aria-label]="'versus.detail.results_title' | translate">
+                @if (resultsLoading()) {
+                  <div class="flex gap-5 overflow-hidden" aria-hidden="true">
+                    @for (slot of [1, 2, 3, 4]; track slot) {
+                      <div
+                        class="bg-fill-subtle rounded-poster aspect-2/3 w-31.5 shrink-0 animate-pulse motion-reduce:animate-none md:w-43"
+                      ></div>
+                    }
+                  </div>
+                } @else if (!results() || results()!.length === 0) {
+                  <p class="text-text-subtle">
+                    {{ 'versus.detail.results_empty' | translate }}
+                  </p>
+                } @else {
+                  <shelfy-versus-results
+                    class="animate-fade-in block lg:[--frame-x:0px]"
+                    [entries]="results()!"
+                  />
+                }
+              </section>
+            }
+            @case ('discussion') {
+              <section id="comments" class="max-w-3xl scroll-mt-24">
+                <shelfy-comments
+                  [source]="commentsSource(pool.id)"
+                  [resetKey]="pool.id"
+                  [initialItems]="pool.comments"
+                  [initialTotal]="pool.commentCount"
+                  [canModerate]="pool.isOwner"
+                  [maxLength]="500"
+                  (totalChange)="commentTotal.set($event)"
+                />
+              </section>
+            }
+            @default {
+              @if (edit.entries().length === 0) {
+                <div class="flex flex-col items-start gap-2 pt-2">
+                  <h2 [class]="sectionTitle">{{ 'versus.detail.empty_title' | translate }}</h2>
+                  <p class="text-text-muted max-w-[56ch] text-base">
+                    {{
+                      (pool.canEdit ? 'versus.manage.empty_hint' : 'versus.detail.empty_hint')
+                        | translate
+                    }}
+                  </p>
+                </div>
+              } @else {
+                @if (edit.kind() === 'media') {
+                  <shelfy-entity-media-grid
+                    class="block"
+                    [items]="mediaItems()"
+                    [posterSize]="true"
+                    [overlay]="pool.canEdit || edit.showAuthors() ? mediaOverlay : null"
+                    [selectionMode]="edit.selectionMode()"
+                    [selectedIds]="selectedMediaIds()"
+                    (selectionToggle)="toggleMedia($event)"
+                  />
+                } @else {
+                  <div class="v-lgrid" [attr.data-size]="edit.kind() === 'clips' ? 'w' : 'l'">
+                    @for (entry of edit.entries(); track entry.id; let i = $index) {
+                      <div
+                        class="animate-rise-in [animation-fill-mode:backwards] motion-reduce:animate-none"
+                        [style.animation-delay.ms]="stagger(i)"
+                      >
+                        <shelfy-versus-entry-card
+                          [entry]="entry"
+                          [selectionMode]="edit.selectionMode()"
+                          [selected]="edit.selected().has(entry.id)"
+                          (selectionToggle)="edit.toggleSelected(entry.id)"
+                          (opened)="open($event)"
+                        >
+                          <ng-container cardOverlay>
+                            @if (edit.showAuthors() && entry.addedBy; as who) {
+                              <span
+                                class="pointer-events-none absolute top-2 left-2 z-6 rounded-full p-0.5"
+                                [class]="mediaChip"
+                                [title]="
+                                  'lists.manage.added_by'
+                                    | translate: { user: who.displayName || who.username }
+                                "
+                              >
+                                <shelfy-avatar
+                                  size="28"
+                                  [displayName]="who.username"
+                                  [avatarUrl]="who.avatarUrl"
+                                />
+                                <span class="sr-only">{{
+                                  'lists.manage.added_by'
+                                    | translate: { user: who.displayName || who.username }
+                                }}</span>
+                              </span>
+                            }
+                            @if (pool.canEdit && !edit.selectionMode()) {
+                              <div
+                                class="absolute top-2 right-2 z-6 flex gap-1.5 opacity-0 transition-opacity group-focus-within/card:opacity-100 group-hover/card:opacity-100 [@media(hover:none)]:hidden"
+                              >
+                                @if (entry.clip) {
+                                  <button
+                                    type="button"
+                                    class="hover:bg-fill-strong grid size-9 cursor-pointer place-items-center rounded-full text-white transition-[background-color,scale] active:scale-90"
+                                    [class]="mediaChip"
+                                    [attr.aria-label]="
+                                      'versus.manage.edit_clip' | translate: { title: entry.title }
+                                    "
+                                    [title]="
+                                      'versus.manage.edit_clip' | translate: { title: entry.title }
+                                    "
+                                    (click)="openClipSheet(entry)"
+                                  >
+                                    <shelfy-icon name="edit" size="sm" />
+                                  </button>
+                                }
+                                <button
+                                  type="button"
+                                  class="hover:bg-danger grid size-9 cursor-pointer place-items-center rounded-full text-white transition-[background-color,scale] active:scale-90"
+                                  [class]="mediaChip"
+                                  [attr.aria-label]="
+                                    'versus.manage.remove_entry' | translate: { title: entry.title }
+                                  "
+                                  [title]="
+                                    'versus.manage.remove_entry' | translate: { title: entry.title }
+                                  "
+                                  (click)="edit.remove([entry.id])"
+                                >
+                                  <shelfy-icon name="close" size="sm" />
+                                </button>
+                              </div>
+                            }
+                          </ng-container>
+                        </shelfy-versus-entry-card>
+                      </div>
+                    }
+                  </div>
+                }
+              }
+            }
+          }
+        </div>
+      }
+    </div>
+    <shelfy-page-footer />
+
+    <ng-template #mediaOverlay let-item>
+      @if (entryFor(item.media.id); as entry) {
+        @if (edit.showAuthors() && entry.addedBy; as who) {
+          <span
+            class="pointer-events-none absolute top-2 left-2 z-6 rounded-full p-0.5"
+            [class]="mediaChip"
+            [title]="'lists.manage.added_by' | translate: { user: who.displayName || who.username }"
+          >
+            <shelfy-avatar size="28" [displayName]="who.username" [avatarUrl]="who.avatarUrl" />
+            <span class="sr-only">{{
+              'lists.manage.added_by' | translate: { user: who.displayName || who.username }
+            }}</span>
+          </span>
+        }
+        @if (pool.canEdit && !edit.selectionMode()) {
+          <button
+            type="button"
+            class="hover:bg-danger absolute top-2 right-2 z-6 grid size-9 cursor-pointer place-items-center rounded-full text-white opacity-0 transition-[opacity,background-color,scale] group-focus-within/card:opacity-100 group-hover/card:opacity-100 focus-visible:opacity-100 active:scale-90 [@media(hover:none)]:hidden"
+            [class]="mediaChip"
+            [attr.aria-label]="'versus.manage.remove_entry' | translate: { title: entry.title }"
+            [title]="'versus.manage.remove_entry' | translate: { title: entry.title }"
+            (click)="edit.remove([entry.id])"
+          >
+            <shelfy-icon name="close" size="sm" />
+          </button>
+        }
+      }
+    </ng-template>
+
+    @if (edit.selectionMode()) {
+      <div
+        [class]="bulkBar"
+        role="toolbar"
+        [attr.aria-label]="
+          'collection.bulk.selected_count' | translate: { count: selectedIds().length }
+        "
+        animate.enter="animate-rise-in"
+        animate.leave="animate-sink-out"
+      >
+        <button
+          type="button"
+          role="checkbox"
+          class="hover:bg-fill-subtle grid size-11 shrink-0 cursor-pointer place-items-center rounded-full transition-colors"
+          [attr.aria-checked]="
+            allSelected() ? 'true' : selectedIds().length > 0 ? 'mixed' : 'false'
+          "
+          [attr.aria-label]="'collection.bulk.select_all' | translate"
+          [title]="'collection.bulk.select_all' | translate"
+          (click)="allSelected() ? edit.selectAll([]) : selectAll()"
+        >
+          <span [class]="checkbox + ' ' + (selectedIds().length > 0 ? checkboxOn : checkboxOff)">
+            @if (allSelected()) {
+              <shelfy-icon name="check" size="12" />
+            } @else if (selectedIds().length > 0) {
+              <span class="h-0.5 w-2 rounded-full bg-current"></span>
+            }
+          </span>
+        </button>
+        <span
+          class="text-text mr-auto min-w-0 truncate pl-1 text-base font-semibold tabular-nums"
+          aria-live="polite"
+        >
+          {{ 'collection.bulk.selected_count' | translate: { count: selectedIds().length } }}
+        </span>
+        <shelfy-selection-remove
+          [count]="selectedIds().length"
+          (remove)="edit.remove(selectedIds())"
+          (exit)="edit.exitSelection()"
+        />
+      </div>
+    }
+
+    @if (pool.canEdit) {
+      <shelfy-media-picker
+        [open]="mediaPickerOpen()"
+        [alreadySelected]="pickedMedia()"
+        (picked)="edit.addMedia([$event])"
+        (unpicked)="removeByKey($event)"
+        (closed)="mediaPickerOpen.set(false)"
+      />
+      @if (clipSheet(); as sheet) {
+        <shelfy-clip-sheet
+          [editing]="sheet.entry"
+          (added)="edit.addClip($event)"
+          (updated)="edit.updateClip($event.entryId, $event.request)"
+          (closed)="clipSheet.set(null)"
+        />
+      }
+    }
+
+    <shelfy-publish-dialog
+      [open]="publishOpen()"
+      [current]="pool.visibility"
+      [shared]="isShared()"
+      (closed)="publishOpen.set(false)"
+      (published)="publish($event)"
+    />
+
+    @if (collab.open()) {
+      <shelfy-collaborators-sheet
+        [isOwner]="pool.isOwner"
+        [owner]="
+          pool.creatorUsername
+            ? { username: pool.creatorUsername, avatarUrl: pool.creatorAvatarUrl }
+            : null
+        "
+        [members]="pool.collaborators"
+        [pending]="pool.pendingInvites"
+        [candidates]="collab.candidates()"
+        [busyUserId]="collab.busyUserId()"
+        (removed)="collab.remove($event)"
+        (inviteCancelled)="collab.cancelInvite($event)"
+        (invited)="collab.invite($event)"
+        (queryChange)="collab.search($event)"
+        (closed)="collab.open.set(false)"
+      />
+    }
+  </main>
+}

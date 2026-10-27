@@ -1,0 +1,69 @@
+<shelfy-legal-shell [title]="'legal.terms.title' | translate" active="terms">
+  <p class="text-text-muted text-base leading-relaxed">{{ 'legal.terms.intro' | translate }}</p>
+
+  <section class="flex flex-col gap-3">
+    <h2
+      class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em]"
+    >
+      {{ 'legal.terms.service_heading' | translate }}
+    </h2>
+    <p class="text-text-muted text-base leading-relaxed">
+      {{ 'legal.terms.service_body' | translate }}
+    </p>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2
+      class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em]"
+    >
+      {{ 'legal.terms.account_heading' | translate }}
+    </h2>
+    <p class="text-text-muted text-base leading-relaxed">
+      {{ 'legal.terms.account_body' | translate }}
+    </p>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2
+      class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em]"
+    >
+      {{ 'legal.terms.content_heading' | translate }}
+    </h2>
+    <p class="text-text-muted text-base leading-relaxed">
+      {{ 'legal.terms.content_body' | translate }}
+    </p>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2
+      class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em]"
+    >
+      {{ 'legal.terms.availability_heading' | translate }}
+    </h2>
+    <p class="text-text-muted text-base leading-relaxed">
+      {{ 'legal.terms.availability_body' | translate }}
+    </p>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2
+      class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em]"
+    >
+      {{ 'legal.terms.termination_heading' | translate }}
+    </h2>
+    <p class="text-text-muted text-base leading-relaxed">
+      {{ 'legal.terms.termination_body' | translate }}
+    </p>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2
+      class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em]"
+    >
+      {{ 'legal.terms.contact_heading' | translate }}
+    </h2>
+    <p class="text-text-muted text-base leading-relaxed">
+      {{ 'legal.terms.contact_body' | translate: { email: contactEmail() } }}
+    </p>
+  </section>
+</shelfy-legal-shell>

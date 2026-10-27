@@ -1,0 +1,10 @@
+RewriteEngine On
+
+RewriteRule ^\.well-known/(webfinger|nodeinfo|host-meta)$ https://api.shelfy.dev/.well-known/$1 [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+RewriteCond %{REQUEST_URI} !\.(js|mjs|css|map|json|txt|xml|webmanifest|png|jpe?g|gif|svg|webp|avif|ico|woff2?|ttf|otf|mp4|webm|pdf)$ [NC]
+RewriteRule ^ /index.html [L]

@@ -1,0 +1,339 @@
+@let heading = title() ?? ('profile.banner.picker_title' | translate);
+<shelfy-dialog layout="panel" [open]="true" [label]="heading" (closed)="closed.emit()">
+  <div dialogPanel class="flex min-h-0 flex-1 flex-col">
+    <div class="relative flex min-h-0 flex-1 flex-col">
+      <div
+        #scroller
+        class="flex min-h-0 flex-1 flex-col max-sm:overflow-y-auto max-sm:overscroll-contain"
+      >
+        <div
+          class="bg-surface-raised relative isolate max-h-68 min-h-44 w-full shrink-0 touch-none overflow-hidden outline-none select-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-inset"
+          [class]="selectedImage() ? 'cursor-grab active:cursor-grabbing' : ''"
+          [style.aspect-ratio]="previewRatio()"
+          [attr.tabindex]="selectedImage() ? 0 : null"
+          [attr.role]="selectedImage() ? 'slider' : 'img'"
+          [attr.aria-label]="'profile.banner.preview_alt' | translate"
+          [attr.aria-valuemin]="selectedImage() ? 0 : null"
+          [attr.aria-valuemax]="selectedImage() ? 100 : null"
+          [attr.aria-valuenow]="selectedImage() ? imagePosition() : null"
+          (pointerdown)="onImagePointerDown($event)"
+          (pointermove)="onImagePointerMove($event)"
+          (pointerup)="onImagePointerUp($event)"
+          (pointercancel)="onImagePointerUp($event)"
+          (keydown)="onPreviewKeydown($event)"
+        >
+          @if (previewUrl(); as url) {
+            <img
+              [src]="url"
+              alt=""
+              draggable="false"
+              class="pointer-events-none absolute inset-0 -z-10 size-full object-cover"
+              [style.object-position]="'center ' + previewPosition() + '%'"
+            />
+          } @else {
+            <p
+              class="text-text-subtle absolute inset-0 -z-10 grid place-items-center px-6 text-center text-sm"
+            >
+              {{ 'profile.banner.preview_empty' | translate }}
+            </p>
+          }
+
+          <span
+            class="from-scrim pointer-events-none absolute inset-x-0 top-0 h-28 bg-linear-to-b to-transparent"
+            aria-hidden="true"
+          ></span>
+          <span
+            class="from-background via-background/20 pointer-events-none absolute inset-0 bg-linear-to-t via-30% to-transparent"
+            aria-hidden="true"
+          ></span>
+
+          <div
+            class="absolute inset-x-0 top-0 flex items-start justify-between gap-4 p-5 sm:px-8 sm:pt-6"
+          >
+            <h2
+              class="font-display text-text text-[1.5rem] font-extrabold text-balance sm:text-[1.875rem]"
+            >
+              {{ heading }}
+            </h2>
+            <button
+              type="button"
+              class="text-text duration-base grid size-11 shrink-0 cursor-pointer place-items-center rounded-full bg-black/45 transition-[background-color,scale] hover:bg-black/70 active:scale-[0.94]"
+              [attr.aria-label]="'dialog.close' | translate"
+              (click)="closed.emit()"
+            >
+              <shelfy-icon name="close" size="sm" />
+            </button>
+          </div>
+
+          @if (previewTitle(); as previewHeading) {
+            <p
+              class="font-display text-text drop-shadow-media pointer-events-none absolute bottom-4 left-5 text-[1.5rem] font-extrabold sm:left-8 sm:text-[1.875rem]"
+              aria-hidden="true"
+            >
+              {{ previewHeading }}
+            </p>
+          } @else {
+            <div
+              class="pointer-events-none absolute bottom-4 left-5 flex min-w-0 items-center gap-3 sm:left-8"
+              aria-hidden="true"
+            >
+              <shelfy-avatar
+                [displayName]="displayName()"
+                [avatarUrl]="avatarUrl()"
+                size="xl"
+                class="shadow-float size-12! shrink-0 rounded-full sm:size-16!"
+              />
+              <span class="flex min-w-0 flex-col">
+                <span
+                  class="font-display text-text truncate text-lg leading-tight font-extrabold sm:text-xl"
+                  >{{ displayName() }}</span
+                >
+                <span class="text-text-muted truncate text-sm">&#64;{{ username() }}</span>
+              </span>
+            </div>
+          }
+
+          @if (selectedImage()) {
+            <span
+              class="text-text pointer-events-none absolute right-5 bottom-4 rounded-full bg-black/55 px-3 py-1.5 text-xs font-medium sm:right-8"
+            >
+              {{ 'profile.banner.reposition' | translate }}
+            </span>
+          }
+        </div>
+
+        <div class="flex flex-col gap-4 px-5 pt-5 sm:min-h-0 sm:flex-1 sm:px-8">
+          <shelfy-searchbar
+            variant="pill"
+            [placeholder]="searchPlaceholder() ?? ('profile.banner.search_placeholder' | translate)"
+            [ngModel]="query()"
+            (ngModelChange)="queryChange.emit($event)"
+          />
+
+          @if (unavailableProviders().length > 0) {
+            <p class="text-text-muted bg-warning/10 rounded-xl px-3.5 py-2.5 text-sm">
+              {{ 'profile.banner.partial_results' | translate }}
+            </p>
+          }
+
+          <div
+            class="pb-4 sm:min-h-0 sm:flex-1 sm:overflow-y-auto sm:overscroll-contain sm:[mask-image:linear-gradient(to_bottom,transparent,black_14px)] sm:pt-3 sm:pr-1"
+          >
+            @if (selectedMedia(); as selected) {
+              <div class="mb-4 flex items-center gap-3">
+                @if (selected.coverUrl) {
+                  <img
+                    [src]="selected.coverUrl"
+                    alt=""
+                    class="aspect-2/3 w-9 shrink-0 rounded-md object-cover"
+                  />
+                }
+                <div class="min-w-0 flex-1">
+                  <p class="text-text truncate text-base font-semibold">
+                    {{ selected.result.title }}
+                  </p>
+                  <p class="text-text-subtle text-sm">
+                    {{ 'profile.banner.backdrops_heading' | translate }}
+                  </p>
+                </div>
+                <button type="button" [class]="secondarySmall" (click)="backToSearch.emit()">
+                  {{ 'profile.banner.choose_another' | translate }}
+                </button>
+              </div>
+
+              @if (imagesLoading()) {
+                <div
+                  class="grid grid-cols-[repeat(auto-fill,minmax(11rem,1fr))] gap-3 sm:grid-cols-[repeat(auto-fill,minmax(14rem,1fr))]"
+                >
+                  @for (n of skeletons; track n) {
+                    <div class="bg-fill-subtle aspect-video animate-pulse rounded-xl"></div>
+                  }
+                </div>
+              } @else if (images().length === 0) {
+                <p class="text-text-muted py-10 text-center text-sm">
+                  {{ 'profile.banner.no_images' | translate }}
+                </p>
+              } @else {
+                <div
+                  class="grid grid-cols-[repeat(auto-fill,minmax(11rem,1fr))] gap-3 sm:grid-cols-[repeat(auto-fill,minmax(14rem,1fr))]"
+                >
+                  @for (image of images(); track image.url) {
+                    <button
+                      type="button"
+                      class="bg-surface-raised animate-rise-in duration-base relative block aspect-video w-full cursor-pointer overflow-hidden rounded-xl text-left transition-[scale,box-shadow] hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
+                      [class]="
+                        selectedImage()?.url === image.url ? 'ring-2 ring-white' : 'shadow-raise'
+                      "
+                      [disabled]="saving()"
+                      [style.animation-delay.ms]="staggerDelay($index)"
+                      [attr.aria-label]="image.label"
+                      [attr.aria-pressed]="selectedImage()?.url === image.url"
+                      (click)="imageSelected.emit(image)"
+                    >
+                      <img
+                        [src]="image.url"
+                        alt=""
+                        class="absolute inset-0 size-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </button>
+                  }
+                </div>
+              }
+            } @else if (!query().trim()) {
+              <h3 class="text-text-muted mb-3 text-sm font-semibold">
+                {{ 'profile.banner.shelf_heading' | translate }}
+              </h3>
+              @if (shelfLoading()) {
+                <ng-container *ngTemplateOutlet="posterSkeleton" />
+              } @else if (shelfResults().length === 0) {
+                <p class="text-text-muted py-10 text-center text-sm">
+                  {{ 'profile.banner.shelf_empty' | translate }}
+                </p>
+              } @else {
+                <ng-container
+                  *ngTemplateOutlet="posterGrid; context: { $implicit: shelfResults(), auto: true }"
+                />
+              }
+            } @else if (loading()) {
+              <ng-container *ngTemplateOutlet="posterSkeleton" />
+            } @else if (results().length === 0) {
+              <p class="text-text-muted py-10 text-center text-sm">
+                {{ 'profile.banner.no_results' | translate }}
+              </p>
+            } @else {
+              <ng-container *ngTemplateOutlet="posterGrid; context: { $implicit: results() }" />
+              @if (hasMore()) {
+                <button
+                  type="button"
+                  class="text-text-muted hover:text-text mx-auto mt-4 block cursor-pointer text-sm font-medium disabled:opacity-50"
+                  [disabled]="loadingMore()"
+                  (click)="loadMore.emit()"
+                >
+                  {{
+                    (loadingMore() ? 'profile.banner.loading_more' : 'profile.banner.load_more')
+                      | translate
+                  }}
+                </button>
+              }
+            }
+          </div>
+        </div>
+      </div>
+      <shelfy-scroll-top class="sm:hidden" [target]="scroller" />
+    </div>
+
+    <footer
+      class="bg-bar flex shrink-0 items-center gap-3 px-5 py-4 max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-8"
+    >
+      @if (hasBanner()) {
+        <shelfy-button variant="secondary" [disabled]="saving()" (click)="removeBanner.emit()">
+          {{ 'settings.avatar_banner.banner.remove' | translate }}
+        </shelfy-button>
+      }
+      <span class="flex-1"></span>
+      <shelfy-button variant="secondary" (click)="closed.emit()">
+        {{ 'profile.banner.cancel' | translate }}
+      </shelfy-button>
+      @if (selectedImage(); as image) {
+        <shelfy-button
+          variant="primary"
+          [disabled]="saving()"
+          (click)="imageConfirmed.emit({ url: image.url, position: imagePosition() })"
+        >
+          {{ 'profile.banner.use_banner' | translate }}
+        </shelfy-button>
+      } @else {
+        <shelfy-button variant="primary" [disabled]="true">
+          {{ 'profile.banner.use_banner' | translate }}
+        </shelfy-button>
+      }
+    </footer>
+  </div>
+</shelfy-dialog>
+
+<ng-template #posterGrid let-items let-auto="auto">
+  <div
+    class="grid grid-cols-[repeat(auto-fill,minmax(7.5rem,1fr))] gap-3 sm:grid-cols-[repeat(auto-fill,minmax(8.5rem,1fr))]"
+  >
+    @if (auto && autoOption()) {
+      <button
+        type="button"
+        class="animate-rise-in group flex cursor-pointer flex-col gap-2 text-left focus-visible:outline-none"
+        [attr.aria-pressed]="autoActive()"
+        (click)="autoChosen.emit()"
+      >
+        <span
+          class="bg-surface-raised shadow-raise duration-base relative flex aspect-2/3 w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-lg px-3 text-center transition-[scale] group-hover:scale-[1.03] group-focus-visible:ring-2 group-focus-visible:ring-white/60"
+          [class.ring-2]="autoActive()"
+          [class.ring-white]="autoActive()"
+        >
+          <shelfy-icon name="star" size="md" class="text-text-muted" />
+          <span class="text-text-subtle text-xs leading-snug">{{ autoHint() }}</span>
+        </span>
+        <span class="text-text-muted group-hover:text-text line-clamp-2 text-xs font-medium">
+          {{ autoLabel() }}
+        </span>
+      </button>
+    }
+    @for (
+      candidate of items;
+      track candidate.result.provider + candidate.result.mediaType + candidate.result.externalId
+    ) {
+      <button
+        type="button"
+        class="animate-rise-in group flex flex-col gap-2 text-left focus-visible:outline-none enabled:cursor-pointer disabled:cursor-not-allowed"
+        [disabled]="bannerCounts()[bannerKey(candidate)] === 0"
+        [style.animation-delay.ms]="staggerDelay($index)"
+        shelfyInView
+        (inView)="countRequested.emit(candidate)"
+        (click)="mediaSelected.emit(candidate)"
+      >
+        <span
+          class="bg-surface-raised shadow-raise duration-base relative block aspect-2/3 w-full overflow-hidden rounded-lg transition-[scale] group-focus-visible:ring-2 group-focus-visible:ring-white/60 group-enabled:group-hover:scale-[1.03]"
+          [class.opacity-40]="bannerCounts()[bannerKey(candidate)] === 0"
+          [class.grayscale]="bannerCounts()[bannerKey(candidate)] === 0"
+        >
+          @if (candidate.coverUrl) {
+            <img
+              [src]="candidate.coverUrl"
+              alt=""
+              class="absolute inset-0 size-full object-cover"
+              loading="lazy"
+              decoding="async"
+            />
+          }
+          @if (bannerCounts()[bannerKey(candidate)]; as count) {
+            <span
+              class="text-text absolute right-2 bottom-2 z-5 rounded-full px-2.5 py-1 text-xs font-semibold tabular-nums"
+              [class]="chip"
+            >
+              {{ 'profile.banner.count' | translate: { count } }}
+            </span>
+          } @else if (bannerCounts()[bannerKey(candidate)] === 0) {
+            <span
+              class="text-text-subtle absolute right-2 bottom-2 z-5 rounded-full px-2.5 py-1 text-xs font-semibold"
+              [class]="chip"
+            >
+              {{ 'profile.banner.none' | translate }}
+            </span>
+          }
+        </span>
+        <span class="text-text-muted group-hover:text-text line-clamp-2 text-xs font-medium">
+          {{ candidate.result.title }}
+        </span>
+      </button>
+    }
+  </div>
+</ng-template>
+
+<ng-template #posterSkeleton>
+  <div
+    class="grid grid-cols-[repeat(auto-fill,minmax(7.5rem,1fr))] gap-3 sm:grid-cols-[repeat(auto-fill,minmax(8.5rem,1fr))]"
+  >
+    @for (n of skeletons; track n) {
+      <div class="bg-fill-subtle aspect-2/3 animate-pulse rounded-lg"></div>
+    }
+  </div>
+</ng-template>

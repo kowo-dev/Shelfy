@@ -1,0 +1,171 @@
+<div
+  #scrollContainer
+  class="page-scroll h-full min-h-0 [scrollbar-gutter:stable] overflow-x-clip overflow-y-auto [overflow-anchor:none] max-md:pb-(--bottom-nav-clearance)"
+  (scroll)="onScroll()"
+>
+  <shelfy-page-hero [title]="'notifications.title' | translate" [wall]="wall.posters()">
+    <p class="text-text-muted mt-4.5 flex flex-wrap gap-x-5.5 gap-y-1.5 text-base">
+      @if (inbox.unread(); as unread) {
+        <span
+          ><b class="text-text mr-1 font-bold tabular-nums">{{ unread }}</b
+          >{{ 'notifications.stat_unread' | translate }}</span
+        >
+      } @else {
+        <span class="text-text font-bold">{{ 'notifications.all_read' | translate }}</span>
+      }
+      <span
+        ><b class="text-text mr-1 font-bold tabular-nums">{{ inbox.summary().all }}</b
+        >{{
+          (inbox.summary().all === 1 ? 'notifications.stat_total_one' : 'notifications.stat_total')
+            | translate
+        }}</span
+      >
+      @if (feed.requests().length; as requests) {
+        <span
+          ><b class="text-text mr-1 font-bold tabular-nums">{{ requests }}</b
+          >{{
+            (requests === 1 ? 'notifications.stat_requests_one' : 'notifications.stat_requests')
+              | translate
+          }}</span
+        >
+      }
+    </p>
+  </shelfy-page-hero>
+
+  <div #barSentinel aria-hidden="true"></div>
+  <div class="v-libbar" [class.stuck]="stuck()">
+    <shelfy-tabs
+      class="min-w-0"
+      [tabs]="tabs()"
+      [activeId]="active()"
+      [label]="'notifications.show_label' | translate"
+      (tabSelected)="select($event)"
+    />
+    <div class="v-ltools">
+      @if (inbox.hasUnread()) {
+        <button
+          type="button"
+          class="v-tool"
+          [attr.aria-label]="'notifications.mark_all_read' | translate"
+          (click)="feed.markAllRead()"
+        >
+          <shelfy-icon name="check" size="18" />
+          <span class="lbl">{{ 'notifications.mark_all_read' | translate }}</span>
+        </button>
+      }
+      @if (feed.clearable()) {
+        <button
+          type="button"
+          class="v-tool"
+          [attr.aria-label]="'notifications.clear_all' | translate"
+          (click)="feed.clearAll()"
+        >
+          <shelfy-icon name="trash" size="18" />
+          <span class="lbl">{{ 'notifications.clear_all' | translate }}</span>
+        </button>
+      }
+      <a
+        routerLink="/settings"
+        [queryParams]="{ section: 'notifications' }"
+        class="v-tool"
+        [attr.aria-label]="'notifications.settings' | translate"
+      >
+        <shelfy-icon name="settings" size="18" />
+        <span class="lbl">{{ 'nav.settings' | translate }}</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="px-gutter mx-auto w-full pt-4.5">
+    <div class="min-w-0 pb-35 md:max-w-[880px]">
+      @for (shownTab of [active()]; track shownTab) {
+        <div class="animate-rise-in flex flex-col gap-11 pt-2 motion-reduce:animate-none">
+          @if (feed.requests().length && !feed.family()) {
+            <section aria-labelledby="notifications-requests">
+              <h2 id="notifications-requests" [class]="sectionTitle">
+                {{ 'notifications.requests' | translate }}
+                <span
+                  class="text-text-subtle font-sans text-[0.9375rem] font-bold tracking-normal tabular-nums"
+                  >{{ feed.requests().length }}</span
+                >
+              </h2>
+              @for (item of feed.requests(); track item.id) {
+                <shelfy-notification-row
+                  [notification]="item"
+                  [busy]="feed.busyId() === item.id"
+                  (answered)="feed.answer(item, $event)"
+                  (opened)="feed.open(item)"
+                />
+              }
+            </section>
+          }
+
+          @for (group of groups(); track group.age) {
+            <section [attr.aria-labelledby]="'notifications-' + group.age">
+              <h2 [id]="'notifications-' + group.age" [class]="sectionTitle">
+                {{ 'notifications.' + group.age | translate }}
+              </h2>
+              @for (item of group.items; track item.id) {
+                <shelfy-notification-row
+                  [clearable]="true"
+                  [notification]="item"
+                  (opened)="feed.open(item)"
+                  (cleared)="feed.clear(item)"
+                />
+              }
+            </section>
+          }
+        </div>
+      }
+
+      @if (feed.loading() && feed.blank()) {
+        <div
+          class="flex flex-col"
+          role="status"
+          aria-busy="true"
+          [attr.aria-label]="'shared.loading' | translate"
+        >
+          @for (slot of skeletonSlots; track slot) {
+            <div class="flex items-center gap-4 py-3.5" aria-hidden="true">
+              <span
+                class="bg-fill-subtle size-11 shrink-0 animate-pulse rounded-full motion-reduce:animate-none"
+              ></span>
+              <span class="flex flex-1 flex-col gap-2">
+                <span
+                  class="bg-fill-subtle h-4 w-2/3 animate-pulse rounded-sm motion-reduce:animate-none"
+                ></span>
+                <span
+                  class="bg-fill-subtle h-3 w-24 animate-pulse rounded-sm motion-reduce:animate-none"
+                ></span>
+              </span>
+            </div>
+          }
+        </div>
+      } @else if (feed.loading()) {
+        <div class="flex justify-center py-8"><shelfy-spinner /></div>
+      } @else if (feed.failed()) {
+        <div class="grid justify-items-start gap-2.5 py-10" role="alert">
+          <h2 [class]="emptyTitle">{{ 'explore.failed_title' | translate }}</h2>
+          <p class="text-text-muted text-base">{{ 'notifications.load_error' | translate }}</p>
+          <button type="button" [class]="secondaryButton" (click)="feed.load()">
+            {{ 'collection.retry' | translate }}
+          </button>
+        </div>
+      } @else if (empty()) {
+        <div class="grid justify-items-start gap-2.5 py-10">
+          <h2 [class]="emptyTitle">{{ 'notifications.all_read' | translate }}</h2>
+          <p class="text-text-muted max-w-[56ch] text-base">
+            {{ 'notifications.empty_hint' | translate }}
+          </p>
+          @if (feed.family()) {
+            <button type="button" [class]="secondaryButton" (click)="select('all')">
+              {{ 'notifications.show_all' | translate }}
+            </button>
+          }
+        </div>
+      }
+      <div #sentinel aria-hidden="true"></div>
+    </div>
+  </div>
+  <shelfy-page-footer />
+</div>

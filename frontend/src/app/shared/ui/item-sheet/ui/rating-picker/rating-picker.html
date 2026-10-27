@@ -1,0 +1,81 @@
+<div
+  class="flex flex-col gap-5 @[30rem]:flex-row @[30rem]:items-center @[30rem]:gap-6"
+  [style.--c]="ratingColor()"
+>
+  <div class="flex items-center gap-5">
+    <div class="relative grid size-24 shrink-0 place-items-center @[30rem]:size-32">
+      <svg
+        viewBox="0 0 76 76"
+        class="absolute inset-0 -rotate-90"
+        [class.drop-shadow-rating]="shownRating() !== null"
+        aria-hidden="true"
+      >
+        <circle
+          cx="38"
+          cy="38"
+          r="33"
+          fill="none"
+          stroke-width="4"
+          class="duration-slow stroke-(--c)/15 transition-[stroke]"
+        />
+        <circle
+          cx="38"
+          cy="38"
+          r="33"
+          fill="none"
+          stroke-width="4"
+          stroke-linecap="round"
+          class="duration-slow ease-smooth stroke-(--c) transition-[stroke-dasharray,stroke] motion-reduce:transition-[stroke]"
+          [attr.stroke-dasharray]="ringDash()"
+        />
+      </svg>
+      <span
+        class="text-display relative grid h-[1em] w-full place-items-center overflow-hidden leading-none"
+      >
+        @for (shown of [shownRating()]; track shown) {
+          <b
+            class="font-display col-start-1 row-start-1 font-extrabold tabular-nums"
+            [class]="numberClass(shown)"
+            animate.enter="animate-count-in"
+            animate.leave="animate-count-out"
+            >{{ shown === null ? '–' : formatRating(shown) }}</b
+          >
+        }
+      </span>
+    </div>
+    <div class="min-w-0 @[30rem]:hidden">
+      <ng-container *ngTemplateOutlet="verdict" />
+    </div>
+  </div>
+
+  <div class="min-w-0 flex-1">
+    <div class="hidden @[30rem]:block">
+      <ng-container *ngTemplateOutlet="verdict" />
+    </div>
+    <shelfy-star-rating
+      class="@[30rem]:mt-4"
+      [value]="value()"
+      [toggle]="toggle()"
+      [label]="'collection.sheet.rating' | translate"
+      (changed)="changed.emit($event)"
+      (previewed)="previewRating.set($event)"
+    />
+  </div>
+</div>
+
+<ng-template #verdict>
+  <p
+    class="font-display duration-base text-xl leading-none font-extrabold text-(--c) transition-colors"
+  >
+    {{ verdictKey() | translate }}
+  </p>
+  @if (value() !== null) {
+    <button
+      type="button"
+      class="text-text-muted hover:text-text decoration-text-subtle mt-2 cursor-pointer text-sm font-medium underline-offset-4 transition-colors hover:underline"
+      (click)="clear()"
+    >
+      {{ 'collection.sheet.remove_rating' | translate }}
+    </button>
+  }
+</ng-template>

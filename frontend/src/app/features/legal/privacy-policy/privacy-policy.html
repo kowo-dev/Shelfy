@@ -1,0 +1,121 @@
+<shelfy-legal-shell [title]="'legal.privacy.title' | translate" active="privacy">
+  <p class="text-text-muted text-base leading-relaxed">{{ 'legal.privacy.intro' | translate }}</p>
+
+  <section class="flex flex-col gap-3">
+    <h2
+      class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em]"
+    >
+      {{ 'legal.privacy.controller_heading' | translate }}
+    </h2>
+    <p class="text-text-muted text-base leading-relaxed">
+      {{
+        'legal.privacy.controller_body'
+          | translate: { controller: controllerName(), email: contactEmail() }
+      }}
+    </p>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2
+      class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em]"
+    >
+      {{ 'legal.privacy.data_heading' | translate }}
+    </h2>
+    <p class="text-text-muted text-base leading-relaxed">
+      {{ 'legal.privacy.data_intro' | translate }}
+    </p>
+    <ul class="text-text-muted flex list-disc flex-col gap-1.5 pl-5 text-base leading-relaxed">
+      <li>{{ 'legal.privacy.data_account' | translate }}</li>
+      <li>{{ 'legal.privacy.data_profile' | translate }}</li>
+      <li>{{ 'legal.privacy.data_steam' | translate }}</li>
+      <li>{{ 'legal.privacy.data_activity' | translate }}</li>
+      <li>{{ 'legal.privacy.data_technical' | translate }}</li>
+    </ul>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2
+      class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em]"
+    >
+      {{ 'legal.privacy.purposes_heading' | translate }}
+    </h2>
+    <p class="text-text-muted text-base leading-relaxed">
+      {{ 'legal.privacy.purposes_body' | translate }}
+    </p>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2
+      class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em]"
+    >
+      {{ 'legal.privacy.retention_heading' | translate }}
+    </h2>
+    <p class="text-text-muted text-base leading-relaxed">
+      {{ 'legal.privacy.retention_body' | translate }}
+    </p>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2
+      class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em]"
+    >
+      {{ 'legal.privacy.processors_heading' | translate }}
+    </h2>
+    <p class="text-text-muted text-base leading-relaxed">
+      {{ 'legal.privacy.processors_intro' | translate }}
+    </p>
+    <ul class="text-text-muted flex list-disc flex-col gap-1.5 pl-5 text-base leading-relaxed">
+      <li>{{ 'legal.privacy.processors_catalogs' | translate }}</li>
+      <li>{{ 'legal.privacy.processors_mail' | translate }}</li>
+    </ul>
+  </section>
+
+  @if (federationEnabled()) {
+    <section class="flex flex-col gap-3">
+      <h2
+        class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em]"
+      >
+        {{ 'legal.privacy.federation_heading' | translate }}
+      </h2>
+      <p class="text-text-muted text-base leading-relaxed">
+        {{ 'legal.privacy.federation_body' | translate }}
+      </p>
+      <p class="text-text-muted text-base leading-relaxed">
+        {{ 'legal.privacy.federation_deletion' | translate }}
+      </p>
+    </section>
+  }
+
+  <section class="flex flex-col gap-3">
+    <h2
+      class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em]"
+    >
+      {{ 'legal.privacy.no_tracking_heading' | translate }}
+    </h2>
+    <p class="text-text-muted text-base leading-relaxed">
+      {{ 'legal.privacy.no_tracking_body' | translate }}
+    </p>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2
+      class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em]"
+    >
+      {{ 'legal.privacy.rights_heading' | translate }}
+    </h2>
+    <p class="text-text-muted text-base leading-relaxed">
+      {{ 'legal.privacy.rights_body' | translate: { email: contactEmail() } }}
+    </p>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2
+      class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em]"
+    >
+      {{ 'legal.privacy.complaint_heading' | translate }}
+    </h2>
+    <p class="text-text-muted text-base leading-relaxed">
+      {{ 'legal.privacy.complaint_body' | translate: { jurisdiction: jurisdiction() } }}
+    </p>
+  </section>
+</shelfy-legal-shell>

@@ -1,0 +1,74 @@
+@layer components {
+  .shelfy-icon {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    vertical-align: middle;
+    line-height: 0;
+    width: var(--shelfy-icon-size, 18px);
+    height: var(--shelfy-icon-size, 18px);
+    --shelfy-icon-size: 18px;
+  }
+
+  .shelfy-icon[data-size='10'] {
+    --shelfy-icon-size: 10px;
+  }
+
+  .shelfy-icon[data-size='12'] {
+    --shelfy-icon-size: 12px;
+  }
+
+  .shelfy-icon[data-size='14'] {
+    --shelfy-icon-size: 14px;
+  }
+
+  .shelfy-icon[data-size='16'] {
+    --shelfy-icon-size: 16px;
+  }
+
+  .shelfy-icon[data-size='18'] {
+    --shelfy-icon-size: 18px;
+  }
+
+  .shelfy-icon[data-size='20'] {
+    --shelfy-icon-size: 20px;
+  }
+
+  .shelfy-icon[data-size='22'] {
+    --shelfy-icon-size: 22px;
+  }
+
+  .shelfy-icon[data-size='24'] {
+    --shelfy-icon-size: 24px;
+  }
+
+  .shelfy-icon[data-size='32'] {
+    --shelfy-icon-size: 32px;
+  }
+
+  .shelfy-icon[data-size='40'] {
+    --shelfy-icon-size: 40px;
+  }
+
+  .shelfy-icon[data-size='48'] {
+    --shelfy-icon-size: 48px;
+  }
+
+  .shelfy-icon[data-size='64'] {
+    --shelfy-icon-size: 64px;
+  }
+
+  .shelfy-icon > ng-icon {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    line-height: 0;
+  }
+
+  .shelfy-icon > ng-icon svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}

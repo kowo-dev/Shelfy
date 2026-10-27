@@ -1,0 +1,30 @@
+@if (characters().length > 0) {
+  <shelfy-shelf-section [title]="'media.characters' | translate" [rail]="null">
+    <div class="v-cast">
+      @for (character of characters(); track character.name) {
+        <div class="min-w-0">
+          <a [routerLink]="characterUrl(character.characterId)" class="block">
+            <span>
+              @if (character.imageUrl; as photo) {
+                <img [src]="photo" alt="" loading="lazy" draggable="false" />
+              }
+            </span>
+            <b>{{ character.name }}</b>
+            @if (character.role; as role) {
+              <small>{{ role }}</small>
+            }
+          </a>
+          @if (character.voiceActorId) {
+            <a
+              [routerLink]="staffUrl(character.voiceActorId)"
+              class="hover:text-text block transition-colors"
+              ><small>{{ character.japaneseVoiceActor }}</small></a
+            >
+          } @else if (character.japaneseVoiceActor) {
+            <small>{{ character.japaneseVoiceActor }}</small>
+          }
+        </div>
+      }
+    </div>
+  </shelfy-shelf-section>
+}

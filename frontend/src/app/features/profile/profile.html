@@ -1,0 +1,262 @@
+@if (profile(); as profile) {
+  <main class="animate-fade-in relative flex min-h-full flex-col pb-40 motion-reduce:animate-none">
+    <section class="v-p-hero">
+      @if (profile.profileBannerUrl; as banner) {
+        <div class="v-p-banner" aria-hidden="true">
+          <img
+            [src]="banner"
+            alt=""
+            fetchpriority="high"
+            draggable="false"
+            [style.object-position]="'center ' + (profile.profileBannerPosition ?? 50) + '%'"
+          />
+        </div>
+      } @else if (ambientCover(); as cover) {
+        <div class="v-ambient" aria-hidden="true"><img [src]="cover" alt="" /></div>
+      }
+      <shelfy-avatar
+        class="v-p-av"
+        [displayName]="displayName()"
+        [avatarUrl]="profile.avatarUrl"
+        size="xl"
+      />
+      <h1>{{ displayName() }}</h1>
+      <p class="v-p-sub">
+        <span class="handle">&#64;{{ profile.username }}</span>
+        @if (profile.bio; as bio) {
+          {{ bio }}
+        }
+      </p>
+      <div class="v-p-row">
+        <nav class="v-p-stats" [attr.aria-label]="'profile.title' | translate">
+          @for (stat of bigStats(); track stat.key) {
+            <a [routerLink]="stat.route" [queryParams]="stat.query">
+              <b [style.color]="stat.color"
+                >{{ stat.value }}
+                @if (stat.star) {
+                  <shelfy-icon name="star" size="auto" [active]="true" />
+                }
+              </b>
+              <span>{{ stat.label }}</span>
+            </a>
+          }
+        </nav>
+        <div class="v-p-act">
+          @if (isOwner()) {
+            <a [routerLink]="collectionRoute()" [class]="primaryButton">
+              <shelfy-icon name="grid" size="20" />{{ 'profile.my_collection' | translate }}
+              @if (shelfStats(); as shelf) {
+                <small>{{ shelf.total }}</small>
+              }
+            </a>
+            <button type="button" [class]="secondaryButton" (click)="editProfile()">
+              <shelfy-icon name="edit" size="20" />{{ 'profile.edit' | translate }}
+            </button>
+          } @else {
+            @if (profile.isFollowedByCurrentUser) {
+              <button
+                type="button"
+                [class]="secondaryButton"
+                [disabled]="unfollowPending()"
+                [attr.aria-busy]="unfollowPending() || null"
+                (click)="unfollow()"
+              >
+                <shelfy-icon name="userCheck" size="20" />{{
+                  'profile.follow.following' | translate
+                }}
+              </button>
+            } @else {
+              <button
+                type="button"
+                [class]="primaryButton"
+                [disabled]="followPending()"
+                [attr.aria-busy]="followPending() || null"
+                (click)="follow()"
+              >
+                <shelfy-icon name="userAdd" size="20" />{{ 'profile.follow.action' | translate }}
+              </button>
+            }
+            <a [routerLink]="collectionRoute()" [class]="secondaryButton">
+              <shelfy-icon name="grid" size="20" />{{ 'profile.collection.short' | translate }}
+              @if (shelfStats(); as shelf) {
+                <small>{{ shelf.total }}</small>
+              }
+            </a>
+            <a
+              [routerLink]="['/users', profile.username]"
+              [queryParams]="{ compare: '1' }"
+              [class]="secondaryButton"
+              (click)="compare($event)"
+            >
+              <shelfy-icon name="compare" size="20" />{{ 'profile.compare' | translate }}
+            </a>
+          }
+        </div>
+      </div>
+    </section>
+
+    @if (sectionsReady()) {
+      <shelfy-shelf-section
+        [title]="'profile.now.title' | translate"
+        [subtitle]="nowItems().length ? nowSubtitle() : null"
+        [rail]="nowItems().length ? 'w' : null"
+      >
+        @if (nowItems().length) {
+          @for (item of nowItems(); track item.id) {
+            <shelfy-home-tile [item]="item" [art]="art" [addable]="false">
+              <span class="v-cap2">
+                <b>{{ item.media.title }}</b>
+                <span>{{ startedMeta(item) }}</span>
+              </span>
+            </shelfy-home-tile>
+          }
+        } @else {
+          <p class="text-text-muted">{{ 'profile.now.empty' | translate }}</p>
+        }
+      </shelfy-shelf-section>
+
+      <shelfy-profile-essentials
+        [entries]="essentials()"
+        [owner]="isOwner()"
+        [name]="displayName()"
+        (entriesChange)="essentials.set($event)"
+      />
+
+      @if (finished().length || isOwner()) {
+        <shelfy-shelf-section
+          [title]="'profile.finished.title' | translate"
+          [moreLabel]="'profile.finished.full_shelf' | translate"
+          [moreRoute]="collectionRouteParts()"
+          [rail]="finished().length ? '' : null"
+        >
+          @if (finished().length) {
+            @for (item of finished(); track item.id) {
+              <shelfy-media-card
+                [item]="item"
+                [subtitle]="finishedMeta(item)"
+                [addable]="!isOwner()"
+                [tinted]="true"
+              />
+            }
+          } @else {
+            <p class="text-text-muted">{{ 'profile.finished.empty' | translate }}</p>
+          }
+        </shelfy-shelf-section>
+      }
+
+      @if (reviews().length || isOwner()) {
+        <shelfy-shelf-section
+          [title]="'profile.latest_review.title_plural' | translate"
+          [moreLabel]="
+            reviews().length
+              ? ('profile.latest_review.all'
+                | translate: { count: stats()?.reviewsCount ?? reviews().length })
+              : null
+          "
+          [moreRoute]="reviews().length ? ['/profile', profile.username, 'lists'] : null"
+          [moreQuery]="{ f: 'reviews' }"
+          [band]="true"
+          [rail]="null"
+        >
+          @if (reviews().length) {
+            <div class="v-revs">
+              @for (review of reviews().slice(0, 3); track review.id) {
+                <shelfy-review-card [review]="review" />
+              }
+            </div>
+          } @else {
+            <div class="flex flex-col items-start gap-4">
+              <p class="text-text-muted">{{ 'profile.latest_review.empty' | translate }}</p>
+              <a routerLink="/reviews/new" [class]="secondaryButton">
+                <shelfy-icon name="reviews" size="20" />{{
+                  'profile.latest_review.write' | translate
+                }}
+              </a>
+            </div>
+          }
+        </shelfy-shelf-section>
+      }
+
+      @if (creations().length) {
+        <shelfy-shelf-section
+          [title]="'profile.creations.title' | translate"
+          [moreLabel]="'profile.creations.all' | translate"
+          [moreRoute]="['/profile', profile.username, 'lists']"
+          [rail]="null"
+        >
+          <div class="v-crea">
+            @for (creation of creations().slice(0, 3); track creation.kind + creation.id) {
+              @switch (creation.kind) {
+                @case ('list') {
+                  <shelfy-creation-tile [list]="creation.list" />
+                }
+                @case ('versus') {
+                  <shelfy-creation-tile [pool]="creation.pool" />
+                }
+              }
+            }
+          </div>
+        </shelfy-shelf-section>
+      }
+    }
+    <shelfy-page-footer />
+  </main>
+} @else if (loadState() !== 'loading') {
+  <main class="px-gutter flex min-h-full flex-col pt-[calc(var(--nav-bar-height)+1rem)] pb-28">
+    <div
+      class="animate-rise-in mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center py-16 text-center motion-reduce:animate-none"
+      role="alert"
+    >
+      @if (loadState() === 'private' && privateUser(); as user) {
+        <shelfy-avatar
+          [displayName]="user.displayName ?? user.username"
+          [avatarUrl]="user.avatarUrl"
+          size="xl"
+          class="mb-5 size-18! rounded-full"
+        />
+        <p class="text-text-muted mb-2 text-base font-medium">&#64;{{ user.username }}</p>
+      } @else {
+        <span
+          class="text-text-muted bg-surface mb-5 flex size-14 items-center justify-center rounded-lg"
+        >
+          <shelfy-icon [name]="unavailableKey() === 'private' ? 'eyeClosed' : 'search'" size="lg" />
+        </span>
+      }
+      <h1 class="font-display text-text text-xl font-extrabold">
+        {{ 'profile.states.' + unavailableKey() + '.title' | translate }}
+      </h1>
+      <p class="text-text-muted mt-2 text-base">
+        {{ 'profile.states.' + unavailableKey() + '.text' | translate }}
+      </p>
+      @if (loadState() === 'private' && privateUser()) {
+        <button
+          type="button"
+          [class]="primaryPill + ' mt-6'"
+          [disabled]="privateFollowPending()"
+          [attr.aria-busy]="privateFollowPending() || null"
+          (click)="followPrivate()"
+        >
+          <shelfy-icon name="userAdd" size="sm" [active]="true" />{{
+            'profile.follow.action' | translate
+          }}
+        </button>
+      }
+    </div>
+  </main>
+} @else {
+  <div
+    class="bg-surface px-gutter pt-band flex min-h-(--band-identity) flex-col justify-end pb-6 md:pb-14 2xl:pb-16"
+    role="status"
+    aria-busy="true"
+  >
+    <div class="flex flex-col gap-4" aria-hidden="true">
+      <div class="bg-fill-subtle size-18 rounded-full sm:size-24"></div>
+      <div class="bg-fill-subtle h-12 w-64 max-w-full rounded-lg md:h-20"></div>
+      <div class="bg-fill-subtle h-4 w-32 rounded-sm"></div>
+    </div>
+    <div class="mt-5 flex gap-3" aria-hidden="true">
+      <div class="bg-fill-subtle h-11 w-36 rounded-full"></div>
+      <div class="bg-fill-subtle h-11 w-32 rounded-full"></div>
+    </div>
+  </div>
+}

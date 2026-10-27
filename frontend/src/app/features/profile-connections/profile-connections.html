@@ -1,0 +1,214 @@
+@if (notFound()) {
+  <div class="mt-24 flex flex-col items-center gap-4 px-6 text-center">
+    <p class="text-text-muted text-lg">{{ 'friends.profile.not_found' | translate }}</p>
+    <a routerLink="/people" [class]="notFoundLink">
+      {{ 'nav.people' | translate }}
+    </a>
+  </div>
+} @else {
+  <div
+    #scrollContainer
+    class="page-scroll h-full [scrollbar-gutter:stable] overflow-x-clip overflow-y-auto [overflow-anchor:none] max-md:pb-(--bottom-nav-clearance)"
+    (scroll)="onScroll()"
+  >
+    @let stats = heroStats();
+    <shelfy-page-hero [title]="heroTitle()">
+      @if (stats.following !== null || stats.followers !== null) {
+        <p class="text-text-muted mt-4.5 flex flex-wrap gap-x-5.5 gap-y-1.5 text-base">
+          @if (stats.following !== null) {
+            <span
+              ><b class="text-text mr-1 font-bold tabular-nums">{{ stats.following }}</b
+              >{{ 'community.stat_following' | translate }}</span
+            >
+          }
+          @if (stats.followers !== null) {
+            <span
+              ><b class="text-text mr-1 font-bold tabular-nums">{{ stats.followers }}</b
+              >{{ 'connections.stat_followers' | translate: { count: stats.followers } }}</span
+            >
+          }
+        </p>
+      }
+    </shelfy-page-hero>
+
+    <div #sentinel aria-hidden="true"></div>
+    <div class="v-libbar" [class.stuck]="stuck()">
+      <shelfy-tabs
+        class="min-w-0"
+        [tabs]="tabs()"
+        [activeId]="tab()"
+        [label]="'community.show_label' | translate"
+        (tabSelected)="selectTab($event)"
+      />
+      <div class="v-ltools">
+        <label class="v-lsearch">
+          <shelfy-icon name="search" size="18" class="shrink-0" />
+          <input
+            type="search"
+            autocomplete="off"
+            [placeholder]="'community.people.search' | translate"
+            [attr.aria-label]="'community.people.search' | translate"
+            [value]="query()"
+            (input)="onQuery($any($event.target).value)"
+            (keydown.escape)="clearQuery()"
+          />
+        </label>
+      </div>
+    </div>
+
+    <div class="px-gutter pt-7 pb-35 max-md:pt-5">
+      @for (shownTab of [tab()]; track shownTab) {
+        <div class="animate-rise-in min-w-0">
+          <p class="sr-only" role="status">
+            @if (resultCount(); as count) {
+              {{ 'connections.count' | translate: { count } }}
+            }
+          </p>
+
+          @if (searchTerm()) {
+            @if (searching()) {
+              <ng-container [ngTemplateOutlet]="skeleton" />
+            } @else if (resultViews().length === 0) {
+              <div class="flex max-w-xl flex-col items-start gap-2 py-12">
+                <h2 class="font-display text-text text-[2rem] font-bold tracking-[-0.04em]">
+                  {{ 'connections.empty.search_title' | translate }}
+                </h2>
+                <p class="text-text-muted max-w-[56ch] text-base">
+                  {{ 'connections.empty.search_body' | translate: { query: searchTerm() } }}
+                </p>
+                <shelfy-button
+                  class="mt-4"
+                  type="button"
+                  variant="secondary"
+                  (click)="clearQuery()"
+                >
+                  {{ 'library.empty.clear_search' | translate }}
+                </shelfy-button>
+              </div>
+            } @else {
+              <ul [class]="grid">
+                @for (person of resultViews(); track person.key) {
+                  <li class="grid">
+                    <ng-container
+                      [ngTemplateOutlet]="card"
+                      [ngTemplateOutletContext]="{ person }"
+                    />
+                  </li>
+                }
+              </ul>
+            }
+          } @else if (tab() === 'activity') {
+            <shelfy-activity-feed />
+          } @else {
+            @let page = current();
+            @if (!page.loaded) {
+              <ng-container [ngTemplateOutlet]="skeleton" />
+            } @else if (page.people.length === 0) {
+              <div class="flex max-w-xl flex-col items-start gap-2 py-12">
+                <h2 class="font-display text-text text-[2rem] font-bold tracking-[-0.04em]">
+                  {{ empty().title | translate }}
+                </h2>
+                <p class="text-text-muted max-w-[56ch] text-base">
+                  {{ empty().body | translate: { name: displayName() } }}
+                </p>
+                @if (isOwner() && tab() !== 'discover') {
+                  <shelfy-button
+                    class="mt-4"
+                    type="button"
+                    variant="secondary"
+                    (click)="selectTab('discover')"
+                  >
+                    {{ 'connections.see_suggestions' | translate }}
+                  </shelfy-button>
+                }
+              </div>
+            } @else {
+              <ul [class]="grid">
+                @for (person of people(); track person.key) {
+                  <li animate.leave="animate-collapse-out" class="grid">
+                    <ng-container
+                      [ngTemplateOutlet]="card"
+                      [ngTemplateOutletContext]="{ person }"
+                    />
+                  </li>
+                }
+              </ul>
+              @if (page.people.length < page.total) {
+                <div class="mt-10 flex justify-center">
+                  <shelfy-button
+                    type="button"
+                    variant="secondary"
+                    [loading]="page.loading"
+                    [disabled]="page.loading"
+                    (click)="load(tab())"
+                  >
+                    {{ 'friends.load_more' | translate }}
+                  </shelfy-button>
+                </div>
+              }
+            }
+          }
+        </div>
+      }
+    </div>
+    <shelfy-page-footer />
+  </div>
+}
+
+<ng-template #skeleton>
+  <div
+    [class]="grid"
+    role="status"
+    aria-busy="true"
+    [attr.aria-label]="'shared.loading' | translate"
+  >
+    @for (slot of skeletonSlots; track slot) {
+      <div class="bg-surface overflow-hidden rounded-3xl" aria-hidden="true">
+        <div class="bg-fill-subtle aspect-8/3 motion-safe:animate-pulse"></div>
+        <div class="-mt-9 flex items-end gap-4 px-5 pb-5">
+          <span class="bg-surface-3 ring-surface size-18 shrink-0 rounded-full ring-4"></span>
+          <span class="flex flex-1 flex-col gap-2 pb-1">
+            <span class="bg-fill-subtle h-4 w-3/5 rounded-sm"></span>
+            <span class="bg-fill-subtle h-3 w-2/5 rounded-sm"></span>
+          </span>
+        </div>
+      </div>
+    }
+  </div>
+</ng-template>
+
+<ng-template #card let-person="person">
+  <shelfy-person-card [person]="person" [note]="person.noteKey">
+    @if (person.action; as action) {
+      <button
+        type="button"
+        [class]="action.primary ? followButton : followingButton"
+        [disabled]="busy().has(person.key)"
+        [attr.aria-busy]="busy().has(person.key) || null"
+        [attr.aria-label]="(action.labelKey | translate) + ' · ' + person.name"
+        (click)="act(person, action)"
+      >
+        @if (action.primary) {
+          <shelfy-icon name="userAdd" size="18" />{{ action.labelKey | translate }}
+        } @else {
+          <shelfy-icon name="userCheck" size="18" />{{ 'profile.follow.following' | translate }}
+        }
+      </button>
+    }
+    @if (canFavorite(person)) {
+      @let starred = isFavorite(person);
+      <button
+        type="button"
+        class="v-pc-fav"
+        [class.on]="starred"
+        [attr.aria-pressed]="starred"
+        [attr.aria-label]="'connections.favorite' | translate: { name: person.name }"
+        [title]="(starred ? 'connections.unfavorite' : 'connections.favorite_short') | translate"
+        [disabled]="busy().has(person.key)"
+        (click)="toggleFavorite(person)"
+      >
+        <shelfy-icon name="star" size="18" [active]="starred" />
+      </button>
+    }
+  </shelfy-person-card>
+</ng-template>

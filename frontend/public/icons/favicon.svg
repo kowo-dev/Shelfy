@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="32" height="32">
+  <title>Shelfy</title>
+  <!-- Small-size cut of icon.svg: deeper wash and a solid S so it stays legible at 16 to 48 px -->
+  <defs>
+    <path id="s" d="M50.33 81Q57.44 81 62.9 79.02Q68.35 77.03 71.46 73.07Q74.57 69.1 74.57 63.16Q74.57 58.02 72.54 54.69Q70.51 51.35 67.18 49.23Q63.84 47.12 59.92 45.81Q56 44.5 52.13 43.42Q48.43 42.43 45.73 41.48Q43.03 40.54 41.58 39.28Q40.14 38.01 40.14 36.12Q40.14 34.5 41.09 33.24Q42.03 31.98 43.88 31.26Q45.73 30.53 48.52 30.53Q51.23 30.53 53.21 31.3Q55.19 32.07 56.5 33.51Q57.8 34.95 58.44 37.02Q59.07 39.1 58.98 41.8L72.31 39.64Q72.94 32.97 69.97 28.37Q67 23.78 61.5 21.39Q56 19 48.97 19Q42.3 19 37.12 21.12Q31.94 23.24 29.01 27.29Q26.08 31.35 26.08 37.11Q26.08 41.8 28.02 44.95Q29.96 48.11 33.11 50.09Q36.27 52.07 40.1 53.38Q43.93 54.69 47.8 55.77Q51.41 56.76 54.25 57.75Q57.08 58.74 58.71 60.14Q60.33 61.53 60.33 63.7Q60.33 65.32 59.11 66.54Q57.89 67.75 55.82 68.43Q53.75 69.1 51.05 69.1Q47.71 69.1 45.01 67.89Q42.3 66.67 40.73 64.1Q39.15 61.53 38.97 57.39L25.45 60.36Q25.27 65.05 26.76 68.88Q28.25 72.71 31.4 75.41Q34.55 78.12 39.29 79.56Q44.02 81 50.33 81Z"/>
+    <clipPath id="tile"><rect width="100" height="100" rx="22.5"/></clipPath>
+    <linearGradient id="wash-a" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#B89E6E"/>
+      <stop offset="0.5" stop-color="#7A5C95"/>
+      <stop offset="1" stop-color="#33449A"/>
+    </linearGradient>
+    <linearGradient id="wash-b" x1="1" y1="0" x2="0.2" y2="0.9">
+      <stop offset="0" stop-color="#EE86B6" stop-opacity="0.7"/>
+      <stop offset="0.6" stop-color="#EE86B6" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.2"/></filter>
+  </defs>
+  <g clip-path="url(#tile)">
+    <rect width="100" height="100" fill="url(#wash-a)"/>
+    <rect width="100" height="100" fill="url(#wash-b)"/>
+    <use href="#s" transform="translate(0 2.4)" fill="#1B1D4F" fill-opacity="0.5" filter="url(#soft)"/>
+    <use href="#s" fill="#FFFFFF"/>
+  </g>
+</svg>

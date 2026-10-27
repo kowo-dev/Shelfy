@@ -1,0 +1,18 @@
+<div [class]="rows">
+  <shelfy-settings-row
+    [title]="'settings.danger_zone.clear_collection' | translate"
+    [description]="'settings.danger_zone.clear_collection_description' | translate"
+  >
+    <button type="button" [class]="danger" (click)="clearCollection.emit()">
+      {{ 'settings.danger_zone.clear_collection' | translate }}
+    </button>
+  </shelfy-settings-row>
+  <shelfy-settings-row
+    [title]="'settings.danger_zone.delete_account' | translate"
+    [description]="'settings.danger_zone.delete_account_description' | translate"
+  >
+    <button type="button" [class]="danger" (click)="deleteAccount.emit()">
+      {{ 'settings.danger_zone.delete_account' | translate }}
+    </button>
+  </shelfy-settings-row>
+</div>

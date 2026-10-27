@@ -1,0 +1,45 @@
+<ol class="grid gap-[clamp(16px,2vw,24px)] sm:grid-cols-2">
+  @for (entry of sorted(); track entry.id; let i = $index) {
+    <li class="animate-rise-in grid" [style.animation-delay.ms]="stagger(i)">
+      <article [class]="card">
+        <ng-container [ngTemplateOutlet]="body" [ngTemplateOutletContext]="{ $implicit: entry }" />
+      </article>
+    </li>
+  }
+</ol>
+
+<ng-template #body let-entry>
+  <span class="flex min-w-0 items-center justify-between gap-3">
+    <span class="flex min-w-0 items-center gap-2.5">
+      <shelfy-icon name="history" size="20" class="text-text-subtle shrink-0" />
+      <span class="text-text truncate text-base font-semibold">{{
+        entry.name ||
+          ('collection.history.' + (entry.isRewatch ? 'repeat.' : 'entry.') + kind() | translate)
+      }}</span>
+    </span>
+    @if (entry.rating !== null) {
+      <shelfy-rating-value
+        class="text-xl font-bold"
+        [value]="entry.rating"
+        [color]="ratingColor(entry.rating)"
+        starSize="20"
+      />
+    }
+  </span>
+  @if (entry.review) {
+    <shelfy-spoiler-guard class="mt-3" [spoiler]="entry.containsSpoilers" [interactive]="false">
+      <p class="text-text-muted line-clamp-4 text-[0.9375rem] leading-relaxed">
+        {{ excerpt(entry.review) }}
+      </p>
+    </shelfy-spoiler-guard>
+  }
+  <span class="mt-auto flex items-center justify-between gap-3 pt-4">
+    <span class="text-text-subtle text-sm tabular-nums">{{ longDate(entry.occurredAt) }}</span>
+    @if (!readonly()) {
+      <button type="button" [class]="editButton" (click)="selected.emit(entry)">
+        <shelfy-icon name="edit" size="16" />
+        {{ 'collection.history.edit' | translate }}
+      </button>
+    }
+  </span>
+</ng-template>

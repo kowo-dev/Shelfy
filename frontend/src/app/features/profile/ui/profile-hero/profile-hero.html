@@ -1,0 +1,65 @@
+<header class="bg-background relative isolate overflow-hidden">
+  @if (bannerUrl(); as banner) {
+    <img
+      [src]="banner"
+      [attr.srcset]="srcset(banner)"
+      sizes="100vw"
+      alt=""
+      fetchpriority="high"
+      class="absolute inset-x-0 top-0 -z-10 h-full max-h-140 w-full object-cover"
+      [style.object-position]="'center ' + bannerPosition() + '%'"
+      draggable="false"
+    />
+  } @else {
+    <div
+      data-brand-wash
+      class="absolute inset-x-0 top-0 -z-10 h-full max-h-140 bg-[radial-gradient(70%_90%_at_72%_0%,color-mix(in_srgb,var(--color-brand)_38%,var(--color-background))_0%,color-mix(in_srgb,var(--color-brand)_12%,var(--color-background))_45%,var(--color-background)_80%)]"
+      aria-hidden="true"
+    ></div>
+  }
+  <div
+    class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-full max-h-140 bg-[linear-gradient(0deg,var(--color-background)_0%,rgb(11_11_11/0.96)_12%,rgb(11_11_11/0.84)_26%,rgb(11_11_11/0.62)_42%,rgb(11_11_11/0.4)_60%,rgb(11_11_11/0.3)_80%,rgb(11_11_11/0.45)_100%),linear-gradient(90deg,rgb(11_11_11/0.55)_0%,rgb(11_11_11/0.25)_40%,rgb(11_11_11/0)_70%)]"
+    aria-hidden="true"
+  ></div>
+
+  <div
+    class="px-gutter mx-auto grid items-end gap-4 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-5 md:grid-cols-[auto_minmax(0,1fr)_auto] md:gap-5 md:gap-x-7 md:pt-36 md:pb-8"
+  >
+    <div class="animate-rise-in shrink-0">
+      <ng-content select="[heroLead]" />
+    </div>
+    <div class="animate-rise-in min-w-0 [animation-delay:60ms]">
+      <h1
+        class="font-display text-[2.125rem] leading-none font-extrabold tracking-[-0.04em] text-balance text-white md:text-[3.5rem]"
+      >
+        {{ name() }}
+      </h1>
+      @if (meta().length) {
+        <p class="mt-2 text-sm text-white/70">{{ meta().join(' · ') }}</p>
+      }
+      @if (bio(); as text) {
+        <p
+          #bioText
+          class="mt-3 max-w-[60ch] text-base text-white/86"
+          [class.line-clamp-2]="!expanded()"
+        >
+          {{ text }}
+        </p>
+        @if (clamped() || expanded()) {
+          <button
+            type="button"
+            class="mt-1 cursor-pointer text-sm font-medium text-white/70 underline-offset-4 hover:text-white hover:underline"
+            [attr.aria-expanded]="expanded()"
+            (click)="expanded.set(!expanded())"
+          >
+            {{ (expanded() ? 'media.see_less' : 'media.see_more') | translate }}
+          </button>
+        }
+      }
+      <ng-content select="[heroStats]" />
+    </div>
+    <div class="animate-rise-in flex flex-wrap gap-2.5 [animation-delay:120ms] empty:hidden">
+      <ng-content select="[heroActions]" />
+    </div>
+  </div>
+</header>

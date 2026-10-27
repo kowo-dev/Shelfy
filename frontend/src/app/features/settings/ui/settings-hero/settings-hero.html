@@ -1,0 +1,100 @@
+<div class="relative mb-18 max-sm:mb-16">
+  <button
+    type="button"
+    class="group/banner bg-surface block aspect-[21/7] w-full cursor-pointer overflow-hidden rounded-3xl outline-offset-4 max-sm:aspect-[16/8]"
+    [attr.aria-label]="
+      (bannerUrl() ? 'settings.avatar_banner.banner.change' : 'settings.avatar_banner.banner.add')
+        | translate
+    "
+    (click)="changeBanner.emit()"
+  >
+    @if (bannerUrl(); as image) {
+      <img
+        [src]="image"
+        alt=""
+        class="ease-smooth size-full object-cover transition-[filter] duration-300 group-hover/banner:brightness-90"
+        [style.object-position]="'center ' + bannerPosition() + '%'"
+        draggable="false"
+      />
+    } @else {
+      <span
+        class="bg-profile-fallback text-text-muted absolute inset-0 grid place-content-center justify-items-center gap-2 text-[0.9375rem] font-semibold"
+      >
+        <shelfy-icon name="plus" size="md" />
+        {{ 'settings.avatar_banner.banner.add' | translate }}
+      </span>
+    }
+  </button>
+
+  @if (bannerUrl()) {
+    <div class="absolute top-3.5 right-3.5 flex gap-2">
+      <button type="button" [class]="glass" (click)="changeBanner.emit()">
+        <shelfy-icon name="edit" size="18" />
+        <span class="max-sm:sr-only">{{ 'settings.avatar_banner.banner.change' | translate }}</span>
+      </button>
+      <button
+        type="button"
+        [class]="glass + ' w-11 justify-center px-0!'"
+        [attr.aria-label]="'settings.avatar_banner.banner.remove' | translate"
+        [title]="'settings.avatar_banner.banner.remove' | translate"
+        (click)="removeBanner.emit()"
+      >
+        <shelfy-icon name="trash" size="18" />
+      </button>
+    </div>
+  }
+
+  <input
+    #avatarInput
+    type="file"
+    accept="image/jpeg,image/png,image/webp"
+    class="hidden"
+    (change)="onAvatarFileSelected($event)"
+  />
+  <div
+    class="absolute -bottom-13 left-7 flex items-end gap-4 max-sm:-bottom-11 max-sm:left-1/2 max-sm:-translate-x-1/2"
+  >
+    <button
+      type="button"
+      class="group/avatar ring-background relative shrink-0 cursor-pointer rounded-full ring-6 outline-offset-4 disabled:cursor-progress"
+      [disabled]="avatarBusy()"
+      [attr.aria-busy]="avatarBusy() || null"
+      [attr.aria-label]="'settings.avatar_banner.avatar.upload' | translate"
+      (click)="avatarInput.click()"
+    >
+      <shelfy-avatar
+        [displayName]="name()"
+        [avatarUrl]="avatarUrl()"
+        size="xl"
+        class="ease-smooth block size-29! rounded-full text-[2.75rem]! transition-[filter] duration-150 group-hover/avatar:brightness-75 max-sm:size-24!"
+      />
+      <span
+        class="border-background absolute right-0 bottom-0 flex size-11 items-center justify-center rounded-full border-4 bg-[#262626] bg-clip-padding text-white"
+        aria-hidden="true"
+      >
+        @if (avatarBusy()) {
+          <shelfy-spinner size="sm" />
+        } @else {
+          <shelfy-icon name="edit" size="18" />
+        }
+      </span>
+    </button>
+  </div>
+</div>
+
+<p
+  class="text-text-subtle -mt-4 mb-10 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm max-sm:justify-center sm:pl-40"
+>
+  {{ 'settings.avatar_banner.avatar.hint' | translate }}
+  @if (avatarUrl()) {
+    <button
+      type="button"
+      class="hover:text-danger-fg cursor-pointer font-semibold transition-colors"
+      (click)="removeAvatar.emit()"
+    >
+      {{ 'settings.avatar_banner.avatar.remove' | translate }}
+    </button>
+  }
+</p>
+
+<ng-content />

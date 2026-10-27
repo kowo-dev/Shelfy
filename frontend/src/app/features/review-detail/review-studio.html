@@ -1,0 +1,137 @@
+@if (loading()) {
+  <main class="grid min-h-full place-items-center pt-(--nav-bar-height)" aria-busy="true">
+    <shelfy-spinner />
+  </main>
+} @else {
+  <main class="animate-fade-in flex min-h-full flex-col motion-reduce:animate-none">
+    <shelfy-media-header [title]="title()" [posterUrl]="coverUrl()" [backdropUrl]="heroBackdrop()">
+      <p
+        class="text-text-muted flex flex-wrap items-center gap-x-3.5 gap-y-1 text-[0.9375rem] max-[900px]:justify-center"
+      >
+        <span class="text-text inline-flex items-center gap-1.75 font-semibold">
+          <shelfy-icon [name]="logMode ? 'history' : 'reviews'" size="18" />
+          {{ kicker() | translate }}
+        </span>
+        <span>{{ hint() | translate }}</span>
+      </p>
+    </shelfy-media-header>
+
+    <section
+      class="px-gutter mx-auto w-full pt-12 pb-16 lg:pb-12"
+      [attr.aria-label]="kicker() | translate"
+    >
+      <div class="max-w-180">
+        @if (logMode) {
+          <div class="mb-9 flex flex-wrap items-end gap-x-8 gap-y-5">
+            <shelfy-input
+              class="block w-56"
+              type="date"
+              [label]="'collection.history.date' | translate"
+              [error]="dateInvalid() ? ('collection.history.date_required' | translate) : ''"
+              [ngModel]="logDate()"
+              (ngModelChange)="onLogDate($event)"
+            />
+            <label
+              for="studio-repeat"
+              class="text-text flex h-13 cursor-pointer items-center gap-2.5 text-sm font-semibold"
+            >
+              <shelfy-checkbox
+                inputId="studio-repeat"
+                [checked]="logRepeat()"
+                (checkedChange)="onLogRepeat($event)"
+              />
+              {{ 'collection.history.repeat.' + logKind() | translate }}
+            </label>
+          </div>
+        }
+        @if (isNew()) {
+          <shelfy-status-picker
+            class="mb-7 block"
+            [statuses]="statuses"
+            [mediaType]="mediaType()"
+            [value]="status()"
+            (picked)="status.set($event)"
+          />
+        }
+        <shelfy-rating-block class="max-w-150" [value]="rating()" (changed)="onRating($event)" />
+
+        <shelfy-rich-text-editor
+          class="shelfy-review-editor mt-10 block min-h-[42vh]"
+          [placeholder]="'review.studio.placeholder' | translate: { title: title() }"
+          [content]="initialContent()"
+          (contentChange)="onContent($event)"
+        />
+
+        <div
+          class="text-text-muted mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm font-semibold"
+        >
+          <label for="studio-spoiler" class="text-text flex cursor-pointer items-center gap-2.5">
+            <shelfy-checkbox
+              inputId="studio-spoiler"
+              [checked]="spoiler()"
+              (checkedChange)="onSpoiler($event)"
+            />
+            {{ 'collection.history.spoiler' | translate }}
+          </label>
+          <span class="flex items-center gap-1.5">
+            <shelfy-icon name="eye" size="16" />
+            {{ 'review.studio.visible_to' | translate: { who: (visibilityKey() | translate) } }}
+          </span>
+          <span class="tabular-nums">
+            {{ 'collection.sheet.words' | translate: { count: wordCount() } }}
+          </span>
+          @if (entry()) {
+            <button
+              type="button"
+              class="text-text-muted hover:text-danger-fg ml-auto flex cursor-pointer items-center gap-1.5 transition-colors"
+              [class.text-danger-fg]="confirmingDelete()"
+              [disabled]="saveState() !== 'idle'"
+              (click)="deleteLog()"
+            >
+              <shelfy-icon name="trash" size="16" />
+              {{
+                (confirmingDelete()
+                  ? 'collection.history.delete_confirm'
+                  : 'collection.history.delete_entry'
+                ) | translate
+              }}
+            </button>
+          }
+        </div>
+      </div>
+    </section>
+
+    <div
+      class="bg-bar sticky bottom-0 z-20 mt-auto hidden items-center gap-3 px-(--frame-x) py-3.5 shadow-[0_-22px_30px_-26px_#000] lg:flex"
+    >
+      <span class="text-text-muted min-w-0 flex-1 truncate text-sm">{{ hint() | translate }}</span>
+      <button type="button" [class]="ghostButton" (click)="close()">
+        {{ 'studio.close' | translate }}
+      </button>
+      <button
+        type="button"
+        [class]="primaryButton"
+        [disabled]="!canFinish() || saveState() !== 'idle'"
+        (click)="finish()"
+      >
+        <shelfy-icon [name]="isNew() ? 'send' : 'check'" size="20" />
+        {{ finishLabel() | translate }}
+      </button>
+    </div>
+  </main>
+
+  <div class="lg:hidden">
+    <shelfy-edit-bar
+      [autosave]="!logMode"
+      [closable]="true"
+      [hint]="hint() | translate"
+      [canSave]="canFinish()"
+      [state]="saveState()"
+      [cancelLabel]="'studio.close' | translate"
+      [saveLabel]="finishLabel() | translate"
+      [savedLabel]="'edit.saved' | translate"
+      (cancelRequested)="close()"
+      (saveRequested)="finish()"
+    />
+  </div>
+}

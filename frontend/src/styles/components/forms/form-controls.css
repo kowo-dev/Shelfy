@@ -1,0 +1,84 @@
+@layer components {
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-label {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+
+  .form-control {
+    width: 100%;
+    border-radius: 1rem;
+    background-color: rgb(255 255 255 / 0.08);
+    color: var(--color-text);
+    font-size: var(--text-base);
+    line-height: 1.5;
+    caret-color: var(--color-accent);
+    transition:
+      background-color var(--duration-fast) var(--ease-smooth),
+      box-shadow var(--duration-fast) var(--ease-smooth),
+      opacity var(--duration-fast) var(--ease-smooth);
+  }
+
+  .form-control::placeholder {
+    color: var(--color-text-subtle);
+  }
+
+  .form-control:hover:not(:disabled) {
+    background-color: rgb(255 255 255 / 0.11);
+  }
+
+  .form-control:focus {
+    outline: none;
+    background-color: rgb(255 255 255 / 0.12);
+    box-shadow: 0 0 0 2px rgb(230 211 179 / 0.5);
+  }
+
+  .form-control:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .form-control:-webkit-autofill,
+  .form-control:-webkit-autofill:hover,
+  .form-control:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--color-text);
+    -webkit-box-shadow: 0 0 0 1000px color-mix(in srgb, white 8%, var(--color-background)) inset;
+    box-shadow: 0 0 0 1000px color-mix(in srgb, white 8%, var(--color-background)) inset;
+    caret-color: var(--color-text);
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  .form-control--error,
+  .form-control--error:focus {
+    box-shadow: inset 0 0 0 1.5px var(--color-danger-fg);
+  }
+
+  .form-control--md {
+    height: 3.375rem;
+    padding-inline: 1.125rem;
+  }
+
+  .form-control--textarea {
+    min-height: 7.5rem;
+    height: auto;
+    border-radius: 1rem;
+    padding: 1rem 1.125rem;
+    resize: none;
+  }
+
+  .form-hint {
+    font-size: var(--text-xs);
+    color: var(--color-text-subtle);
+  }
+
+  .form-error {
+    font-size: var(--text-xs);
+    color: var(--color-danger-fg);
+  }
+}

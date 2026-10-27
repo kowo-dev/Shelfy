@@ -1,0 +1,8 @@
+{$FRONTEND_DOMAIN} {$API_DOMAIN} {
+	tls internal
+	import shelfy
+}
+
+http:// {
+	redir https://{host}:{$HTTPS_PORT:443}{uri} 308
+}

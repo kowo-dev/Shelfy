@@ -1,0 +1,52 @@
+<shelfy-dialog
+  [open]="open()"
+  [title]="
+    (action() === 'delete-account'
+      ? 'settings.danger_zone.delete_account_confirm_title'
+      : 'settings.danger_zone.clear_collection_confirm_title'
+    ) | translate
+  "
+  (closed)="closed.emit()"
+>
+  <div class="flex flex-col gap-4">
+    <p class="text-text-muted text-sm">
+      {{
+        (action() === 'delete-account'
+          ? 'settings.danger_zone.delete_account_confirm_body'
+          : 'settings.danger_zone.clear_collection_confirm_body'
+        ) | translate
+      }}
+    </p>
+
+    <shelfy-input
+      [formControl]="confirmControl()"
+      [label]="
+        'settings.danger_zone.confirm_input_label' | translate: { username: username() ?? '' }
+      "
+      [placeholder]="username() ?? ''"
+    />
+
+    @if (action() === 'delete-account' && passwordControl(); as password) {
+      <shelfy-input
+        type="password"
+        [formControl]="password"
+        [label]="'settings.danger_zone.password_label' | translate"
+        [passwordToggle]="true"
+      />
+    }
+  </div>
+  <div dialogFooter class="contents">
+    <shelfy-button type="button" variant="secondary" [disabled]="busy()" (click)="closed.emit()">
+      {{ 'settings.danger_zone.cancel' | translate }}
+    </shelfy-button>
+    <shelfy-button
+      type="button"
+      variant="danger"
+      [disabled]="!confirmMatches()"
+      [loading]="busy()"
+      (click)="confirm.emit()"
+    >
+      {{ 'settings.danger_zone.confirm' | translate }}
+    </shelfy-button>
+  </div>
+</shelfy-dialog>

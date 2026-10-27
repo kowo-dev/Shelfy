@@ -1,0 +1,45 @@
+<shelfy-import-card-shell
+  icon="movie"
+  [title]="'settings.import.letterboxd.title' | translate"
+  [covers]="covers()"
+>
+  <p status class="text-text-muted mt-0.5 text-sm leading-snug">
+    {{ 'settings.import.letterboxd.description' | translate }}
+  </p>
+  <div actions class="contents">
+    <input
+      #letterboxdInput
+      type="file"
+      accept=".zip,application/zip"
+      class="hidden"
+      (change)="onFileSelected($event)"
+    />
+    <button
+      type="button"
+      [class]="pill"
+      [disabled]="importStarting() || importActive()"
+      [attr.aria-busy]="importStarting() || null"
+      (click)="letterboxdInput.click()"
+    >
+      @if (importStarting()) {
+        <shelfy-spinner size="sm" />
+      }
+      {{ 'settings.import.letterboxd.import_library' | translate }}
+    </button>
+  </div>
+
+  @if (summary(); as summary) {
+    <shelfy-import-progress
+      prefix="settings.import.letterboxd"
+      [summary]="summary"
+      [active]="importActive()"
+      [progress]="importProgress()"
+      [expanded]="entriesExpanded()"
+      [loading]="entriesLoading()"
+      [entryCount]="entries()?.length ?? null"
+      [skipped]="skippedRows()"
+      [imported]="importedRows()"
+      (toggleDetails)="toggleEntries.emit()"
+    />
+  }
+</shelfy-import-card-shell>

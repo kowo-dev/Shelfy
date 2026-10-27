@@ -1,0 +1,10 @@
+alter table pantheon_entries rename to essential_entries;
+
+alter table essential_entries rename constraint pantheon_entries_pkey to essential_entries_pkey;
+alter table essential_entries rename constraint pantheon_entries_slot_check to essential_entries_slot_check;
+alter table essential_entries rename constraint pantheon_entries_user_id_fkey to essential_entries_user_id_fkey;
+alter table essential_entries rename constraint pantheon_entries_user_media_id_fkey to essential_entries_user_media_id_fkey;
+alter table essential_entries rename constraint pantheon_entries_user_id_slot_key to essential_entries_user_id_slot_key;
+alter table essential_entries rename constraint pantheon_entries_user_id_user_media_id_key to essential_entries_user_id_user_media_id_key;
+
+alter index idx_pantheon_entries_user_media_id rename to idx_essential_entries_user_media_id;

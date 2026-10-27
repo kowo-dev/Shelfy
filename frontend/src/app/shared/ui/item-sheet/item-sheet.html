@@ -1,0 +1,169 @@
+@if (!hidden()) {
+  <div
+    [class]="
+      recipes.scrim +
+      (closing()
+        ? ' duration-fast opacity-0 transition-opacity'
+        : ' duration-base transition-opacity starting:opacity-0')
+    "
+    aria-hidden="true"
+    (click)="requestClose()"
+  ></div>
+
+  <div class="pointer-events-none fixed inset-0 z-85">
+    <aside
+      #panel
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="item-sheet-title"
+      class="bg-surface rounded-t-sheet pointer-events-auto absolute inset-x-0 bottom-0 flex max-h-[94dvh] flex-col overflow-hidden shadow-[0_30px_80px_-20px_rgb(0_0_0/0.7),inset_0_1px_0_rgb(255_255_255/0.06),0_0_0_1px_rgb(255_255_255/0.06)] sm:inset-x-[max(0.75rem,calc(50%-23rem))] sm:max-h-[min(88dvh,52rem)]"
+      [class]="panelMotion()"
+      [style.--top]="top()"
+      [style.translate]="drag.translate()"
+      [style.transition]="drag.dragging() ? 'none' : dragSettle"
+      (animationend)="onPanelAnimationEnd($event)"
+    >
+      <div
+        [class]="handleClass"
+        (pointerdown)="drag.start($event)"
+        (pointermove)="drag.move($event)"
+        (pointerup)="drag.end()"
+        (pointercancel)="drag.end()"
+      >
+        <span [class]="recipes.handleBar" aria-hidden="true"></span>
+      </div>
+
+      <button
+        type="button"
+        class="bg-media-chip absolute top-3.5 right-3.5 z-10 grid size-10 cursor-pointer place-items-center rounded-full text-white backdrop-blur-[14px] transition-colors hover:bg-[rgb(14_17_22/0.85)]"
+        [attr.aria-label]="'dialog.close' | translate"
+        (click)="requestClose()"
+      >
+        <shelfy-icon name="close" size="sm" />
+      </button>
+
+      <div
+        class="flex min-h-0 flex-1 [scrollbar-width:none] flex-col overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden"
+        [style.background]="'linear-gradient(180deg, var(--top) 0, var(--top) 250px, var(--color-surface) 620px)'"
+      >
+        @if (artwork(); as art) {
+          <div
+            class="relative h-44 shrink-0 overflow-hidden sm:h-56"
+            (pointerdown)="drag.start($event)"
+            (pointermove)="drag.move($event)"
+            (pointerup)="drag.end()"
+            (pointercancel)="drag.end()"
+          >
+            <img
+              [src]="hiRes(art, 'hero')"
+              alt=""
+              class="ease-smooth absolute inset-0 size-full object-cover transition-opacity duration-500"
+              [class]="artLoaded() ? 'opacity-100' : 'opacity-0'"
+              style="mask-image: linear-gradient(180deg, #000 40%, transparent)"
+              draggable="false"
+              (load)="artLoaded.set(true)"
+            />
+          </div>
+        }
+        <header
+          class="relative grid shrink-0 grid-cols-[5.5rem_minmax(0,1fr)] items-end gap-4.5 px-5 sm:grid-cols-[6.75rem_minmax(0,1fr)] sm:px-6.5"
+          [class]="artwork() ? '-mt-18 sm:-mt-20' : 'pt-14 sm:pt-19'"
+          (pointerdown)="drag.start($event)"
+          (pointermove)="drag.move($event)"
+          (pointerup)="drag.end()"
+          (pointercancel)="drag.end()"
+        >
+          <button
+            type="button"
+            class="bg-surface-3 relative aspect-2/3 cursor-pointer overflow-hidden rounded-[0.875rem] shadow-[0_26px_44px_-18px_#000]"
+            [attr.aria-label]="data().media.title + ' – ' + ('media.view_details' | translate)"
+            (click)="openMediaDetail()"
+          >
+            @if (data().media.coverUrl; as cover) {
+              <img
+                [src]="hiRes(cover, 'card')"
+                alt=""
+                class="size-full object-cover"
+                draggable="false"
+              />
+            }
+          </button>
+          <div class="min-w-0" [class]="rise" [style.animation-delay.ms]="80">
+            <h2
+              id="item-sheet-title"
+              class="font-display text-text line-clamp-3 text-[1.625rem] leading-[0.98] font-extrabold tracking-[-0.045em] text-balance sm:text-[2rem]"
+            >
+              <button
+                type="button"
+                class="cursor-pointer text-left transition-opacity hover:opacity-75"
+                (click)="openMediaDetail()"
+              >
+                {{ data().media.title }}
+              </button>
+            </h2>
+            <div class="mt-4 flex items-center gap-2">
+              <button
+                type="button"
+                [class]="actionButton"
+                [title]="
+                  (data().note ? 'collection.sheet.edit_review' : 'collection.sheet.write_review')
+                    | translate
+                "
+                (click)="openNote()"
+              >
+                <shelfy-icon name="reviews" size="18" />
+                <span class="max-sm:sr-only">{{
+                  (data().note ? 'collection.sheet.edit_review' : 'collection.sheet.write_review')
+                    | translate
+                }}</span>
+              </button>
+              <button
+                type="button"
+                [class]="actionButton"
+                [title]="'collection.sheet.log_viewing' | translate"
+                (click)="openLog()"
+              >
+                <shelfy-icon name="history" size="18" />
+                <span class="max-sm:sr-only">{{ 'collection.sheet.log_viewing' | translate }}</span>
+              </button>
+              @if (!isDraft()) {
+                <button
+                  type="button"
+                  [class]="removeButton"
+                  [attr.aria-label]="removeLabel() | translate"
+                  [title]="removeLabel() | translate"
+                  [disabled]="deleting()"
+                  (click)="deleteItem()"
+                >
+                  <shelfy-icon name="trash" size="18" />
+                </button>
+              }
+              <span class="text-text-muted ml-1 truncate text-sm" aria-live="polite">
+                @switch (saveState()) {
+                  @case ('saving') {
+                    {{ 'collection.sheet.saving' | translate }}
+                  }
+                  @case ('saved') {
+                    <span class="text-success inline-flex items-center gap-1">
+                      <shelfy-icon name="check" size="xs" />
+                      {{ 'collection.sheet.saved' | translate }}
+                    </span>
+                  }
+                }
+              </span>
+            </div>
+          </div>
+        </header>
+
+        <shelfy-item-editor
+          class="px-5 pt-7 pb-[calc(2.5rem+env(safe-area-inset-bottom))] sm:px-6.5 sm:pt-8 sm:pb-10"
+          [mediaType]="data().media.mediaType"
+          [status]="isDraft() ? null : data().status"
+          [rating]="data().rating"
+          (statusPicked)="pickStatus($event)"
+          (ratingChanged)="changeRating($event)"
+        />
+      </div>
+    </aside>
+  </div>
+}

@@ -1,0 +1,22 @@
+<shelfy-dialog
+  [open]="open()"
+  [title]="'settings.adult_content_confirm.title' | translate"
+  (closed)="closed.emit()"
+>
+  <div class="flex flex-col gap-4">
+    <div class="flex items-center gap-4">
+      <img src="/assets/emojis/no_one_under_eighteen_3d.png" alt="" class="size-12 shrink-0" />
+      <p class="text-text-muted text-sm">
+        {{ 'settings.adult_content_confirm.body' | translate }}
+      </p>
+    </div>
+  </div>
+  <div dialogFooter class="contents">
+    <shelfy-button type="button" variant="secondary" (click)="closed.emit()">
+      {{ 'settings.danger_zone.cancel' | translate }}
+    </shelfy-button>
+    <shelfy-button type="button" variant="primary" (click)="confirm.emit()">
+      {{ 'settings.adult_content_confirm.confirm' | translate }}
+    </shelfy-button>
+  </div>
+</shelfy-dialog>

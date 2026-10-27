@@ -1,0 +1,172 @@
+@if (!trackable()) {
+  <main class="px-gutter flex min-h-full items-center justify-center pt-(--nav-bar-height)">
+    <shelfy-empty-state icon="grid" [hint]="'media.tracker.not_trackable' | translate" />
+  </main>
+} @else if (loading()) {
+  <div class="mt-24 flex justify-center"><shelfy-spinner /></div>
+} @else if (loadFailed()) {
+  <main class="px-gutter flex min-h-full items-center justify-center pt-(--nav-bar-height)">
+    <shelfy-empty-state role="alert" icon="warningTriangle" [hint]="'media.load_error' | translate">
+      <button type="button" [class]="primaryPill" (click)="retry()">
+        {{ 'collection.retry' | translate }}
+      </button>
+    </shelfy-empty-state>
+  </main>
+} @else {
+  @let s = stats();
+  <div
+    #scrollContainer
+    class="page-scroll h-full min-h-0 [scrollbar-gutter:stable] overflow-x-clip overflow-y-auto [overflow-anchor:none] max-md:pb-(--bottom-nav-clearance)"
+    (scroll)="onScroll()"
+  >
+    <shelfy-page-hero
+      [title]="view().title ?? ('media.tracker.episodes' | translate)"
+      [backdropUrl]="view().backdropUrl"
+    >
+      <div class="mt-4.5 flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+        <p class="text-text-muted flex flex-wrap items-center gap-x-5.5 gap-y-1.5 text-base">
+          <span
+            ><b class="text-text font-bold tabular-nums">{{ s.watched }}</b> / {{ s.released }}
+            {{ 'media.tracker.stat_watched' | translate }}</span
+          >
+          @let avg = average();
+          @if (avg.value !== null) {
+            <span class="inline-flex items-center gap-1.5">
+              <shelfy-rating-value
+                class="text-text font-bold"
+                starSize="16"
+                [value]="avg.value"
+                [color]="avg.mine ? scoreColor(avg.value) : externalColor"
+              />
+              {{
+                (avg.mine ? 'media.tracker.stat_your_average' : 'media.tracker.stat_average')
+                  | translate
+              }}
+            </span>
+          }
+          @if (s.best; as best) {
+            <button
+              type="button"
+              class="hover:text-text min-w-0 cursor-pointer truncate rounded-xs text-left transition-colors"
+              (click)="focusEpisode(best)"
+            >
+              {{ 'media.tracker.stat_best' | translate }}
+              <b class="text-text font-bold">{{ episodeLabel(best) }}</b>
+            </button>
+          }
+        </p>
+        @if (item()) {
+          <button
+            type="button"
+            [class]="allWatched() ? heroChip : heroPrimary"
+            [disabled]="busy() || s.released === 0"
+            [attr.aria-busy]="busy() || null"
+            (click)="toggleAll()"
+          >
+            <shelfy-icon name="check" size="18" />
+            {{ (allWatched() ? 'media.tracker.clear_all' : 'media.tracker.mark_all') | translate }}
+          </button>
+        } @else {
+          <button type="button" [class]="heroPrimary" (click)="add()">
+            <shelfy-icon name="bookmarks" size="18" />
+            {{ 'collection.backlog.add' | translate }}
+          </button>
+        }
+      </div>
+    </shelfy-page-hero>
+
+    @if (columns().length === 0) {
+      <p class="px-gutter text-text-subtle mt-10 text-base">
+        {{ 'media.tracker.no_episodes' | translate }}
+      </p>
+    } @else {
+      <div #barSentinel aria-hidden="true"></div>
+      <div class="v-libbar" [class.stuck]="stuck()">
+        <shelfy-tabs
+          class="min-w-0"
+          [tabs]="paneTabs()"
+          [activeId]="activePane()"
+          [label]="'media.tracker.seasons' | translate"
+          (tabSelected)="selectPane($event)"
+        />
+      </div>
+
+      <div class="px-gutter mx-auto w-full pt-2">
+        <div class="min-w-0 pb-35">
+          @if (pane() === 'grid') {
+            <div [class]="headerRow">
+              <h2 [class]="sectionTitle">{{ 'media.tracker.ratings_title' | translate }}</h2>
+            </div>
+            <shelfy-rating-matrix
+              class="animate-rise-in mt-2 motion-reduce:animate-none"
+              [columns]="columns()"
+              [source]="source()"
+              [selectedSeason]="railSeason().season"
+              (cellSelected)="selectEpisode($event)"
+              (seasonSelected)="goToSeason($event)"
+            />
+          } @else if (railSeason(); as season) {
+            @let previous = previousSeason();
+            @let next = nextSeason();
+            <div [class]="headerRow">
+              <h2 [class]="sectionTitle">
+                {{ 'media.tracker.season_long' | translate: { season: season.season } }}
+              </h2>
+              @if (previous || next) {
+                <div class="ml-auto flex gap-2">
+                  <button
+                    type="button"
+                    [class]="seasonArrow"
+                    [disabled]="!previous"
+                    [attr.aria-label]="'profile.rail.previous' | translate"
+                    (click)="previous && selectSeason(previous.season)"
+                  >
+                    <shelfy-icon name="chevronLeft" size="sm" />
+                  </button>
+                  <button
+                    type="button"
+                    [class]="seasonArrow"
+                    [disabled]="!next"
+                    [attr.aria-label]="'profile.rail.next' | translate"
+                    (click)="next && selectSeason(next.season)"
+                  >
+                    <shelfy-icon name="chevronRight" size="sm" />
+                  </button>
+                </div>
+              }
+            </div>
+            @for (shown of [season]; track shown.season) {
+              <shelfy-season-list
+                id="tracker-episodes"
+                class="animate-rise-in motion-reduce:animate-none"
+                [season]="shown"
+                [source]="source()"
+                [editable]="!!item()"
+                [highlighted]="highlighted()"
+                (episodeSelected)="selectEpisode($event)"
+                (watchedToggled)="setWatched($event.cell, $event.watched)"
+                (rated)="rate($event.cell, $event.rating)"
+                (seasonToggled)="toggleSeason($event)"
+              />
+            }
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (selectedCell(); as cell) {
+    <shelfy-episode-sheet
+      [cell]="cell"
+      [editable]="!!item()"
+      [showTitle]="view().title ?? ''"
+      [hasPrevious]="!!neighbours().previous"
+      [hasNext]="!!neighbours().next"
+      (stepped)="stepEpisode($event)"
+      (addRequested)="add()"
+      (watchedToggled)="setWatched(cell, $event)"
+      (rated)="rate(cell, $event)"
+      (closed)="selectedKey.set(null)"
+    />
+  }
+}

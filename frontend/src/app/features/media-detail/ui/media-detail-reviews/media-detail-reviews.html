@@ -1,0 +1,59 @@
+@if (reviews().length > 0) {
+  <div class="v-revs">
+    @for (review of reviews(); track review.id) {
+      <article
+        class="group/rev bg-fill-subtle hover:bg-fill has-[a:focus-visible]:bg-fill relative flex min-w-0 flex-col rounded-lg p-5 transition-colors md:p-6"
+      >
+        <a
+          [routerLink]="['/reviews', review.id]"
+          class="rounded-lg after:absolute after:inset-0 focus-visible:outline-none"
+          [attr.aria-label]="
+            'review.open' | translate: { name: review.displayName || review.username }
+          "
+        ></a>
+        <span class="flex min-w-0 items-center justify-between gap-3">
+          <a
+            [routerLink]="['/profile', review.username]"
+            class="group/author relative z-10 flex min-w-0 items-center gap-2.5 rounded-full outline-offset-2"
+          >
+            <shelfy-avatar
+              [displayName]="review.displayName || review.username"
+              [avatarUrl]="review.avatarUrl"
+              size="32"
+            />
+            <span
+              class="text-text decoration-text-subtle truncate text-base font-semibold underline-offset-4 group-hover/author:underline"
+              >{{ review.displayName || review.username }}</span
+            >
+          </a>
+          @if (review.rating !== null) {
+            <shelfy-rating-value
+              class="text-xl font-bold"
+              [value]="review.rating"
+              [color]="ratingColor(review.rating)"
+              starSize="20"
+            />
+          }
+        </span>
+        <shelfy-spoiler-guard
+          class="mt-3"
+          [spoiler]="review.containsSpoilers"
+          [interactive]="false"
+        >
+          <p
+            class="text-text-muted group-hover/rev:text-text line-clamp-4 text-[0.9375rem] leading-relaxed transition-colors"
+          >
+            {{ excerpt(review.content) }}
+          </p>
+        </shelfy-spoiler-guard>
+        <span class="mt-auto flex items-center justify-between gap-3 pt-4">
+          <span class="text-text-subtle text-sm tabular-nums">{{ when(review.updatedAt) }}</span>
+          <shelfy-social-counts
+            [likeCount]="review.likeCount"
+            [commentCount]="review.commentCount"
+          />
+        </span>
+      </article>
+    }
+  </div>
+}

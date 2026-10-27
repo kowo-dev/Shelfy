@@ -1,0 +1,23 @@
+<input
+  type="checkbox"
+  class="peer sr-only"
+  [id]="inputId()"
+  [checked]="isChecked"
+  [disabled]="isDisabled()"
+  (change)="onToggle($event)"
+/>
+<span
+  class="peer-focus-visible:outline-text flex size-5.5 shrink-0 items-center justify-center rounded-[0.4375rem] transition-[background-color,box-shadow] peer-focus-visible:outline-2 peer-focus-visible:outline-offset-3"
+  [class]="
+    isChecked
+      ? 'bg-accent text-on-brand'
+      : 'bg-white/10 ' + (isDisabled() ? '' : 'hover:bg-white/15')
+  "
+  [class.cursor-pointer]="!isDisabled()"
+  [class.cursor-not-allowed]="isDisabled()"
+  [class.opacity-50]="isDisabled()"
+>
+  @if (isChecked) {
+    <shelfy-icon name="check" size="15" class="animate-pop-in" />
+  }
+</span>

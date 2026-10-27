@@ -1,0 +1,78 @@
+<shelfy-import-card-shell
+  icon="steam"
+  [title]="'settings.import.steam.title' | translate"
+  [covers]="covers()"
+>
+  @if (steamConnected()) {
+    <p status class="text-text-muted mt-0.5 flex items-center gap-2 text-sm leading-snug">
+      <span class="bg-success size-1.5 shrink-0 rounded-full" aria-hidden="true"></span>
+      <span class="min-w-0 truncate">
+        {{ 'settings.import.steam.connected_as' | translate }} {{ steamDisplayName() }}
+      </span>
+    </p>
+  } @else {
+    <p status class="text-text-muted mt-0.5 text-sm leading-snug">
+      {{ 'settings.import.steam.description' | translate }}
+    </p>
+  }
+
+  @if (steamConnected()) {
+    <div actions class="contents">
+      <button
+        type="button"
+        [class]="pill"
+        [disabled]="importStarting() || importActive()"
+        [attr.aria-busy]="importStarting() || null"
+        (click)="startImport.emit()"
+      >
+        @if (importStarting()) {
+          <shelfy-spinner size="sm" />
+        }
+        {{ 'settings.import.steam.import_library' | translate }}
+      </button>
+      <button
+        type="button"
+        [class]="pill"
+        [disabled]="disconnecting()"
+        [attr.aria-busy]="disconnecting() || null"
+        (click)="disconnect.emit()"
+      >
+        @if (disconnecting()) {
+          <shelfy-spinner size="sm" />
+        }
+        {{ 'settings.import.steam.disconnect' | translate }}
+      </button>
+    </div>
+  } @else {
+    <button
+      actions
+      type="button"
+      class="w-fit shrink-0 cursor-pointer rounded-xs outline-offset-4 transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
+      [disabled]="connecting()"
+      [attr.aria-busy]="connecting() || null"
+      [attr.aria-label]="'settings.import.steam.connect' | translate"
+      (click)="connect.emit()"
+    >
+      <img
+        src="/assets/steam/sits_02.png"
+        [alt]="'settings.import.steam.connect' | translate"
+        class="h-11 w-auto"
+      />
+    </button>
+  }
+
+  @if (steamConnected() && summary(); as summary) {
+    <shelfy-import-progress
+      prefix="settings.import.steam"
+      [summary]="summary"
+      [active]="importActive()"
+      [progress]="importProgress()"
+      [expanded]="entriesExpanded()"
+      [loading]="entriesLoading()"
+      [entryCount]="entries()?.length ?? null"
+      [skipped]="skippedRows()"
+      [imported]="importedRows()"
+      (toggleDetails)="toggleEntries.emit()"
+    />
+  }
+</shelfy-import-card-shell>

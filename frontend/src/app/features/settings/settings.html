@@ -1,0 +1,274 @@
+<div
+  #scrollContainer
+  class="page-scroll h-full min-h-0 [scrollbar-gutter:stable] overflow-x-clip overflow-y-auto [overflow-anchor:none] max-md:pb-(--bottom-nav-clearance)"
+  (scroll)="onScroll()"
+>
+  <shelfy-page-hero [title]="'settings.title' | translate" [wall]="wall.posters()">
+    <p class="text-text-muted mt-4.5 flex min-w-0 items-center gap-3 text-base">
+      <shelfy-avatar [displayName]="heroName()" [avatarUrl]="avatarUrl()" size="32" />
+      <b class="text-text truncate font-bold">{{ heroName() }}</b>
+      <span class="truncate">&#64;{{ formValues().username }}</span>
+    </p>
+  </shelfy-page-hero>
+
+  <div #barSentinel aria-hidden="true"></div>
+  <div class="v-libbar" [class.stuck]="stuck()">
+    <shelfy-tabs
+      class="min-w-0"
+      [tabs]="tabs()"
+      [activeId]="activeSection()"
+      [label]="'settings.title' | translate"
+      (tabSelected)="selectSection($event)"
+    />
+    @if (activeSection() === 'profile') {
+      <div class="ml-auto flex max-md:hidden">
+        <button
+          type="button"
+          [class]="primary"
+          [disabled]="!hasChanges() || !formValid() || saveState() === 'saving'"
+          [attr.aria-busy]="saveState() === 'saving' || null"
+          (click)="saveAll()"
+        >
+          @if (saveState() === 'saving') {
+            <shelfy-spinner size="sm" />
+          }
+          {{ 'settings.save' | translate }}
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="px-gutter mx-auto w-full pt-4.5">
+    <div class="min-w-0 pb-35 md:max-w-[880px]">
+      <h2 class="sr-only">{{ 'settings.sections.' + activeSection() | translate }}</h2>
+      <p class="text-text-muted mb-6 max-w-[60ch] text-base">
+        {{ 'settings.section_hints.' + activeSection() | translate }}
+      </p>
+
+      @switch (activeSection()) {
+        @case ('profile') {
+          <shelfy-settings-hero
+            class="animate-rise-in motion-reduce:animate-none"
+            [displayName]="heroName()"
+            [username]="formValues().username"
+            [bannerUrl]="avatarBannerUrl()"
+            [bannerPosition]="avatarBannerPosition()"
+            [avatarUrl]="avatarUrl()"
+            [avatarBusy]="avatarUploading()"
+            (changeBanner)="openBannerPicker()"
+            (removeBanner)="removeBanner()"
+            (uploadAvatar)="uploadAvatar($event)"
+            (removeAvatar)="removeAvatar()"
+          >
+            <shelfy-profile-form
+              [form]="form"
+              [values]="formValues()"
+              [usernameError]="usernameError()"
+              [displayNameError]="displayNameError()"
+              [bioError]="bioError()"
+              [federationEnabled]="federationEnabled()"
+              [canSave]="hasChanges() && formValid()"
+              [saving]="saveState() === 'saving'"
+              [inlineSubmit]="false"
+              (save)="saveAll()"
+            />
+          </shelfy-settings-hero>
+        }
+        @case ('preferences') {
+          <div class="animate-rise-in flex flex-col gap-10 motion-reduce:animate-none">
+            <section aria-labelledby="settings-display">
+              <h3 id="settings-display" [class]="subTitle">
+                {{ 'settings.panels.display' | translate }}
+              </h3>
+              <div [class]="rows">
+                <shelfy-settings-row
+                  [class]="toggleRow"
+                  [title]="'settings.use_24_hour_format' | translate"
+                  [description]="'settings.preferences_hint.time_format' | translate"
+                >
+                  <shelfy-toggle
+                    [checked]="use24HourFormat()"
+                    [ariaLabel]="'settings.use_24_hour_format' | translate"
+                    (checkedChange)="toggle24HourFormat($event)"
+                  />
+                </shelfy-settings-row>
+                <shelfy-settings-row
+                  [class]="toggleRow"
+                  [title]="'settings.allow_adult_content' | translate"
+                  [description]="'settings.preferences_hint.adult_content' | translate"
+                >
+                  <shelfy-toggle
+                    [checked]="allowAdultContent()"
+                    [ariaLabel]="'settings.allow_adult_content' | translate"
+                    (checkedChange)="toggleAdultContent($event)"
+                  />
+                </shelfy-settings-row>
+              </div>
+            </section>
+            @if (federationEnabled()) {
+              <section aria-labelledby="settings-fediverse">
+                <h3 id="settings-fediverse" [class]="subTitle">
+                  {{ 'settings.panels.fediverse' | translate }}
+                </h3>
+                <div [class]="rows">
+                  <shelfy-settings-row
+                    [class]="toggleRow"
+                    [title]="'settings.federation_share' | translate"
+                    [description]="'settings.preferences_hint.federation_share' | translate"
+                  >
+                    <shelfy-toggle
+                      [checked]="!federationOptOut()"
+                      [ariaLabel]="'settings.federation_share' | translate"
+                      (checkedChange)="toggleFederationShare($event)"
+                    />
+                  </shelfy-settings-row>
+                </div>
+              </section>
+            }
+          </div>
+        }
+        @case ('notifications') {
+          <shelfy-notification-preferences class="animate-rise-in motion-reduce:animate-none" />
+        }
+        @case ('connections') {
+          <div class="animate-rise-in grid gap-5 motion-reduce:animate-none lg:grid-cols-2">
+            @if (user()?.isSteamAvailable || user()?.isSteamConnected) {
+              <shelfy-steam-import-card
+                [covers]="gameCovers()"
+                [steamConnected]="!!user()?.isSteamConnected"
+                [steamDisplayName]="user()?.steamDisplayName ?? null"
+                [connecting]="steamConnecting()"
+                [disconnecting]="steamDisconnecting()"
+                [importStarting]="steamImportStarting()"
+                [importActive]="steamImportActive()"
+                [importStatus]="steamImportStatus()"
+                [importProgress]="steamImportProgress()"
+                [entriesExpanded]="steamImportEntriesExpanded()"
+                [entriesLoading]="steamImportEntriesLoading()"
+                [entries]="steamImportEntries()"
+                [skippedEntries]="steamImportSkippedEntries()"
+                [importedEntries]="steamImportImportedEntries()"
+                (connect)="connectSteam()"
+                (disconnect)="disconnectSteam()"
+                (startImport)="startSteamImport()"
+                (toggleEntries)="toggleImportEntries()"
+              />
+            }
+            <shelfy-letterboxd-import-card
+              [covers]="movieCovers()"
+              [importStarting]="letterboxdImportStarting()"
+              [importActive]="letterboxdImportActive()"
+              [importStatus]="letterboxdImportStatus()"
+              [importProgress]="letterboxdImportProgress()"
+              [entriesExpanded]="letterboxdImportEntriesExpanded()"
+              [entriesLoading]="letterboxdImportEntriesLoading()"
+              [entries]="letterboxdImportEntries()"
+              [skippedEntries]="letterboxdImportSkippedEntries()"
+              [importedEntries]="letterboxdImportImportedEntries()"
+              (fileSelected)="startLetterboxdImport($event)"
+              (toggleEntries)="toggleLetterboxdImportEntries()"
+            />
+          </div>
+        }
+        @case ('account') {
+          <div [class]="rows + ' animate-rise-in motion-reduce:animate-none'">
+            @if (user(); as user) {
+              <shelfy-email-change-card
+                [email]="user.email"
+                [pendingEmail]="user.pendingEmail"
+                [emailVerified]="user.isEmailVerified"
+                [form]="emailForm"
+                [newEmailError]="newEmailError()"
+                [sending]="emailSending()"
+                (requestChange)="requestEmailChange()"
+              />
+            }
+            @if (federationEnabled()) {
+              <shelfy-account-migration-card />
+            }
+            @if (user()?.isAdmin) {
+              <shelfy-settings-row
+                [class]="row"
+                [title]="'settings.admin.title' | translate"
+                [description]="'settings.admin.description' | translate"
+              >
+                <a routerLink="/admin" shelfyButtonLink variant="secondary">
+                  {{ 'settings.admin.open' | translate }}
+                </a>
+              </shelfy-settings-row>
+            }
+          </div>
+        }
+        @case ('privacy') {
+          <shelfy-privacy-data-card
+            class="animate-rise-in motion-reduce:animate-none"
+            [exporting]="privacyExporting()"
+            (exportData)="exportData()"
+          />
+        }
+        @case ('danger') {
+          <shelfy-danger-zone-card
+            class="animate-rise-in motion-reduce:animate-none"
+            (clearCollection)="openDangerDialog('clear-collection')"
+            (deleteAccount)="openDangerDialog('delete-account')"
+          />
+        }
+      }
+    </div>
+  </div>
+  <shelfy-page-footer />
+</div>
+
+<shelfy-danger-confirm-dialog
+  [open]="dangerDialogOpen()"
+  [action]="dangerAction()"
+  [confirmControl]="dangerConfirmControl"
+  [passwordControl]="dangerPasswordControl"
+  [username]="user()?.username ?? null"
+  [busy]="dangerBusy()"
+  [confirmMatches]="dangerConfirmMatches()"
+  (closed)="closeDangerDialog()"
+  (confirm)="confirmDangerAction()"
+/>
+
+<shelfy-adult-content-confirm-dialog
+  [open]="adultContentConfirmDialogOpen()"
+  (closed)="closeAdultContentConfirmDialog()"
+  (confirm)="confirmAdultContent()"
+/>
+
+@if (bannerPickerOpen()) {
+  <shelfy-banner-picker-dialog
+    [query]="bannerQuery()"
+    [results]="bannerResults()"
+    [shelfResults]="bannerShelfResults()"
+    [shelfLoading]="bannerShelfLoading()"
+    [displayName]="formValues().displayName || formValues().username"
+    [username]="formValues().username"
+    [avatarUrl]="avatarUrl()"
+    [currentBannerUrl]="avatarBannerUrl()"
+    [currentPosition]="avatarBannerPosition()"
+    [loading]="bannerLoading()"
+    [loadingMore]="bannerLoadingMore()"
+    [hasMore]="bannerHasMore()"
+    [unavailableProviders]="bannerUnavailableProviders()"
+    [selectedMedia]="selectedBannerMedia()"
+    [images]="bannerImages()"
+    [imagesLoading]="bannerImagesLoading()"
+    [selectedImage]="selectedBannerImage()"
+    [imagePosition]="bannerImagePosition()"
+    [saving]="bannerSaving()"
+    [hasBanner]="!!avatarBannerUrl()"
+    (removeBanner)="removeBannerFromPicker()"
+    (closed)="closeBannerPicker()"
+    (queryChange)="onBannerQueryChange($event)"
+    [bannerCounts]="bannerCounts()"
+    (countRequested)="requestBannerCount($event)"
+    (mediaSelected)="selectBannerMedia($event)"
+    (loadMore)="loadMoreBannerResults()"
+    (backToSearch)="backToBannerSearch()"
+    (imageSelected)="selectBannerImage($event)"
+    (imagePositionChange)="setBannerImagePosition($event)"
+    (imageConfirmed)="confirmBannerImage($event)"
+  />
+}

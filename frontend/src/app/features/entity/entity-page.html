@@ -1,0 +1,24 @@
+@if (loading()) {
+  <div class="mt-24 flex justify-center"><shelfy-spinner /></div>
+} @else if (header(); as header) {
+  <shelfy-entity-shelf
+    [title]="header.name"
+    [leadUrl]="header.imageUrl ?? null"
+    [leadShape]="leadShape()"
+    [facts]="facts()"
+    [description]="header.description ?? null"
+    [items]="displayedItems()"
+    [hasMore]="hasMore()"
+    [sorts]="sorts()"
+    [sort]="personCreditSort()"
+    [direction]="personCreditSortDirection()"
+    (loadMore)="loadMore()"
+    (opened)="openMedia($event)"
+    (sortChange)="selectPersonCreditSort($event)"
+    (directionChange)="personCreditSortDirection.set($event)"
+  />
+} @else {
+  <main class="px-gutter flex min-h-full items-center justify-center pt-(--nav-bar-height)">
+    <shelfy-empty-state icon="search" [hint]="'entity.no_results' | translate" />
+  </main>
+}

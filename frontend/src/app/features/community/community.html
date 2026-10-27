@@ -1,0 +1,269 @@
+<div
+  #scrollContainer
+  class="page-scroll h-full min-h-0 [scrollbar-gutter:stable] overflow-x-clip overflow-y-auto [overflow-anchor:none] max-md:pb-(--bottom-nav-clearance)"
+  (scroll)="onScroll()"
+>
+  <shelfy-page-hero [title]="'nav.creations' | translate">
+    <p class="text-text-muted mt-2 max-w-xl text-lg">{{ 'nav.desc.creations' | translate }}</p>
+    <div class="mt-4.5 flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+      @if (signedIn()) {
+        <p class="text-text-muted flex flex-wrap gap-x-5.5 gap-y-1.5 text-base">
+          @if (banner.followingCount() !== null) {
+            <span
+              ><b class="text-text mr-1 font-bold tabular-nums">{{ banner.followingCount() }}</b
+              >{{ 'community.stat_following' | translate }}</span
+            >
+          }
+          @if (banner.todayCount()) {
+            <span
+              ><b class="text-text mr-1 font-bold tabular-nums">{{ banner.todayCount() }}</b
+              >{{ 'community.stat_today' | translate }}</span
+            >
+          }
+        </p>
+        <button
+          type="button"
+          [class]="primaryButton + ' max-md:w-full'"
+          aria-haspopup="dialog"
+          (click)="createOpen.set(true)"
+        >
+          <shelfy-icon name="plus" size="20" />{{ 'community.create' | translate }}
+        </button>
+      } @else {
+        <p class="text-text-muted max-w-xl text-base">{{ 'community.guest.hint' | translate }}</p>
+        <button type="button" [class]="secondaryButton" (click)="signIn()">
+          {{ 'community.guest.cta' | translate }}
+        </button>
+      }
+    </div>
+  </shelfy-page-hero>
+
+  <div #sentinel aria-hidden="true"></div>
+  <div class="v-libbar" [class.stuck]="stuck()">
+    <shelfy-tabs
+      class="min-w-0"
+      [tabs]="tabs()"
+      [activeId]="activeTab()"
+      [label]="'nav.creations' | translate"
+      (tabSelected)="selectView($event)"
+    />
+    @if (!landing()) {
+      <div class="v-ltools">
+        <label class="v-lsearch">
+          <shelfy-icon name="search" size="18" class="shrink-0" />
+          <input
+            #searchInput
+            type="search"
+            autocomplete="off"
+            [placeholder]="'community.search_placeholder.' + view() | translate"
+            [attr.aria-label]="'community.search_placeholder.' + view() | translate"
+            [value]="searchDraft()"
+            (input)="onSearchInput($any($event.target).value)"
+          />
+        </label>
+        <button
+          type="button"
+          class="v-tool"
+          aria-haspopup="dialog"
+          [attr.aria-label]="'library.filters' | translate"
+          (click)="filtersOpen.set(true)"
+        >
+          <shelfy-icon name="filter" size="18" />
+          <span class="lbl">{{ 'library.filters' | translate }}</span>
+          @if (filterCount()) {
+            <span class="n">{{ filterCount() }}</span>
+          }
+        </button>
+      </div>
+    }
+  </div>
+
+  @for (shownTab of [activeTab()]; track shownTab) {
+    <div class="animate-rise-in">
+      @if (landing()) {
+        @if (landingState.loading()) {
+          <div class="px-gutter pt-8"><shelfy-creation-skeleton /></div>
+        }
+        @for (rail of landingState.rails(); track rail.id; let even = $even) {
+          <shelfy-shelf-section
+            [title]="rail.titleKey | translate"
+            [moreLabel]="'home.see_all' | translate"
+            [moreRoute]="['/creations']"
+            [moreQuery]="rail.query"
+            [band]="even"
+            [rail]="null"
+          >
+            <div [class]="rail.items[0]?.kind === 'review' ? 'v-revs' : 'v-crea'">
+              @for (entry of rail.items.slice(0, 3); track entry.id) {
+                <ng-container
+                  [ngTemplateOutlet]="card"
+                  [ngTemplateOutletContext]="{ $implicit: entry }"
+                />
+              }
+            </div>
+          </shelfy-shelf-section>
+        } @empty {
+          @if (!landingState.loading()) {
+            <div class="px-gutter"><ng-container [ngTemplateOutlet]="emptyState" /></div>
+          }
+        }
+      } @else {
+        <div class="px-gutter pt-6 pb-35">
+          <ng-container [ngTemplateOutlet]="gridView" />
+        </div>
+      }
+    </div>
+  }
+  <shelfy-page-footer />
+</div>
+
+<ng-template #card let-entry>
+  @switch (entry.kind) {
+    @case ('review') {
+      <shelfy-review-card [review]="entry.review" [dated]="!landing()" />
+    }
+    @case ('list') {
+      <shelfy-creation-tile
+        [list]="entry.list"
+        [dated]="!landing()"
+        [showVisibility]="showVisibility()"
+      />
+    }
+    @case ('versus') {
+      <shelfy-creation-tile
+        [pool]="entry.pool"
+        [dated]="!landing()"
+        [showVisibility]="showVisibility()"
+      />
+    }
+  }
+</ng-template>
+
+<ng-template #emptyState>
+  <div class="flex max-w-xl flex-col items-start gap-2 py-16">
+    <h2 class="font-display text-text text-[2rem] font-bold tracking-[-0.04em]">
+      {{ 'community.empty.browse_title' | translate }}
+    </h2>
+    <p class="text-text-muted max-w-[56ch] text-base">{{ emptyHint() | translate }}</p>
+    <div class="mt-4 flex flex-wrap gap-2.5">
+      @if (query().trim()) {
+        <shelfy-button type="button" variant="secondary" (click)="clearSearch()">
+          {{ 'library.empty.clear_search' | translate }}
+        </shelfy-button>
+      } @else if (scope() === 'CIRCLE' || scope() === 'REMOTE') {
+        <shelfy-button type="button" variant="secondary" (click)="findPeople()">
+          {{ 'friends.empty_cta' | translate }}
+        </shelfy-button>
+      } @else if (scope() === 'MINE') {
+        <shelfy-button type="button" variant="secondary" (click)="onCreate(createKind())">
+          {{ createLabel() | translate }}
+        </shelfy-button>
+      }
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #gridView>
+  @let window = browse.window;
+  <p class="sr-only" role="status">
+    @if (!window.loading() && !window.loadFailed() && window.items().length) {
+      {{ 'community.results' | translate: { count: window.totalElements() } }}
+    }
+  </p>
+  @if (window.loading()) {
+    <shelfy-creation-skeleton [grid]="true" [kind]="view()" />
+  } @else if (window.loadFailed()) {
+    <div class="flex max-w-xl flex-col items-start gap-2 py-16" role="alert">
+      <h2 class="font-display text-text text-[2rem] font-bold tracking-[-0.04em]">
+        {{ 'explore.failed_title' | translate }}
+      </h2>
+      <p class="text-text-muted text-base">{{ 'community.load_error' | translate }}</p>
+      <shelfy-button class="mt-4" type="button" variant="secondary" (click)="retry()">
+        {{ 'collection.retry' | translate }}
+      </shelfy-button>
+    </div>
+  } @else if (window.items().length === 0) {
+    <ng-container [ngTemplateOutlet]="emptyState" />
+  } @else {
+    <div [class]="(view() === 'reviews' ? 'v-revs' : 'v-crea') + ' v-cgrid'">
+      @for (entry of window.items(); track entry.id) {
+        <ng-container [ngTemplateOutlet]="card" [ngTemplateOutletContext]="{ $implicit: entry }" />
+      }
+    </div>
+    @if (window.loadingMore()) {
+      <div class="flex justify-center py-8"><shelfy-spinner /></div>
+    } @else if (browse.ended()) {
+      <p class="text-text-subtle py-10 text-center text-sm">{{ 'community.end' | translate }}</p>
+    }
+  }
+</ng-template>
+
+<shelfy-filter-panel
+  [open]="filtersOpen()"
+  [title]="'library.filters' | translate"
+  [showLabel]="'community.show_results' | translate: { count: browse.window.totalElements() }"
+  (closed)="filtersOpen.set(false)"
+  (cleared)="clearFilters()"
+>
+  <div class="flex flex-col gap-7">
+    @if (signedIn()) {
+      <div role="radiogroup" [attr.aria-label]="'community.scope_label' | translate">
+        <p [class]="groupTitle">{{ 'community.from' | translate }}</p>
+        <div class="flex flex-wrap gap-2">
+          @for (item of scopes(); track item.id) {
+            <button
+              type="button"
+              role="radio"
+              [class]="tile(scope() === item.id)"
+              [attr.aria-checked]="scope() === item.id"
+              (click)="setScope(item.id)"
+            >
+              {{ item.label }}
+            </button>
+          }
+        </div>
+      </div>
+    }
+    <div role="radiogroup" [attr.aria-label]="'library.sort_by' | translate">
+      <p [class]="groupTitle">{{ 'library.sort_by' | translate }}</p>
+      <div class="flex flex-wrap gap-2">
+        @for (item of sortItems(); track item.id) {
+          <button
+            type="button"
+            role="radio"
+            [class]="tile(sort() === item.id)"
+            [attr.aria-checked]="sort() === item.id"
+            (click)="setSort(item.id)"
+          >
+            {{ item.label }}
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+</shelfy-filter-panel>
+
+<shelfy-filter-panel
+  [open]="createOpen()"
+  [title]="'community.create' | translate"
+  (closed)="createOpen.set(false)"
+>
+  <div class="v-ctiles">
+    @for (item of createItems(); track item.id) {
+      <button type="button" class="v-ctile" (click)="createOpen.set(false); onCreate(item.id)">
+        <shelfy-icon [name]="item.icon!" size="32" />
+        <span>
+          <b>{{ item.label }}</b>
+          <small>{{ 'community.create_hint.' + item.id | translate }}</small>
+        </span>
+      </button>
+    }
+  </div>
+</shelfy-filter-panel>
+
+<shelfy-media-picker
+  heading="shared.media_picker.review_title"
+  [open]="pickerOpen()"
+  (picked)="startReview($event)"
+  (closed)="pickerOpen.set(false)"
+/>

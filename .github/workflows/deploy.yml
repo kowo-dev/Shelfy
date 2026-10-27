@@ -1,0 +1,84 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: What to deploy
+        type: choice
+        options: [all, frontend, backend]
+        default: all
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  deploy-frontend:
+    if: github.ref == 'refs/heads/main' && inputs.target != 'backend'
+    runs-on: ubuntu-latest
+    environment: production
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - env:
+          API_DOMAIN: ${{ vars.API_DOMAIN }}
+          TMDB_IMAGE_BASE_URL: ${{ vars.TMDB_IMAGE_BASE_URL }}
+        run: |
+          : "${API_DOMAIN:?API_DOMAIN repository variable is required}"
+          APP_VERSION="$(git describe --tags --always)"
+          mkdir -p src/environments
+          cat <<EOF > src/environments/environment.prod.ts
+          export const environment = {
+            production: true,
+            version: '${APP_VERSION#v}',
+            baseUrl: 'https://${API_DOMAIN}/api/v1',
+            tmdbImageBaseUrl: '${TMDB_IMAGE_BASE_URL:-https://image.tmdb.org/t/p/}',
+          };
+          EOF
+      - run: npm run build
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+      - env:
+          OVH_SFTP_USER: ${{ secrets.OVH_SFTP_USER }}
+          LFTP_PASSWORD: ${{ secrets.OVH_SFTP_PASSWORD }}
+          OVH_SFTP_HOST: ${{ secrets.OVH_SFTP_HOST }}
+        run: >-
+          lftp --env-password -u "$OVH_SFTP_USER" "sftp://$OVH_SFTP_HOST"
+          -e "set sftp:auto-confirm yes;
+          mirror --reverse --delete --verbose dist/shelfy/browser www;
+          bye"
+
+  deploy-backend:
+    if: github.ref == 'refs/heads/main' && inputs.target != 'frontend'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - env:
+          VPS_SSH_PRIVATE_KEY_B64: ${{ secrets.VPS_SSH_PRIVATE_KEY_B64 }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          : "${VPS_KNOWN_HOSTS:?VPS_KNOWN_HOSTS secret is required, see docs/development.md}"
+          install -m 700 -d ~/.ssh
+          printf '%s' "$VPS_SSH_PRIVATE_KEY_B64" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=yes "$VPS_USER@$VPS_HOST" 'cd ~/shelfy && git pull --ff-only && bash docker/deploy.sh'

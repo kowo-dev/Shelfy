@@ -1,0 +1,171 @@
+x-logging: &default-logging
+  driver: local
+  options:
+    max-size: "10m"
+    max-file: "7"
+
+x-hardening: &hardening
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: shelfy-postgres
+    restart: unless-stopped
+    logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      POSTGRES_DB: shelfy
+      POSTGRES_USER: shelfy
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets:
+      - postgres_password
+    ports:
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-5432}:5432"
+    volumes:
+      - shelfy_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shelfy"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+      args:
+        APP_VERSION: ${APP_VERSION:-dev}
+    image: shelfy-backend:latest
+    container_name: shelfy-backend
+    restart: unless-stopped
+    <<: *hardening
+    logging: *default-logging
+    read_only: true
+    tmpfs:
+      - /tmp
+    mem_limit: 1g
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - shelfy_avatar_uploads:/data/avatars
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shelfy
+      SPRING_DATASOURCE_USERNAME: shelfy
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      APP_JWT_ACCESS_TOKEN_SECRET: ${APP_JWT_ACCESS_TOKEN_SECRET}
+      APP_JWT_ISSUER: ${APP_JWT_ISSUER:-shelfy-api}
+      APP_JWT_AUDIENCE: ${APP_JWT_AUDIENCE:-shelfy-web}
+      APP_JWT_ACCESS_TOKEN_EXPIRATION_MINUTES: ${JWT_ACCESS_TOKEN_EXPIRATION_MINUTES:-15}
+      APP_JWT_REFRESH_TOKEN_EXPIRATION_DAYS: ${JWT_REFRESH_TOKEN_EXPIRATION_DAYS:-7}
+      APP_CORS_ALLOWED_ORIGIN: ${APP_CORS_ALLOWED_ORIGIN:-${FRONTEND_URL}}
+      APP_MAIL_FROM: ${APP_MAIL_FROM}
+      SPRING_MAIL_HOST: ${SMTP_HOST}
+      SPRING_MAIL_PORT: ${SMTP_PORT:-587}
+      SPRING_MAIL_USERNAME: ${SMTP_USERNAME}
+      SPRING_MAIL_PASSWORD: ${SMTP_PASSWORD}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: ${SMTP_AUTH:-true}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: ${SMTP_STARTTLS:-true}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_ENABLE: ${SMTP_SSL:-false}
+      APP_PASSWORD_RESET_RESET_URL: ${FRONTEND_URL}/auth/reset-password
+      APP_PASSWORD_RESET_EXPIRATION_MINUTES: ${PASSWORD_RESET_EXPIRATION_MINUTES:-30}
+      APP_EMAIL_VERIFICATION_VERIFY_URL: ${FRONTEND_URL}/auth/verify-email
+      APP_EMAIL_VERIFICATION_EXPIRATION_MINUTES: ${EMAIL_VERIFICATION_EXPIRATION_MINUTES:-1440}
+      APP_EMAIL_VERIFICATION_REQUIRED: ${EMAIL_VERIFICATION_REQUIRED:-true}
+      APP_REGISTRATION_OPEN: ${REGISTRATION_OPEN:-true}
+      APP_EMAIL_CHANGE_CONFIRM_URL: ${FRONTEND_URL}/confirm-email-change
+      APP_EMAIL_CHANGE_EXPIRATION_MINUTES: ${EMAIL_CHANGE_EXPIRATION_MINUTES:-30}
+      APP_AVATAR_DIRECTORY: /data/avatars
+      APP_AVATAR_PUBLIC_BASE_URL: ${API_URL}
+      APP_AVATAR_MAX_SIZE_BYTES: ${AVATAR_MAX_SIZE_BYTES:-2097152}
+      APP_TMDB_URL: https://api.themoviedb.org/3
+      APP_TMDB_IMAGE_BASE_URL: https://image.tmdb.org/t/p/
+      APP_TMDB_ACCESS_TOKEN: ${TMDB_ACCESS_TOKEN}
+      APP_IGDB_CLIENT_ID: ${IGDB_CLIENT_ID}
+      APP_IGDB_CLIENT_SECRET: ${IGDB_CLIENT_SECRET}
+      APP_STEAM_API_KEY: ${STEAM_API_KEY}
+      APP_STEAM_CALLBACK_URL: ${API_URL}/api/v1/steam/oauth/callback
+      APP_STEAM_FRONTEND_REDIRECT_URI: ${FRONTEND_URL}/settings
+      APP_LEGAL_CONTROLLER_NAME: ${LEGAL_CONTROLLER_NAME}
+      APP_LEGAL_CONTACT_EMAIL: ${LEGAL_CONTACT_EMAIL}
+      APP_LEGAL_JURISDICTION: ${LEGAL_JURISDICTION}
+      APP_LEGAL_HOSTING_PROVIDER_NAME: ${LEGAL_HOSTING_PROVIDER_NAME}
+      APP_LEGAL_HOSTING_PROVIDER_ADDRESS: ${LEGAL_HOSTING_PROVIDER_ADDRESS}
+      APP_FEDERATION_ENABLED: ${FEDERATION_ENABLED:-false}
+      APP_FEDERATION_HANDLE_DOMAIN: ${FEDERATION_HANDLE_DOMAIN:-}
+      APP_FEDERATION_SERVER_URL: ${API_URL}
+      APP_FEDERATION_MODE: ${FEDERATION_MODE:-open}
+      APP_FEDERATION_ADMINS: ${FEDERATION_ADMINS:-}
+      APP_FEDERATION_AUTHORIZED_FETCH: ${FEDERATION_AUTHORIZED_FETCH:-false}
+
+  frontend:
+    profiles: [frontend]
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      args:
+        API_BASE_URL: ${FRONTEND_API_BASE_URL}
+        APP_VERSION: ${APP_VERSION:-dev}
+    image: shelfy-frontend:latest
+    container_name: shelfy-frontend
+    restart: unless-stopped
+    <<: *hardening
+    logging: *default-logging
+    read_only: true
+    tmpfs:
+      - /tmp
+    mem_limit: 128m
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: shelfy-caddy
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-80}:${HTTP_PORT:-80}"
+      - "${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
+    environment:
+      TLS_MODE: ${TLS_MODE:-public}
+      FRONTEND_DOMAIN: ${FRONTEND_DOMAIN:-}
+      FRONTEND_HOSTING: ${FRONTEND_HOSTING:-bundled}
+      API_DOMAIN: ${API_DOMAIN:-}
+      HTTP_PORT: ${HTTP_PORT:-80}
+      HTTPS_PORT: ${HTTPS_PORT:-443}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy:/etc/caddy/caddy:ro
+      - shelfy_caddy_data:/data
+      - shelfy_caddy_config:/config
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+        required: false
+    logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+
+volumes:
+  shelfy_pgdata:
+  shelfy_caddy_data:
+  shelfy_caddy_config:
+  shelfy_avatar_uploads:
+
+secrets:
+  postgres_password:
+    file: ./secrets/postgres_password.txt

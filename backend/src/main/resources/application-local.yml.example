@@ -1,0 +1,72 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/shelfy
+    username: shelfy
+    password: shelfy_local_dev
+  mail:
+    # Local email server that catches every email, like Mailpit or MailHog
+    host: localhost
+    port: 1025
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+
+app:
+  jwt:
+    # Make one with: openssl rand -base64 48
+    access-token-secret: "change-me-generate-a-random-secret-at-least-32-bytes-long"
+    issuer: "shelfy-api"
+    audience: "shelfy-app"
+    access-token-expiration-minutes: 15
+    refresh-token-expiration-days: 7
+  cors:
+    allowed-origin: "http://localhost:4200"
+  mail:
+    from: "no-reply@shelfy.app"
+  password-reset:
+    expiration-minutes: 30
+    reset-url: "http://localhost:4200/auth/reset-password"
+  email-verification:
+    expiration-minutes: 1440
+    verify-url: "http://localhost:4200/auth/verify-email"
+  email-change:
+    expiration-minutes: 30
+    confirm-url: "http://localhost:4200/confirm-email-change"
+  legal:
+    controller-name: "change-me"
+    contact-email: "privacy@change-me.example"
+    jurisdiction: "CNIL (France) — https://www.cnil.fr"
+    hosting-provider-name: "change-me"
+    hosting-provider-address: "change-me"
+  tmdb:
+    url: "https://api.themoviedb.org/3"
+    # Get a token at https://www.themoviedb.org/settings/api
+    access-token: "change-me"
+    image-base-url: "https://image.tmdb.org/t/p/"
+  igdb:
+    auth-url: "https://id.twitch.tv"
+    url: "https://api.igdb.com/v4"
+    image-base-url: "https://images.igdb.com/igdb/image/upload/t_1080p/"
+    # Create an app at https://dev.twitch.tv/console/apps to get these
+    client-id: "change-me"
+    client-secret: "change-me"
+  anilist:
+    url: "https://graphql.anilist.co"
+  steam:
+    # Get a key at https://steamcommunity.com/dev/apikey
+    api-key: "change-me"
+    api-base-url: "https://api.steampowered.com"
+    community-base-url: "https://steamcommunity.com"
+    authorize-url: "https://steamcommunity.com/openid/login"
+    callback-url: "http://localhost:8082/api/v1/steam/oauth/callback"
+    frontend-redirect-uri: "http://localhost:4200/settings"
+  avatar:
+    directory: "/tmp/shelfy-avatars"
+    public-base-url: "http://localhost:8082"
+    max-size-bytes: 2097152
+  federation:
+    # Verified emails of the accounts allowed to manage federation, comma separated
+    admins: "you@example.com"

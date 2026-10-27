@@ -1,0 +1,455 @@
+@if (loading()) {
+  <shelfy-detail-skeleton [count]="6" />
+} @else if (failed()) {
+  <main class="px-gutter flex min-h-full items-center justify-center pt-(--nav-bar-height)">
+    <shelfy-empty-state role="alert" icon="warningTriangle" [hint]="'lists.load_error' | translate">
+      <shelfy-button type="button" variant="primary" (click)="retry()">
+        {{ 'collection.retry' | translate }}
+      </shelfy-button>
+    </shelfy-empty-state>
+  </main>
+} @else if (list(); as list) {
+  <main class="animate-fade-in flex min-h-full flex-col motion-reduce:animate-none">
+    <shelfy-media-header
+      [title]="canEditDetails() ? edit.name() : list.name"
+      [editable]="canEditDetails()"
+      [titleLabel]="'community.sheet.name' | translate"
+      [titlePlaceholder]="'lists.title_placeholder' | translate"
+      [customArt]="true"
+      [posterUrl]="artCovers()[0]?.coverUrl ?? null"
+      [backdropUrl]="backdrop()"
+      (titleChange)="edit.name.set($event)"
+    >
+      <div headerArt [class]="artCovers().length ? 'v-fan' : 'v-fan-empty'">
+        @for (cover of artCovers(); track $index) {
+          <span [style.--i]="$index">
+            @if (cover.isAdult) {
+              <span class="bg-surface-2 grid size-full place-items-center">
+                <shelfy-adult-badge size="2.5rem" />
+              </span>
+            } @else if (cover.coverUrl) {
+              <img [src]="cover.coverUrl" alt="" draggable="false" />
+            }
+          </span>
+        } @empty {
+          <shelfy-icon name="lists" size="40" aria-hidden="true" />
+        }
+      </div>
+
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-4 max-[900px]:justify-center">
+        @if (list.creatorUsername; as owner) {
+          <a
+            [routerLink]="['/profile', owner]"
+            class="group/author inline-flex min-w-0 items-center gap-3 text-left"
+          >
+            <shelfy-avatar size="md" [displayName]="owner" [avatarUrl]="list.creatorAvatarUrl" />
+            <span class="min-w-0">
+              <b class="text-text block truncate text-[1.0625rem] group-hover/author:underline">{{
+                owner
+              }}</b>
+              <small class="text-text-subtle block text-sm tabular-nums">{{
+                heroMeta().join(' · ')
+              }}</small>
+            </span>
+          </a>
+        }
+        @if (coAuthors().length > 0) {
+          <span
+            class="flex items-center"
+            [attr.aria-label]="'lists.panel.contributors' | translate"
+          >
+            @for (person of coAuthors(); track person.userId) {
+              <a
+                [routerLink]="['/profile', person.username]"
+                class="ring-background -ml-2 rounded-full ring-3 first:ml-0"
+                [title]="person.displayName || person.username"
+              >
+                <shelfy-avatar
+                  size="32"
+                  [displayName]="person.displayName || person.username"
+                  [avatarUrl]="person.avatarUrl"
+                />
+              </a>
+            }
+          </span>
+        }
+        @if (ctaKind() === 'like') {
+          <button
+            type="button"
+            [class]="social + (list.isLikedByViewer ? ' text-accent!' : '')"
+            [attr.aria-pressed]="list.isLikedByViewer"
+            [attr.aria-label]="
+              (list.isLikedByViewer ? 'community.liked' : 'community.like') | translate
+            "
+            [disabled]="liking()"
+            (click)="toggleLike()"
+          >
+            <shelfy-icon name="like" size="22" [active]="list.isLikedByViewer" />
+            <b class="tabular-nums">{{ likeTotal() }}</b>
+          </button>
+        } @else {
+          <span
+            [class]="social + ' cursor-default'"
+            [attr.aria-label]="'community.likes_count' | translate: { count: likeTotal() }"
+          >
+            <shelfy-icon name="like" size="22" />
+            <b class="tabular-nums">{{ likeTotal() }}</b>
+          </span>
+        }
+        <button
+          type="button"
+          [class]="social"
+          [attr.aria-label]="'comments.title' | translate"
+          (click)="selectTab('discussion')"
+        >
+          <shelfy-icon name="comment" size="22" />
+          <b class="tabular-nums">{{ commentTotal() ?? list.commentCount }}</b>
+        </button>
+      </div>
+
+      @if (canEditDetails()) {
+        <textarea
+          class="text-text-muted placeholder:text-text-subtle hover:bg-fill-subtle focus-visible:bg-fill-subtle duration-base -mx-3 mt-5 block field-sizing-content max-h-32 w-[calc(100%+1.5rem)] max-w-[62ch] resize-none overflow-y-auto rounded-xl bg-transparent px-3 py-2 text-base leading-relaxed transition-colors outline-none max-[900px]:mx-0 max-[900px]:w-full max-[900px]:text-center"
+          maxlength="280"
+          rows="1"
+          [attr.aria-label]="'community.sheet.description' | translate"
+          [placeholder]="'studio.description_placeholder' | translate"
+          [value]="edit.description()"
+          (input)="edit.description.set($any($event.target).value)"
+        ></textarea>
+      } @else if (list.description) {
+        <p
+          #descriptionText
+          class="text-text-muted mt-5 max-w-[60ch] text-base leading-relaxed whitespace-pre-line max-[900px]:mx-auto"
+          [class.line-clamp-3]="!descriptionOpen()"
+        >
+          {{ list.description }}
+        </p>
+        @if (list.description.length > 180) {
+          <button
+            type="button"
+            class="text-text mt-1 cursor-pointer text-[0.9375rem] font-semibold underline-offset-3 hover:underline"
+            [attr.aria-expanded]="descriptionOpen()"
+            (click)="descriptionOpen.set(!descriptionOpen())"
+          >
+            {{ (descriptionOpen() ? 'media.see_less' : 'media.see_more') | translate }}
+          </button>
+        }
+      }
+
+      @if (canEditDetails() || list.tags.length > 0) {
+        <div
+          class="mt-4 flex flex-wrap items-center gap-2 max-[900px]:justify-center"
+          role="group"
+          [attr.aria-label]="'lists.tags' | translate"
+        >
+          @if (canEditDetails()) {
+            @for (tag of edit.tags(); track tag) {
+              <span
+                [class]="tagChip + ' pr-1.5'"
+                animate.enter="animate-rise-in"
+                animate.leave="animate-fade-out"
+              >
+                {{ tag }}
+                <button
+                  type="button"
+                  class="text-text-subtle hover:text-text -mr-1 grid size-6 cursor-pointer place-items-center rounded-md transition-colors"
+                  [class]="hitArea"
+                  [attr.aria-label]="'lists.manage.remove_tag' | translate: { tag }"
+                  (click)="edit.removeTag(tag)"
+                >
+                  <shelfy-icon name="close" size="12" />
+                </button>
+              </span>
+            }
+            @if (edit.tags().length < maxTags) {
+              <label [class]="tagAdd">
+                <shelfy-icon name="plus" size="14" />
+                <input
+                  #tagField
+                  class="placeholder:text-text-subtle [field-sizing:content] w-[9ch] min-w-0 bg-transparent text-sm! leading-none font-semibold outline-none"
+                  maxlength="24"
+                  [placeholder]="'lists.tag_placeholder' | translate"
+                  [attr.aria-label]="'lists.tag_placeholder' | translate"
+                  (keydown)="onTagKey($event, tagField)"
+                  (blur)="commitTag(tagField)"
+                />
+              </label>
+            }
+          } @else {
+            @for (tag of list.tags; track tag) {
+              <span [class]="tagChip">{{ tag }}</span>
+            }
+          }
+        </div>
+      }
+
+      @if (list.source; as source) {
+        <a
+          class="text-text-muted hover:text-text mt-3 inline-flex items-center gap-1.5 text-sm transition-colors"
+          [routerLink]="['/lists', source.id]"
+        >
+          <shelfy-icon name="lists" size="16" />
+          {{
+            'studio.copied_from'
+              | translate: { name: source.name, user: source.creatorUsername ?? '' }
+          }}
+        </a>
+      }
+
+      <div class="mt-7 flex flex-wrap items-center gap-3 empty:hidden max-[900px]:justify-center">
+        @if (ctaKind() === 'publish') {
+          <button
+            type="button"
+            [class]="primaryButton"
+            [disabled]="!edit.nameValid()"
+            (click)="publishOpen.set(true)"
+          >
+            <shelfy-icon name="send" size="20" />{{ 'studio.publish' | translate }}
+          </button>
+        }
+      </div>
+
+      @if (isOwner() || canLeave()) {
+        <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 max-[900px]:justify-center">
+          @if (isOwner()) {
+            <button
+              type="button"
+              [class]="manage"
+              [attr.aria-label]="'studio.change_visibility' | translate"
+              (click)="publishOpen.set(true)"
+            >
+              <shelfy-icon [name]="visibilityInfo().icon" size="16" />
+              {{ visibilityInfo().labelKey | translate }}
+            </button>
+            <button type="button" [class]="manage" (click)="collab.show()">
+              <shelfy-icon name="userAdd" size="16" />{{ 'lists.collab.invite_button' | translate }}
+            </button>
+            <button type="button" [class]="manage + ' hover:text-danger-fg'" (click)="deleteList()">
+              <shelfy-icon name="trash" size="16" />{{ 'studio.delete' | translate }}
+            </button>
+          }
+          @if (canLeave()) {
+            <button type="button" [class]="manage" (click)="collab.leave()">
+              <shelfy-icon name="logout" size="16" />{{ 'lists.collab.leave' | translate }}
+            </button>
+          }
+        </div>
+      }
+    </shelfy-media-header>
+
+    @if (canEditItems()) {
+      <shelfy-media-picker
+        [open]="mediaPickerOpen()"
+        [alreadySelected]="edit.media()"
+        (picked)="edit.add([$event])"
+        (unpicked)="removeByKey($event)"
+        (closed)="closeMediaPicker()"
+      />
+    }
+
+    @if (isPendingInvite()) {
+      <div class="px-gutter mx-auto mt-8 w-full">
+        <shelfy-collab-invite-banner
+          class="block"
+          animate.enter="animate-rise-in"
+          animate.leave="animate-fade-out"
+          message="lists.collab.pending_banner"
+          [answering]="collab.answering()"
+          (accept)="collab.accept()"
+          (decline)="collab.decline()"
+        />
+      </div>
+    }
+
+    <div #barSentinel aria-hidden="true"></div>
+    <div class="v-libbar" [class.stuck]="stuck()">
+      <shelfy-tabs
+        class="min-w-0"
+        [tabs]="pageTabs()"
+        [activeId]="tab()"
+        [label]="list.name"
+        panelId="list-tab-panel"
+        (tabSelected)="selectTab($event)"
+      />
+      @if (tab() === 'titles') {
+        <div class="v-ltools">
+          @if (edit.media().length > 0) {
+            <shelfy-segmented
+              [options]="filterLinks()"
+              [value]="filter()"
+              [label]="'community.list.filter_label' | translate"
+              (changed)="setFilter($event)"
+            />
+            @if (canEditItems()) {
+              <shelfy-selection-toggle
+                [chip]="true"
+                [pressed]="edit.selectionMode()"
+                (toggled)="edit.toggleSelectionMode()"
+              />
+            }
+          }
+          @if (canEditItems()) {
+            <button type="button" [class]="primaryButton" (click)="openMediaPicker()">
+              <shelfy-icon name="plus" size="20" />{{ 'lists.manage.add_titles' | translate }}
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    <div id="list-tab-panel" role="tabpanel" class="px-gutter mx-auto w-full min-w-0 pt-4.5 pb-35">
+      @for (current of [tab()]; track current) {
+        <div class="animate-rise-in flex min-w-0 flex-col">
+          @if (tab() === 'discussion') {
+            <section id="comments" class="w-full max-w-[68ch] scroll-mt-40">
+              <shelfy-comments
+                [source]="commentsSource(list.id)"
+                [resetKey]="list.id"
+                [initialItems]="list.comments"
+                [initialTotal]="list.commentCount"
+                [canModerate]="isOwner()"
+                [maxLength]="500"
+                (totalChange)="commentTotal.set($event)"
+              />
+            </section>
+          } @else if (edit.media().length === 0) {
+            <div class="flex flex-col items-start gap-2 pt-6">
+              <h2 class="font-display text-text text-[1.75rem] font-extrabold tracking-[-0.04em]">
+                {{ 'lists.empty_title' | translate }}
+              </h2>
+              <p class="text-text-muted max-w-[56ch] text-base">
+                {{
+                  (canEditItems() ? 'lists.manage.empty_hint' : 'lists.detail_empty') | translate
+                }}
+              </p>
+            </div>
+          } @else if (visibleItems().length === 0) {
+            <p class="text-text-muted pt-4">{{ 'community.list.all_seen' | translate }}</p>
+          } @else {
+            <shelfy-entity-media-grid
+              class="block"
+              [items]="visibleItems()"
+              [posterSize]="true"
+              [overlay]="canEditItems() || showAuthors() ? cardOverlay : null"
+              [selectionMode]="edit.selectionMode()"
+              [selectedIds]="edit.selected()"
+              (selectionToggle)="edit.toggleSelected($event)"
+            />
+          }
+        </div>
+      }
+    </div>
+    <shelfy-page-footer />
+
+    <ng-template #cardOverlay let-item>
+      @if (showAuthors()) {
+        @if (edit.addedBy()(item.media.id); as who) {
+          <span
+            class="absolute top-2 left-2 z-6 rounded-full p-0.5"
+            [class]="mediaChip"
+            [title]="'lists.manage.added_by' | translate: { user: who.displayName || who.username }"
+          >
+            <shelfy-avatar size="28" [displayName]="who.username" [avatarUrl]="who.avatarUrl" />
+            <span class="sr-only">{{
+              'lists.manage.added_by' | translate: { user: who.displayName || who.username }
+            }}</span>
+          </span>
+        }
+      }
+      @if (canEditItems() && !edit.selectionMode()) {
+        <button
+          type="button"
+          class="hover:bg-danger absolute top-2 right-2 z-6 grid size-9 cursor-pointer place-items-center rounded-full text-white opacity-0 transition-[opacity,background-color,scale] group-focus-within/card:opacity-100 group-hover/card:opacity-100 focus-visible:opacity-100 active:scale-90 [@media(hover:none)]:hidden"
+          [class]="mediaChip"
+          [attr.aria-label]="'lists.manage.remove_title' | translate: { title: item.media.title }"
+          [title]="'lists.manage.remove_title' | translate: { title: item.media.title }"
+          (click)="edit.remove([item.media.id])"
+        >
+          <shelfy-icon name="close" size="sm" />
+        </button>
+      }
+    </ng-template>
+
+    @if (edit.selectionMode()) {
+      <div
+        [class]="bulkBar"
+        role="toolbar"
+        [attr.aria-label]="'collection.bulk.selected_count' | translate: { count: selectedCount() }"
+        animate.enter="animate-rise-in"
+        animate.leave="animate-sink-out"
+      >
+        <button
+          type="button"
+          role="checkbox"
+          class="hover:bg-fill-subtle grid size-11 shrink-0 cursor-pointer place-items-center rounded-full transition-colors"
+          [attr.aria-checked]="allSelected() ? 'true' : selectedCount() > 0 ? 'mixed' : 'false'"
+          [attr.aria-label]="'collection.bulk.select_all' | translate"
+          [title]="'collection.bulk.select_all' | translate"
+          (click)="allSelected() ? edit.selectAll([]) : selectAllVisible()"
+        >
+          <span [class]="checkbox + ' ' + (selectedCount() > 0 ? checkboxOn : checkboxOff)">
+            @if (allSelected()) {
+              <shelfy-icon name="check" size="12" />
+            } @else if (selectedCount() > 0) {
+              <span class="h-0.5 w-2 rounded-full bg-current"></span>
+            }
+          </span>
+        </button>
+        <span
+          class="text-text mr-auto min-w-0 truncate pl-1 text-base font-semibold tabular-nums"
+          aria-live="polite"
+        >
+          {{ 'collection.bulk.selected_count' | translate: { count: selectedCount() } }}
+        </span>
+        @if (filter() === 'all') {
+          @for (move of moves; track move.target) {
+            <button
+              type="button"
+              [class]="bulkIcon"
+              [disabled]="selectedCount() === 0"
+              [attr.aria-label]="move.label | translate"
+              [title]="move.label | translate"
+              (click)="edit.move(selectedIds(), move.target)"
+            >
+              <shelfy-icon [name]="move.icon" size="sm" />
+            </button>
+          }
+        }
+        <shelfy-selection-remove
+          [count]="selectedCount()"
+          (remove)="edit.remove(selectedIds())"
+          (exit)="edit.exitSelection()"
+        />
+      </div>
+    }
+
+    <shelfy-publish-dialog
+      [open]="publishOpen()"
+      [current]="list.visibility"
+      [shared]="isShared()"
+      (closed)="publishOpen.set(false)"
+      (published)="publish($event)"
+    />
+
+    @if (collab.open()) {
+      <shelfy-collaborators-sheet
+        [isOwner]="isOwner()"
+        [owner]="
+          list.creatorUsername
+            ? { username: list.creatorUsername, avatarUrl: list.creatorAvatarUrl }
+            : null
+        "
+        [members]="list.collaborators"
+        [pending]="list.pendingInvites"
+        [candidates]="collab.candidates()"
+        [busyUserId]="collab.busyUserId()"
+        (removed)="collab.remove($event)"
+        (inviteCancelled)="collab.cancelInvite($event)"
+        (invited)="collab.invite($event)"
+        (queryChange)="collab.search($event)"
+        (closed)="collab.open.set(false)"
+      />
+    }
+  </main>
+}

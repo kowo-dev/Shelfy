@@ -1,0 +1,148 @@
+<div
+  class="shelfy-rich-text-toolbar"
+  role="toolbar"
+  [attr.aria-label]="'rich_text.toolbar' | translate"
+>
+  @for (level of headingLevels; track level) {
+    <button
+      type="button"
+      [title]="'rich_text.heading' | translate: { level }"
+      [attr.aria-label]="'rich_text.heading' | translate: { level }"
+      [attr.aria-pressed]="active('heading', { level })"
+      [class.is-active]="active('heading', { level })"
+      (click)="toggleHeading(level)"
+    >
+      <span aria-hidden="true">H{{ level }}</span>
+    </button>
+  }
+  <span aria-hidden="true"></span>
+  <button
+    type="button"
+    [title]="'rich_text.bold' | translate"
+    [attr.aria-label]="'rich_text.bold' | translate"
+    [attr.aria-pressed]="active('bold')"
+    [class.is-active]="active('bold')"
+    (click)="toggle('bold')"
+  >
+    <b aria-hidden="true">B</b>
+  </button>
+  <button
+    type="button"
+    [title]="'rich_text.italic' | translate"
+    [attr.aria-label]="'rich_text.italic' | translate"
+    [attr.aria-pressed]="active('italic')"
+    [class.is-active]="active('italic')"
+    (click)="toggle('italic')"
+  >
+    <i aria-hidden="true">I</i>
+  </button>
+  <button
+    type="button"
+    [title]="'rich_text.underline' | translate"
+    [attr.aria-label]="'rich_text.underline' | translate"
+    [attr.aria-pressed]="active('underline')"
+    [class.is-active]="active('underline')"
+    (click)="toggle('underline')"
+  >
+    <u aria-hidden="true">U</u>
+  </button>
+  <button
+    type="button"
+    [title]="'rich_text.strike' | translate"
+    [attr.aria-label]="'rich_text.strike' | translate"
+    [attr.aria-pressed]="active('strike')"
+    [class.is-active]="active('strike')"
+    (click)="toggle('strike')"
+  >
+    <s aria-hidden="true">S</s>
+  </button>
+  <button
+    type="button"
+    [title]="'rich_text.spoiler' | translate"
+    [attr.aria-label]="'rich_text.spoiler' | translate"
+    [attr.aria-pressed]="active('spoiler')"
+    [class.is-active]="active('spoiler')"
+    (click)="toggle('spoiler')"
+  >
+    <shelfy-icon name="eyeClosed" size="sm" aria-hidden="true" />
+  </button>
+  <span aria-hidden="true"></span>
+  <button
+    type="button"
+    [title]="'rich_text.bullet_list' | translate"
+    [attr.aria-label]="'rich_text.bullet_list' | translate"
+    [attr.aria-pressed]="active('bulletList')"
+    [class.is-active]="active('bulletList')"
+    (click)="toggle('bulletList')"
+  >
+    <span aria-hidden="true">• ≡</span>
+  </button>
+  <button
+    type="button"
+    [title]="'rich_text.ordered_list' | translate"
+    [attr.aria-label]="'rich_text.ordered_list' | translate"
+    [attr.aria-pressed]="active('orderedList')"
+    [class.is-active]="active('orderedList')"
+    (click)="toggle('orderedList')"
+  >
+    <span aria-hidden="true">1 ≡</span>
+  </button>
+  <button
+    type="button"
+    [title]="'rich_text.quote' | translate"
+    [attr.aria-label]="'rich_text.quote' | translate"
+    [attr.aria-pressed]="active('blockquote')"
+    [class.is-active]="active('blockquote')"
+    (click)="toggle('blockquote')"
+  >
+    <span aria-hidden="true">❝</span>
+  </button>
+  <span aria-hidden="true"></span>
+  <button
+    type="button"
+    [title]="'rich_text.add_link' | translate"
+    [attr.aria-label]="'rich_text.add_link' | translate"
+    [attr.aria-expanded]="linkOpen()"
+    [class.is-active]="active('link') || linkOpen()"
+    (click)="openLink()"
+  >
+    <span aria-hidden="true">↗</span>
+  </button>
+  @if (active('link')) {
+    <button
+      type="button"
+      [title]="'rich_text.remove_link' | translate"
+      [attr.aria-label]="'rich_text.remove_link' | translate"
+      (click)="unsetLink()"
+    >
+      <span aria-hidden="true">×</span>
+    </button>
+  }
+</div>
+@if (linkOpen()) {
+  <div
+    class="shelfy-rich-text-link"
+    role="group"
+    data-owns-escape
+    [attr.aria-label]="'rich_text.add_link' | translate"
+    (keydown.escape)="closeLink($event)"
+  >
+    <shelfy-input
+      #linkField
+      type="url"
+      autocomplete="url"
+      placeholder="https://"
+      [label]="'rich_text.link_label' | translate"
+      [error]="linkInvalid() ? ('rich_text.link_invalid' | translate) : ''"
+      [formControl]="linkControl"
+      (keydown.enter)="applyLink($event)"
+    />
+    <shelfy-button variant="primary" (click)="applyLink()">
+      {{ 'rich_text.link_apply' | translate }}
+    </shelfy-button>
+    <shelfy-button variant="secondary" (click)="closeLink()">
+      {{ 'rich_text.link_cancel' | translate }}
+    </shelfy-button>
+  </div>
+}
+<div #editor></div>

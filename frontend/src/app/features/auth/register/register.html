@@ -1,0 +1,99 @@
+@if (registrationOpen()) {
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
+    <shelfy-auth-form-head
+      title="auth.create_account"
+      description="auth.create_account_desc"
+      [error]="serverError()"
+    />
+
+    <shelfy-input
+      formControlName="username"
+      [label]="'auth.username' | translate"
+      [error]="usernameError()"
+      prefixIcon="user"
+    />
+
+    <shelfy-input
+      formControlName="email"
+      type="email"
+      [label]="'auth.email' | translate"
+      [error]="emailError()"
+      prefixIcon="mail"
+    />
+
+    <shelfy-input
+      formControlName="password"
+      type="password"
+      [label]="'auth.password' | translate"
+      [error]="passwordError()"
+      prefixIcon="lock"
+      [passwordToggle]="true"
+    />
+
+    <shelfy-input
+      formControlName="confirmPassword"
+      type="password"
+      [label]="'auth.confirm_password' | translate"
+      [error]="confirmPasswordError()"
+      prefixIcon="lock"
+      [passwordToggle]="true"
+    />
+
+    <div class="animate-rise-in stagger-6 flex flex-col gap-1.5">
+      <label
+        class="text-text-muted flex items-start gap-3 text-left text-sm"
+        [for]="termsCheckbox.inputId()"
+      >
+        <shelfy-checkbox #termsCheckbox formControlName="termsAccepted" />
+        <span>
+          {{ 'auth.terms_prefix' | translate }}
+          <a
+            routerLink="/legal/privacy-policy"
+            class="text-text font-medium underline decoration-white/30 underline-offset-4 hover:decoration-white"
+            >{{ 'auth.terms_privacy_policy' | translate }}</a
+          >
+          {{ 'auth.terms_and' | translate }}
+          <a
+            routerLink="/legal/terms"
+            class="text-text font-medium underline decoration-white/30 underline-offset-4 hover:decoration-white"
+            >{{ 'auth.terms_of_service' | translate }}</a
+          >
+        </span>
+      </label>
+      @if (termsError()) {
+        <p class="text-danger-fg text-xs">{{ termsError() }}</p>
+      }
+    </div>
+
+    <div class="animate-rise-in stagger-6">
+      <shelfy-button type="submit" variant="primary" [loading]="loading()" [block]="true">
+        {{ 'auth.create_account' | translate }}
+      </shelfy-button>
+    </div>
+
+    <p class="text-text-muted animate-rise-in stagger-7 mt-2 text-base">
+      {{ 'auth.already_account' | translate }}
+      <a
+        routerLink="/auth/login"
+        [queryParams]="returnUrl() ? { returnUrl: returnUrl() } : {}"
+        class="text-text ml-1 font-medium underline decoration-white/30 underline-offset-4 transition-colors hover:decoration-white"
+      >
+        {{ 'auth.sign_in' | translate }}
+      </a>
+    </p>
+  </form>
+} @else {
+  <div class="flex flex-col items-start gap-5">
+    <span [class]="mark" aria-hidden="true"><shelfy-icon name="lock" size="32" /></span>
+    <shelfy-auth-form-head
+      title="auth.registration_closed_title"
+      description="auth.registration_closed_desc"
+    />
+    <a
+      routerLink="/auth/login"
+      [queryParams]="returnUrl() ? { returnUrl: returnUrl() } : {}"
+      [class]="linkButton"
+      >{{ 'auth.sign_in' | translate }}</a
+    >
+  </div>
+}

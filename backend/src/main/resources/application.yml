@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: shelfy-api
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate.default_batch_fetch_size: 50
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+server:
+  port: 8082
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+app:
+  tmdb:
+    url: "https://api.themoviedb.org/3"
+    access-token: "change-me"
+    image-base-url: "https://image.tmdb.org/t/p/"
+  igdb:
+    auth-url: "https://id.twitch.tv"
+    url: "https://api.igdb.com/v4"
+    image-base-url: "https://images.igdb.com/igdb/image/upload/t_1080p/"
+    client-id: "change-me"
+    client-secret: "change-me"
+  anilist:
+    url: "https://graphql.anilist.co"
+  steam:
+    api-key: "change-me"
+    api-base-url: "https://api.steampowered.com"
+    community-base-url: "https://steamcommunity.com"
+    authorize-url: "https://steamcommunity.com/openid/login"
+    callback-url: "http://localhost:8082/api/v1/steam/oauth/callback"
+    frontend-redirect-uri: "http://localhost:4200/settings"
+  federation:
+    enabled: false
+    authorized-fetch: false

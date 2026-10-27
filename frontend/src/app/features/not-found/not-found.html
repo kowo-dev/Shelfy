@@ -1,0 +1,40 @@
+<section
+  class="px-gutter mx-auto flex min-h-[calc(100dvh-4.25rem)] w-full max-w-3xl flex-col items-center justify-center gap-12 py-12 text-center [--shelf-h:clamp(9rem,28vw,18rem)]"
+>
+  <div class="flex items-center justify-center gap-[calc(var(--shelf-h)*0.07)]" aria-hidden="true">
+    <span
+      class="animate-rise-in font-display text-text tracking-display flex h-(--shelf-h) shrink-0 items-center text-[calc(var(--shelf-h)*1.38)] leading-none font-extrabold"
+      [style.animation-delay.ms]="180"
+      >4</span
+    >
+    <div
+      class="animate-rise-in bg-fill-subtle font-display text-text-subtle rounded-tile flex aspect-[2/3] h-(--shelf-h) shrink-0 items-center justify-center text-[calc(var(--shelf-h)*1.02)] leading-none font-extrabold"
+      [style.animation-delay.ms]="300"
+    >
+      0
+    </div>
+    <span
+      class="animate-rise-in font-display text-text tracking-display flex h-(--shelf-h) shrink-0 items-center text-[calc(var(--shelf-h)*1.38)] leading-none font-extrabold"
+      [style.animation-delay.ms]="240"
+      >4</span
+    >
+  </div>
+
+  <div class="animate-rise-in flex flex-col items-center gap-3" style="animation-delay: 420ms">
+    <h1 class="heading-page text-balance">
+      <span class="sr-only">404 · </span>{{ 'not_found.heading' | translate }}
+    </h1>
+    <p class="text-text-muted max-w-md text-base text-pretty">
+      {{ 'not_found.hint' | translate }}
+    </p>
+  </div>
+
+  <a
+    class="animate-rise-in"
+    [class]="buttonClass"
+    style="animation-delay: 500ms"
+    [routerLink]="signedIn() ? '/collection' : '/discover'"
+  >
+    {{ (signedIn() ? 'not_found.to_shelf' : 'not_found.to_discover') | translate }}
+  </a>
+</section>

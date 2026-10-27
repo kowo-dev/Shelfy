@@ -1,0 +1,55 @@
+<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+  <div class="min-w-0">
+    <p class="text-text text-[1.0625rem] font-bold">
+      {{ 'settings.profile.email.title' | translate }}
+    </p>
+    <p class="text-text-muted mt-0.5 flex flex-wrap items-center gap-x-2 text-sm leading-snug">
+      <span class="min-w-0 truncate">{{ email() }}</span>
+      @if (!emailVerified()) {
+        <span class="text-danger-fg inline-flex items-center gap-1.5 font-medium">
+          <span class="bg-danger-fg size-1.5 rounded-full" aria-hidden="true"></span>
+          {{ 'settings.profile.email.not_verified' | translate }}
+        </span>
+      }
+    </p>
+    @if (pendingEmail(); as pending) {
+      <p class="text-text-subtle mt-1 text-sm leading-snug">
+        {{ 'settings.profile.email.pending' | translate: { email: pending } }}
+      </p>
+    }
+  </div>
+  <button
+    type="button"
+    [class]="pill"
+    aria-controls="settings-email-form"
+    [attr.aria-expanded]="open()"
+    (click)="open.set(!open())"
+  >
+    {{ 'settings.profile.email.change' | translate }}
+  </button>
+</div>
+
+<div id="settings-email-form" [class]="collapse(open())" [attr.inert]="open() ? null : ''">
+  <form
+    [formGroup]="form()"
+    (ngSubmit)="requestChange.emit()"
+    class="flex flex-col items-start gap-4 overflow-hidden pt-5"
+  >
+    <shelfy-input
+      class="w-full max-w-md"
+      formControlName="newEmail"
+      type="email"
+      autocomplete="email"
+      [label]="'settings.profile.email.new_email' | translate"
+      [error]="newEmailError()"
+    />
+    <button
+      type="submit"
+      [class]="primary"
+      [disabled]="sending()"
+      [attr.aria-busy]="sending() || null"
+    >
+      {{ 'settings.profile.email.send_confirmation' | translate }}
+    </button>
+  </form>
+</div>

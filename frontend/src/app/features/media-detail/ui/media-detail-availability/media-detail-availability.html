@@ -1,0 +1,5 @@
+@for (appId of steamAppIds(); track appId) {
+  <a [href]="steamStoreUrl(appId)" target="_blank" rel="noopener noreferrer" [class]="pill">
+    <shelfy-icon name="steam" size="18" />Steam
+  </a>
+}

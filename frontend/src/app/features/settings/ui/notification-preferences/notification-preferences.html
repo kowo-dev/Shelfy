@@ -1,0 +1,89 @@
+@if (preferences(); as prefs) {
+  <section aria-labelledby="settings-notification-families">
+    <h3 id="settings-notification-families" [class]="heading">
+      {{ 'settings.notifications.families_title' | translate }}
+    </h3>
+    <div [class]="rows">
+      @for (family of prefs.families; track family.family) {
+        @let open = expanded() === family.family;
+        <div>
+          <div class="flex items-center gap-4">
+            <span
+              class="bg-fill text-text-muted grid size-10 shrink-0 place-items-center rounded-full"
+            >
+              <shelfy-icon [name]="icons[family.family]" size="md" />
+            </span>
+            <button
+              type="button"
+              class="group min-w-0 flex-1 cursor-pointer text-left"
+              [attr.aria-expanded]="open"
+              [attr.aria-controls]="'notification-family-' + family.family"
+              (click)="toggleExpanded(family.family)"
+            >
+              <span class="text-text flex items-center gap-1.5 text-[1.0625rem] font-bold">
+                {{ 'settings.notifications.families.' + family.family | translate }}
+                <shelfy-icon
+                  name="chevronDown"
+                  size="14"
+                  class="text-text-subtle duration-base transition-transform"
+                  [class.rotate-180]="open"
+                />
+              </span>
+              <span class="text-text-muted block text-sm leading-snug">{{
+                'settings.notifications.families_hint.' + family.family | translate
+              }}</span>
+            </button>
+            <shelfy-toggle
+              [checked]="family.isEnabled"
+              [ariaLabel]="'settings.notifications.families.' + family.family | translate"
+              (checkedChange)="setFamily(family.family, $event)"
+            />
+          </div>
+
+          @if (open) {
+            <ul
+              [id]="'notification-family-' + family.family"
+              class="animate-fade-in mt-3 ml-14 flex flex-col gap-1"
+              [class.opacity-50]="!family.isEnabled"
+            >
+              @for (setting of family.settings; track setting.setting) {
+                <li class="flex items-center gap-4">
+                  <span class="text-text-muted min-w-0 flex-1 text-sm">{{
+                    'settings.notifications.settings.' + setting.setting | translate
+                  }}</span>
+                  <shelfy-toggle
+                    [checked]="setting.isEnabled"
+                    [disabled]="!family.isEnabled"
+                    [ariaLabel]="'settings.notifications.settings.' + setting.setting | translate"
+                    (checkedChange)="setSetting(setting.setting, $event)"
+                  />
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  <section aria-labelledby="settings-notification-audience">
+    <h3 id="settings-notification-audience" [class]="heading">
+      {{ 'settings.notifications.audience_title' | translate }}
+    </h3>
+    <div class="flex flex-col gap-4 pt-2">
+      <p class="text-text-muted text-sm leading-snug">
+        {{ 'settings.notifications.audience_hint' | translate }}
+      </p>
+      <shelfy-segmented
+        [options]="audienceOptions()"
+        [value]="prefs.audience"
+        [label]="'settings.notifications.audience_title' | translate"
+        (changed)="setAudience($any($event))"
+      />
+    </div>
+  </section>
+} @else if (failed()) {
+  <p class="text-text-subtle text-sm">{{ 'notifications.load_error' | translate }}</p>
+} @else {
+  <div class="grid place-items-center py-10"><shelfy-spinner size="sm" /></div>
+}

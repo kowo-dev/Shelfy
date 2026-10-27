@@ -1,0 +1,101 @@
+<main class="flex h-dvh flex-col overflow-hidden">
+  <header
+    class="px-gutter relative z-30 grid shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 md:grid-cols-[1fr_minmax(0,380px)_1fr] md:pt-[calc(var(--nav-bar-height)+0.75rem)]"
+  >
+    <a
+      [class]="textAction"
+      [routerLink]="poolUrl()"
+      [attr.aria-label]="'versus.play.quit' | translate"
+      [title]="'versus.play.quit_hint' | translate"
+    >
+      <shelfy-icon name="close" size="20" />
+      <span class="max-sm:sr-only">{{ 'versus.play.quit_short' | translate }}</span>
+    </a>
+    <div class="min-w-0">
+      @if (!state.completed() && state.currentMatch(); as match) {
+        <button
+          type="button"
+          class="block w-full cursor-pointer rounded-2xl px-3 py-2 transition-colors hover:bg-white/6"
+          [attr.aria-label]="'versus.play.open_bracket' | translate"
+          (click)="openBracket()"
+        >
+          <shelfy-versus-bracket-progress
+            [currentRound]="state.currentRound()"
+            [roundsTotal]="state.roundsTotal()"
+            [bracketSize]="state.bracketSize()"
+            [matchSlotIndex]="match.slotIndex"
+          />
+        </button>
+      }
+    </div>
+    <div class="flex shrink-0 items-center gap-2 justify-self-end">
+      @if (hasClips()) {
+        <shelfy-clip-volume class="max-md:hidden" />
+      }
+      <button
+        type="button"
+        [class]="undoButton"
+        [disabled]="!state.canUndo()"
+        [attr.aria-label]="'versus.play.undo' | translate"
+        [title]="'versus.play.undo_hint' | translate"
+        (click)="undo()"
+      >
+        <shelfy-icon name="history" size="20" />
+      </button>
+    </div>
+  </header>
+
+  <div class="px-gutter relative min-h-0 flex-1 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+    @if ((state.loading() && !state.currentMatch()) || state.completed()) {
+      <div class="flex h-full items-center justify-center gap-3 md:gap-12" aria-hidden="true">
+        @for (side of [0, 1]; track side) {
+          <div class="flex w-[min(calc(50vw-1.375rem),22rem)] flex-col gap-3">
+            <span class="bg-fill-subtle aspect-2/3 w-full animate-pulse rounded-3xl"></span>
+            <span class="bg-fill-subtle mx-auto h-4 w-2/3 animate-pulse rounded-full"></span>
+          </div>
+        }
+      </div>
+    } @else if (state.currentMatch(); as match) {
+      @for (m of [match]; track state.currentRound() + '-' + m.slotIndex) {
+        <shelfy-versus-matchup
+          class="h-full"
+          [entryA]="m.entryA"
+          [entryB]="m.entryB"
+          [disabled]="state.picking()"
+          (focused)="hoverCover.set($event?.coverUrl ?? null)"
+          (picked)="pick($event)"
+        />
+      }
+    } @else {
+      <p class="text-text-muted py-12 text-center">{{ 'versus.play.no_match' | translate }}</p>
+    }
+  </div>
+  @if (state.currentMatch() && !state.completed()) {
+    <p
+      class="text-text-subtle flex shrink-0 items-center justify-center gap-1.5 pb-5 text-sm font-semibold pointer-coarse:hidden"
+    >
+      <kbd [class]="kbd">←</kbd><kbd [class]="kbd">→</kbd>
+      <span class="ml-1">{{ 'versus.play.keys_hint' | translate }}</span>
+    </p>
+  }
+</main>
+
+@if (bracketOpen()) {
+  <shelfy-side-sheet
+    size="md"
+    [title]="'versus.play.bracket_title' | translate"
+    (closed)="bracketOpen.set(false)"
+  >
+    <div>
+      @if (bracket(); as matches) {
+        <shelfy-versus-bracket-map
+          [matches]="matches"
+          [roundsTotal]="state.roundsTotal()"
+          [currentMatchId]="state.currentMatch()?.id ?? null"
+        />
+      } @else {
+        <div class="flex justify-center py-12"><shelfy-spinner /></div>
+      }
+    </div>
+  </shelfy-side-sheet>
+}

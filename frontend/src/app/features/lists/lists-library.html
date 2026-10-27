@@ -1,0 +1,159 @@
+<main class="animate-fade-in flex min-h-full flex-col motion-reduce:animate-none">
+  <shelfy-page-hero [title]="bandTitle()" [wall]="wall()">
+    <div class="mt-4.5 flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+      <p class="text-text-muted flex flex-wrap gap-x-5.5 gap-y-1.5 text-base">
+        @if (!loading() && total() > 0) {
+          @for (stat of heroStats(); track stat.key) {
+            <span
+              ><b class="text-text mr-1 font-bold tabular-nums">{{ stat.count }}</b
+              >{{ stat.key | translate }}</span
+            >
+          }
+        }
+      </p>
+      @if (isOwner()) {
+        <shelfy-menu-button
+          icon="plus"
+          panelClass="right-0 w-56 origin-top-right"
+          [label]="'community.create' | translate"
+          [text]="'community.create' | translate"
+          [items]="createItems()"
+          [triggerClass]="primaryClass"
+          (picked)="onCreate($event)"
+        />
+      }
+    </div>
+  </shelfy-page-hero>
+
+  <div #sentinel aria-hidden="true"></div>
+  @if (!loading() && !profileFailed() && total() > 0) {
+    <div class="v-libbar" [class.stuck]="stuck()">
+      @if (kindCount() > 1) {
+        <shelfy-tabs
+          class="min-w-0"
+          [tabs]="filterTabs()"
+          [activeId]="filter()"
+          [label]="bandTitle()"
+          (tabSelected)="setFilter($event)"
+        />
+      }
+      <div class="v-ltools">
+        <label class="v-lsearch">
+          <shelfy-icon name="search" size="18" class="shrink-0" />
+          <input
+            type="search"
+            autocomplete="off"
+            [placeholder]="'lists.search_placeholder' | translate"
+            [attr.aria-label]="'lists.search_placeholder' | translate"
+            [value]="query()"
+            (input)="query.set($any($event.target).value)"
+          />
+        </label>
+      </div>
+    </div>
+  }
+
+  <div class="px-gutter mx-auto w-full pt-6">
+    <div class="min-w-0 pb-35">
+      @if (loading()) {
+        <div class="pt-2" aria-busy="true">
+          <div class="v-crea v-cgrid" aria-hidden="true">
+            @for (slot of skeletonSlots; track slot) {
+              <div
+                class="bg-fill-subtle rounded-card h-55 animate-pulse motion-reduce:animate-none"
+              ></div>
+            }
+          </div>
+        </div>
+      } @else if (profileFailed()) {
+        <div class="mt-6 flex flex-col items-start gap-2 md:mt-10" role="alert">
+          <h2 [class]="sectionTitle">{{ 'explore.failed_title' | translate }}</h2>
+          <p class="text-text-muted text-base">{{ 'lists.load_error' | translate }}</p>
+          <shelfy-button class="mt-4" type="button" variant="secondary" (click)="retry()">
+            {{ 'collection.retry' | translate }}
+          </shelfy-button>
+        </div>
+      } @else if (total() === 0) {
+        <div class="mt-6 flex flex-col items-start gap-2 md:mt-10">
+          <h2 [class]="sectionTitle">
+            {{
+              (isOwner() ? 'lists.library_empty_title' : 'lists.profile_library_empty_title')
+                | translate: { username: profileUsername() }
+            }}
+          </h2>
+          <p class="text-text-muted max-w-[56ch] text-base">
+            {{
+              (isOwner() ? 'lists.library_empty_hint' : 'lists.profile_library_empty_hint')
+                | translate
+            }}
+          </p>
+        </div>
+      } @else {
+        <p class="sr-only" role="status">
+          {{ 'lists.creations' | translate: { count: creations().length } }}
+        </p>
+        @if (creations().length === 0) {
+          <div class="mt-4 flex flex-col items-start gap-2">
+            <h2 [class]="sectionTitle">
+              {{ 'lists.search_empty' | translate: { query: query() } }}
+            </h2>
+            <shelfy-button class="mt-3" type="button" variant="secondary" (click)="query.set('')">
+              {{ 'library.empty.clear_search' | translate }}
+            </shelfy-button>
+          </div>
+        } @else {
+          <div class="flex flex-col gap-12">
+            @for (group of groups(); track group.id) {
+              <section class="flex flex-col gap-4" [attr.aria-label]="group.title | translate">
+                @if (groups().length > 1) {
+                  <h2 [class]="sectionTitle">
+                    {{ group.title | translate }}
+                    <span
+                      class="text-text-subtle ml-1.5 font-sans text-base font-medium tabular-nums"
+                      >{{ group.items.length }}</span
+                    >
+                  </h2>
+                }
+                <div [class]="(group.id === 'reviews' ? 'v-revs' : 'v-crea') + ' v-cgrid'">
+                  @for (creation of group.items; track creation.kind + creation.id) {
+                    @switch (creation.kind) {
+                      @case ('review') {
+                        <shelfy-review-card [review]="creation.review" [dated]="true" />
+                      }
+                      @case ('list') {
+                        <shelfy-creation-tile
+                          [list]="creation.list"
+                          [dated]="true"
+                          [showVisibility]="isOwner()"
+                        />
+                      }
+                      @case ('versus') {
+                        <shelfy-creation-tile
+                          [pool]="creation.pool"
+                          [dated]="true"
+                          [showVisibility]="isOwner()"
+                        />
+                      }
+                    }
+                  }
+                </div>
+              </section>
+            }
+          </div>
+          @if (hasMoreReviews() && filter() !== 'lists' && filter() !== 'versus') {
+            <div class="mt-10 flex justify-center">
+              <shelfy-button
+                type="button"
+                variant="secondary"
+                [loading]="reviewsLoadingMore()"
+                (click)="loadMoreReviews()"
+              >
+                {{ 'review.list.load_more' | translate }}
+              </shelfy-button>
+            </div>
+          }
+        }
+      }
+    </div>
+  </div>
+</main>

@@ -1,0 +1,9 @@
+{
+  "name": "shelfy",
+  "private": true,
+  "scripts": {
+    "backend:check": "backend/check.sh",
+    "frontend:test": "npm --prefix frontend test",
+    "frontend:lint": "npm --prefix frontend run lint"
+  }
+}

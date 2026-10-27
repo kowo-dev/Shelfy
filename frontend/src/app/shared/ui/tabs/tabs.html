@@ -1,0 +1,46 @@
+<div class="relative">
+  <nav
+    #scrollContainer
+    class="relative flex [scrollbar-width:none] items-baseline gap-[clamp(18px,2.2vw,32px)] overflow-x-auto py-1 [&::-webkit-scrollbar]:hidden"
+    [attr.role]="navigation() ? null : 'tablist'"
+    [attr.aria-label]="label()"
+    [style.mask-image]="fade()"
+  >
+    @for (tab of tabs(); track tab.id; let i = $index) {
+      @let active = activeId() === tab.id;
+      @if (tab.separated) {
+        <span class="h-5.5 w-px shrink-0 self-center bg-white/14" aria-hidden="true"></span>
+      }
+      <button
+        #tabButton
+        type="button"
+        class="font-display relative flex shrink-0 cursor-pointer items-baseline gap-1.5 py-1 text-[clamp(20px,1.8vw,26px)] font-bold tracking-[-0.035em] whitespace-nowrap transition-colors duration-200 focus-visible:-outline-offset-2"
+        [class]="active ? 'text-white' : 'text-white/34 hover:text-white/70'"
+        [attr.role]="navigation() ? null : 'tab'"
+        [attr.aria-controls]="navigation() ? null : panelId()"
+        [attr.aria-selected]="navigation() ? null : active"
+        [attr.aria-current]="navigation() && active ? 'location' : null"
+        [attr.tabindex]="navigation() ? null : active ? 0 : -1"
+        (keydown)="onKeydown($event, i)"
+        (click)="tabSelected.emit(tab.id)"
+      >
+        @if (tab.dot) {
+          <span
+            class="size-2 shrink-0 rounded-full"
+            aria-hidden="true"
+            [style.background-color]="tab.dot"
+          ></span>
+        }
+        {{ tab.label }}
+        @if (tab.dot && tab.dotLabel) {
+          <span class="sr-only">{{ tab.dotLabel }}</span>
+        }
+        @if (tab.count !== undefined && tab.count !== null) {
+          <span class="font-sans text-[13px] font-bold tabular-nums opacity-80">{{
+            tab.count
+          }}</span>
+        }
+      </button>
+    }
+  </nav>
+</div>

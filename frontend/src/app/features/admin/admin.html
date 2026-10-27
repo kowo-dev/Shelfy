@@ -1,0 +1,342 @@
+<div
+  #scrollContainer
+  class="page-scroll h-full min-h-0 [scrollbar-gutter:stable] overflow-x-clip overflow-y-auto [overflow-anchor:none] max-md:pb-(--bottom-nav-clearance)"
+  (scroll)="onScroll()"
+>
+  <shelfy-page-hero [title]="'admin.title' | translate" [wall]="wall.posters()">
+    @if (overview(); as overview) {
+      <p class="text-text-muted mt-4.5 flex flex-wrap gap-x-5.5 gap-y-1.5 text-base">
+        <span class="text-text font-bold">{{
+          (overview.isEnabled ? 'admin.stat.federation_on' : 'admin.stat.federation_off')
+            | translate
+        }}</span>
+        <span
+          ><b class="text-text mr-1 font-bold tabular-nums">{{ overview.instances.length }}</b
+          >{{ 'admin.stat.instances' | translate: { count: overview.instances.length } }}</span
+        >
+        <span
+          ><b class="text-text mr-1 font-bold tabular-nums">{{ overview.blocks.length }}</b
+          >{{ 'admin.stat.blocked' | translate }}</span
+        >
+        <span
+          ><b class="text-text mr-1 font-bold tabular-nums">{{ reports().length }}</b
+          >{{ 'admin.stat.reports' | translate: { count: reports().length } }}</span
+        >
+      </p>
+    }
+  </shelfy-page-hero>
+
+  <div #barSentinel aria-hidden="true"></div>
+  <div class="v-libbar" [class.stuck]="stuck()">
+    <shelfy-tabs
+      class="min-w-0"
+      [tabs]="tabs()"
+      [activeId]="activeSection()"
+      [label]="'admin.title' | translate"
+      (tabSelected)="selectSection($event)"
+    />
+  </div>
+
+  <div class="px-gutter mx-auto w-full pt-4.5">
+    <div class="min-w-0 pb-35 md:max-w-[880px]">
+      <h2 class="sr-only">{{ 'admin.' + activeSection() + '.title' | translate }}</h2>
+      <p class="text-text-muted mb-6 max-w-[60ch] text-base">{{ sectionHint() | translate }}</p>
+
+      @switch (state()) {
+        @case ('loading') {
+          <div class="flex justify-center py-16"><shelfy-spinner /></div>
+        }
+        @case ('forbidden') {
+          <div [class]="empty" role="alert">
+            <h3 [class]="emptyTitle">{{ 'admin.forbidden_title' | translate }}</h3>
+            <p class="text-text-muted max-w-[56ch] text-base">
+              {{ 'admin.forbidden_hint' | translate }}
+            </p>
+          </div>
+        }
+        @case ('error') {
+          <div [class]="empty" role="alert">
+            <h3 [class]="emptyTitle">{{ 'admin.error_title' | translate }}</h3>
+            <p class="text-text-muted max-w-[56ch] text-base">
+              {{ 'admin.error_hint' | translate }}
+            </p>
+            <shelfy-button class="mt-2" type="button" variant="secondary" (click)="load()">
+              {{ 'admin.retry' | translate }}
+            </shelfy-button>
+          </div>
+        }
+        @case ('ready') {
+          @if (overview(); as overview) {
+            @switch (activeSection()) {
+              @case ('federation') {
+                <section class="animate-rise-in motion-reduce:animate-none">
+                  <div [class]="rows">
+                    <shelfy-settings-row
+                      [class]="row"
+                      [title]="'admin.federation.status' | translate"
+                      [description]="
+                        (overview.isEnabled
+                          ? 'admin.federation.on_hint'
+                          : 'admin.federation.off_hint'
+                        ) | translate
+                      "
+                    >
+                      <span
+                        [class]="
+                          status + (overview.isEnabled ? ' text-[#8fd9a8]' : ' text-[#f0a5a5]')
+                        "
+                        >{{
+                          (overview.isEnabled ? 'admin.federation.on' : 'admin.federation.off')
+                            | translate
+                        }}</span
+                      >
+                    </shelfy-settings-row>
+                    <shelfy-settings-row
+                      [class]="row"
+                      [title]="'admin.federation.mode' | translate"
+                      [description]="'admin.federation.mode_' + overview.mode + '_hint' | translate"
+                    >
+                      <span [class]="value">{{
+                        'admin.federation.mode_' + overview.mode | translate
+                      }}</span>
+                    </shelfy-settings-row>
+                    <shelfy-settings-row
+                      [class]="row"
+                      [title]="'admin.federation.handles' | translate"
+                      [description]="'admin.federation.handles_hint' | translate"
+                    >
+                      <span [class]="value">{{ handleExample() }}</span>
+                    </shelfy-settings-row>
+                  </div>
+                </section>
+              }
+              @case ('instances') {
+                <section class="animate-rise-in motion-reduce:animate-none">
+                  @if (overview.instances.length === 0) {
+                    <div [class]="empty">
+                      <h3 [class]="emptyTitle">{{ 'admin.instances.empty_title' | translate }}</h3>
+                      <p class="text-text-muted max-w-[56ch] text-base">
+                        {{ 'admin.instances.empty_hint' | translate }}
+                      </p>
+                    </div>
+                  } @else {
+                    @for (instance of overview.instances; track instance.domain) {
+                      @let health = instanceState(instance);
+                      <div [class]="server">
+                        <span [class]="favicon" aria-hidden="true">{{
+                          instance.domain.charAt(0)
+                        }}</span>
+                        <div class="min-w-0 flex-1">
+                          <b class="text-text block truncate text-[1.0625rem] font-bold">{{
+                            instance.domain
+                          }}</b>
+                          <small class="text-text-muted block text-sm">{{
+                            instanceSummary(instance)
+                          }}</small>
+                          <span [class]="status + ' mt-1 sm:hidden ' + health.tone">{{
+                            health.label
+                          }}</span>
+                        </div>
+                        <span [class]="status + ' max-sm:hidden ' + health.tone">{{
+                          health.label
+                        }}</span>
+                        @if (instance.failingDeliveries > 0) {
+                          <shelfy-button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            [loading]="busyDomain() === instance.domain"
+                            (click)="retryDeliveries(instance.domain)"
+                          >
+                            {{ 'admin.instances.retry' | translate }}
+                          </shelfy-button>
+                        }
+                        @if (instance.isBlocked) {
+                          <shelfy-button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            [loading]="busyDomain() === instance.domain"
+                            (click)="unblock(instance.domain)"
+                          >
+                            {{ 'admin.blocks.unblock' | translate }}
+                          </shelfy-button>
+                        } @else {
+                          <shelfy-button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            [loading]="busyDomain() === instance.domain"
+                            (click)="block(instance.domain)"
+                          >
+                            {{ 'admin.blocks.block' | translate }}
+                          </shelfy-button>
+                        }
+                      </div>
+                    }
+                  }
+                </section>
+              }
+              @case ('blocks') {
+                <section class="animate-rise-in motion-reduce:animate-none">
+                  @for (rule of overview.blocks; track rule.domain) {
+                    <div [class]="server">
+                      <span [class]="favicon" aria-hidden="true">{{ rule.domain.charAt(0) }}</span>
+                      <div class="min-w-0 flex-1">
+                        <b class="text-text block truncate text-[1.0625rem] font-bold">{{
+                          rule.domain
+                        }}</b>
+                        <small class="text-text-muted block text-sm">{{
+                          (rule.reason ? rule.reason + ' · ' : '') +
+                            ('admin.blocks.since' | translate: { date: ruleDate(rule.createdAt) })
+                        }}</small>
+                      </div>
+                      <shelfy-button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        [loading]="busyDomain() === rule.domain"
+                        (click)="unblock(rule.domain)"
+                      >
+                        {{ 'admin.blocks.unblock' | translate }}
+                      </shelfy-button>
+                    </div>
+                  } @empty {
+                    <p class="text-text-subtle pb-2 text-base">
+                      {{ 'admin.blocks.empty' | translate }}
+                    </p>
+                  }
+                  <form
+                    class="mt-7 flex flex-col gap-3 sm:flex-row"
+                    (submit)="$event.preventDefault(); block(blockDomain.value, blockReason.value)"
+                  >
+                    <label class="relative min-w-0 flex-1">
+                      <shelfy-icon name="globe" size="20" [class]="fieldIcon" />
+                      <input
+                        class="form-control h-13 pr-4 pl-11"
+                        [placeholder]="'admin.blocks.placeholder' | translate"
+                        [attr.aria-label]="'admin.blocks.domain' | translate"
+                        autocomplete="off"
+                        [formControl]="blockDomain"
+                      />
+                    </label>
+                    <input
+                      class="form-control h-13 min-w-0 flex-1 px-4"
+                      [placeholder]="'admin.blocks.reason_placeholder' | translate"
+                      [attr.aria-label]="'admin.blocks.reason' | translate"
+                      maxlength="500"
+                      [formControl]="blockReason"
+                    />
+                    <shelfy-button
+                      type="submit"
+                      variant="danger"
+                      [disabled]="!blockDomain.value.trim()"
+                      [loading]="busyDomain() === blockDomain.value.trim().toLowerCase()"
+                    >
+                      {{ 'admin.blocks.block' | translate }}
+                    </shelfy-button>
+                  </form>
+                </section>
+              }
+              @case ('allows') {
+                <section class="animate-rise-in motion-reduce:animate-none">
+                  @for (rule of overview.allows; track rule.domain) {
+                    <div [class]="server">
+                      <span [class]="favicon" aria-hidden="true">{{ rule.domain.charAt(0) }}</span>
+                      <div class="min-w-0 flex-1">
+                        <b class="text-text block truncate text-[1.0625rem] font-bold">{{
+                          rule.domain
+                        }}</b>
+                        <small class="text-text-muted block text-sm">{{
+                          'admin.allows.since' | translate: { date: ruleDate(rule.createdAt) }
+                        }}</small>
+                      </div>
+                      <shelfy-button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        [loading]="busyDomain() === rule.domain"
+                        (click)="disallow(rule.domain)"
+                      >
+                        {{ 'admin.allows.remove' | translate }}
+                      </shelfy-button>
+                    </div>
+                  } @empty {
+                    <p class="text-text-subtle pb-2 text-base">
+                      {{ 'admin.allows.empty' | translate }}
+                    </p>
+                  }
+                  <form
+                    class="mt-7 flex flex-col gap-3 sm:flex-row"
+                    (submit)="$event.preventDefault(); allow(allowDomain.value)"
+                  >
+                    <label class="relative min-w-0 flex-1">
+                      <shelfy-icon name="globe" size="20" [class]="fieldIcon" />
+                      <input
+                        class="form-control h-13 pr-4 pl-11"
+                        [placeholder]="'admin.allows.placeholder' | translate"
+                        [attr.aria-label]="'admin.allows.domain' | translate"
+                        autocomplete="off"
+                        [formControl]="allowDomain"
+                      />
+                    </label>
+                    <shelfy-button
+                      type="submit"
+                      variant="secondary"
+                      [disabled]="!allowDomain.value.trim()"
+                      [loading]="busyDomain() === allowDomain.value.trim().toLowerCase()"
+                    >
+                      {{ 'admin.allows.allow' | translate }}
+                    </shelfy-button>
+                  </form>
+                </section>
+              }
+              @case ('reports') {
+                <section class="animate-rise-in motion-reduce:animate-none">
+                  @if (reports().length === 0) {
+                    <div [class]="empty">
+                      <h3 [class]="emptyTitle">{{ 'admin.reports.empty_title' | translate }}</h3>
+                      <p class="text-text-muted max-w-[56ch] text-base">
+                        {{ 'admin.reports.empty_hint' | translate }}
+                      </p>
+                    </div>
+                  } @else {
+                    <ul>
+                      @for (report of reports(); track report.id) {
+                        <li [class]="'mb-2 flex items-start gap-3.5 ' + tile">
+                          <shelfy-avatar
+                            size="40"
+                            [displayName]="report.reporterHandle || report.reporterDomain"
+                            [avatarUrl]="null"
+                          />
+                          <div class="min-w-0 flex-1">
+                            <p class="text-text text-[1.0625rem] font-bold">
+                              {{ reportTitle(report) }}
+                            </p>
+                            @if (report.content) {
+                              <q
+                                class="text-text/85 mt-2.5 block pl-3.5 text-base leading-relaxed whitespace-pre-line italic shadow-[inset_1px_0_0_rgb(255_255_255/0.2)] [quotes:none]"
+                                >{{ report.content }}</q
+                              >
+                            }
+                            <p class="text-text-subtle mt-2.5 text-sm break-all">
+                              {{ report.objectUris }}
+                            </p>
+                            <small class="text-text-subtle mt-1.5 block text-[0.8125rem]">{{
+                              reportMeta(report)
+                            }}</small>
+                          </div>
+                        </li>
+                      }
+                    </ul>
+                  }
+                </section>
+              }
+            }
+          }
+        }
+      }
+    </div>
+  </div>
+  <shelfy-page-footer />
+</div>

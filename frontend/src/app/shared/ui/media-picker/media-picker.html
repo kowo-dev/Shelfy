@@ -1,0 +1,248 @@
+@if (open()) {
+  <shelfy-dialog
+    #dialog
+    layout="wide"
+    [open]="true"
+    [label]="headingKey() | translate"
+    (closed)="onClosed()"
+  >
+    <div dialogPanel class="flex min-h-0 flex-1 flex-col">
+      <div
+        class="flex shrink-0 items-start justify-between gap-4 px-4 pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-7 sm:pt-7"
+      >
+        <div class="min-w-0">
+          <h2
+            class="font-display text-text truncate text-[clamp(2rem,3vw,2.75rem)] leading-none font-extrabold tracking-[-0.05em]"
+          >
+            {{ headingKey() | translate }}
+          </h2>
+          <p class="text-text-muted mt-2.5 min-h-6 text-base" role="status">
+            @if (results.loaded() && !results.failed()) {
+              <b class="text-text mr-1 font-bold tabular-nums"
+                >{{ visibleResults().length }}{{ results.hasMore() ? '+' : '' }}</b
+              >{{ 'explore.titles' | translate }}
+            } @else if (results.refreshing()) {
+              {{ 'explore.loading' | translate }}
+            }
+          </p>
+        </div>
+        <button
+          type="button"
+          [class]="closeButton"
+          [attr.aria-label]="'search.close' | translate"
+          title="Esc"
+          (click)="requestClose()"
+        >
+          <shelfy-icon name="close" size="20" />
+        </button>
+      </div>
+
+      <div class="v-exbar flex shrink-0 flex-wrap items-center px-4 pt-5 pb-1 sm:px-7">
+        <shelfy-explore-omnibox
+          class="v-omni-wrap"
+          [omni]="true"
+          [query]="exploreQuery()"
+          (added)="addCriterion($event)"
+          (removed)="removeChip($event)"
+          (textChanged)="setText($event)"
+          (typePicked)="selectTypeTab($event)"
+        />
+        @let filtered = filterCount() + (hideOwned() ? 1 : 0);
+        <button
+          type="button"
+          class="v-tool"
+          aria-controls="picker-filters"
+          [attr.aria-expanded]="filtersOpen()"
+          [attr.aria-label]="'explore.filters.title' | translate"
+          (click)="filtersOpen.set(!filtersOpen())"
+        >
+          <shelfy-icon name="filter" size="18" />
+          <span class="lbl">{{ 'explore.filters.title' | translate }}</span>
+          @if (filtered) {
+            <span class="n">{{ filtered }}</span>
+          }
+        </button>
+        <div class="v-exrow">
+          <shelfy-tabs
+            class="[&_.from-background]:from-surface min-w-0"
+            [tabs]="typeTabs()"
+            [activeId]="exploreQuery().type ?? 'all'"
+            [label]="'explore.categories' | translate"
+            (tabSelected)="selectTypeTab($event)"
+          />
+          @if (!exploreQuery().text.trim()) {
+            <shelfy-segmented
+              class="max-sm:hidden"
+              [options]="sortItems()"
+              [value]="exploreQuery().sort"
+              [label]="'collection.sort.label' | translate"
+              (changed)="setSort($any($event))"
+            />
+          }
+        </div>
+      </div>
+
+      <div class="relative flex min-h-0 flex-1">
+        @if (filtersOpen()) {
+          <aside
+            id="picker-filters"
+            class="bg-surface flex w-80 shrink-0 flex-col max-md:absolute max-md:inset-0 max-md:z-10 max-md:w-auto"
+            [attr.aria-label]="'explore.filters.title' | translate"
+            animate.enter="animate-fade-in"
+          >
+            <div
+              class="flex min-h-0 flex-1 [scrollbar-width:thin] flex-col gap-7 overflow-y-auto overscroll-contain px-4 pt-4.5 pb-6 sm:pr-3 sm:pl-7"
+            >
+              <shelfy-explore-filters
+                [query]="exploreQuery()"
+                (cycled)="setCriterionState($event.criterion, $event.state)"
+                (yearsChanged)="setYears($event)"
+                (cleared)="clearFilters()"
+              />
+              @if (signedIn()) {
+                <div role="group" [attr.aria-label]="'library.show' | translate">
+                  <p [class]="groupTitle">{{ 'library.show' | translate }}</p>
+                  <button
+                    type="button"
+                    [class]="tile(hideOwned())"
+                    [attr.aria-pressed]="hideOwned()"
+                    (click)="history.setHideOwned(!hideOwned())"
+                  >
+                    {{ 'explore.filters.hide_owned' | translate }}
+                  </button>
+                </div>
+              }
+            </div>
+            <div class="grid grid-cols-2 gap-2 px-4 pt-3 pb-4 sm:pl-7 md:grid-cols-1">
+              <button
+                type="button"
+                [class]="secondaryButton"
+                (click)="clearFilters(); history.setHideOwned(false)"
+              >
+                {{ 'library.clear_all' | translate }}
+              </button>
+              <button
+                type="button"
+                [class]="primaryButton + ' md:hidden'"
+                (click)="filtersOpen.set(false)"
+              >
+                {{ 'library.show_count' | translate: { count: visibleResults().length } }}
+              </button>
+            </div>
+          </aside>
+        }
+        <div
+          #scroller
+          class="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-4.5 pb-8 sm:px-7"
+          [attr.aria-busy]="results.loading()"
+        >
+          @if (results.loading() && results.results().length === 0) {
+            <div [class]="gridClass" aria-hidden="true">
+              @for (skeleton of skeletons; track skeleton) {
+                <div>
+                  <div
+                    class="bg-fill-subtle aspect-2/3 animate-pulse rounded-2xl motion-reduce:animate-none"
+                  ></div>
+                  <div
+                    class="bg-fill-subtle mt-3 h-4 w-3/4 animate-pulse rounded-full motion-reduce:animate-none"
+                  ></div>
+                </div>
+              }
+            </div>
+          } @else if (results.failed() && visibleResults().length === 0) {
+            <div
+              class="flex flex-col items-center justify-center gap-4 py-16 text-center"
+              role="alert"
+            >
+              <p class="text-text-muted">{{ 'explore.failed' | translate }}</p>
+              <shelfy-button variant="secondary" (click)="results.retry()">
+                {{ 'explore.retry' | translate }}
+              </shelfy-button>
+            </div>
+          } @else if (results.loaded() && visibleResults().length === 0) {
+            <div
+              class="flex flex-col items-center justify-center gap-3 py-16 text-center"
+              role="status"
+            >
+              <p class="font-display text-text text-[1.75rem] font-extrabold tracking-[-0.04em]">
+                {{ 'explore.empty_title' | translate }}
+              </p>
+              <p class="text-text-muted max-w-sm text-base">
+                {{
+                  (hideOwned() && results.results().length
+                    ? 'explore.empty_owned'
+                    : 'explore.empty_hint'
+                  ) | translate
+                }}
+              </p>
+              @if (hideOwned() && results.results().length) {
+                <shelfy-button variant="secondary" (click)="history.setHideOwned(false)">
+                  {{ 'explore.show_owned' | translate }}
+                </shelfy-button>
+              }
+            </div>
+          } @else {
+            <div
+              class="duration-base transition-opacity"
+              [class]="
+                gridClass + (results.refreshing() ? ' opacity-45 delay-150' : ' opacity-100')
+              "
+            >
+              @for (result of visibleResults(); track resultKey(result)) {
+                <shelfy-pick-tile
+                  [title]="result.title"
+                  [poster]="poster(result)"
+                  [meta]="meta(result)"
+                  [owned]="owned(result)"
+                  [selected]="isChecked(result)"
+                  (toggled)="pick(result)"
+                />
+              }
+            </div>
+
+            @if ((results.hasMore() || results.loading()) && !results.refreshing()) {
+              <div #sentinel class="mt-8 flex justify-center">
+                <shelfy-button
+                  variant="secondary"
+                  [loading]="results.loading()"
+                  (click)="results.loadMore()"
+                >
+                  {{ 'explore.load_more' | translate }}
+                </shelfy-button>
+              </div>
+            }
+          }
+        </div>
+      </div>
+
+      @if (pending().length) {
+        <footer
+          class="animate-rise-in bg-bar flex shrink-0 items-center gap-3 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-6"
+        >
+          <div class="flex shrink-0 -space-x-3" aria-hidden="true">
+            @for (cover of trayCovers(); track cover.key) {
+              <span
+                class="bg-surface-raised ring-surface animate-pop-in block h-11 w-7.5 overflow-hidden rounded-md ring-2"
+              >
+                @if (cover.src; as src) {
+                  <img [src]="src" alt="" class="size-full object-cover" />
+                }
+              </span>
+            }
+          </div>
+          <p class="text-text min-w-0 flex-1 truncate text-base font-semibold tabular-nums">
+            {{ 'search.selection.selected_count' | translate: { count: pending().length } }}
+          </p>
+          <shelfy-button variant="secondary" (click)="clearPending()">
+            {{ 'search.selection.clear' | translate }}
+          </shelfy-button>
+          <shelfy-button variant="primary" (click)="confirm()">
+            <shelfy-icon name="plus" size="md" />{{
+              'shared.media_picker.confirm' | translate: { count: pending().length }
+            }}
+          </shelfy-button>
+        </footer>
+      }
+    </div>
+  </shelfy-dialog>
+}

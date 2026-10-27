@@ -1,0 +1,15 @@
+@if (games().length > 0) {
+  <shelfy-shelf-section rail="" [title]="headingKey() | translate">
+    @for (game of games(); track game.id) {
+      <div class="min-w-0">
+        <shelfy-media-rail-card
+          provider="igdb"
+          mediaType="game"
+          [externalId]="game.id + ''"
+          [title]="game.name"
+          [coverUrl]="coverUrl(game)"
+        />
+      </div>
+    }
+  </shelfy-shelf-section>
+}

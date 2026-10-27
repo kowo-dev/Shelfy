@@ -1,0 +1,150 @@
+<div
+  class="arena"
+  [attr.data-mode]="video() ? 'video' : 'image'"
+  [attr.data-chosen]="chosen()"
+  [class.locked]="locked()"
+>
+  <div class="arena-bg" aria-hidden="true">
+    @for (entry of sides(); track $index) {
+      <span>
+        @if (entry?.coverUrl; as cover) {
+          <img [src]="cover" alt="" draggable="false" />
+        }
+      </span>
+    }
+  </div>
+
+  <div class="arena-stage">
+    @for (entry of sides(); track $index; let i = $index) {
+      <article
+        class="fighter"
+        [attr.data-side]="i"
+        [class.won]="chosen() === side(i)"
+        [class.lost]="chosen() !== null && chosen() !== side(i)"
+        (pointerenter)="focusSide(side(i))"
+        (pointerleave)="focusSide(null)"
+      >
+        @if (entry?.clip; as clip) {
+          <div class="fighter-art">
+            <shelfy-clip-player
+              [key]="entry!.id"
+              [clip]="clip"
+              [native]="true"
+              [area]="false"
+              [button]="false"
+            />
+          </div>
+          <div class="fighter-cap">
+            <div class="min-w-0">
+              <h2>{{ entry?.title }}</h2>
+              <p class="truncate">
+                @if (isPlaying(entry)) {
+                  <span class="text-accent">{{ 'versus.play.playing' | translate }}</span>
+                } @else {
+                  {{ 'versus.clip.video' | translate }}
+                }
+                @if (clip.author) {
+                  · {{ clip.author }}
+                }
+              </p>
+            </div>
+            <button
+              type="button"
+              [class]="choosePill"
+              [disabled]="locked() || !entry"
+              [attr.aria-label]="'versus.play.choose_title' | translate: { title: entry!.title }"
+              (click)="pick(entry)"
+            >
+              {{ 'versus.play.choose' | translate }}
+            </button>
+          </div>
+        } @else {
+          <button
+            type="button"
+            class="fighter-art"
+            [disabled]="locked() || !entry"
+            [attr.aria-label]="
+              (touch ? 'versus.play.preview' : 'versus.play.choose_title')
+                | translate: { title: entry?.title ?? '' }
+            "
+            (click)="posterTap(side(i))"
+          >
+            @if (entry?.coverUrl) {
+              <img [src]="entry!.coverUrl" alt="" draggable="false" />
+            } @else {
+              <span
+                class="text-text-subtle font-display flex size-full items-center justify-center p-4 text-center text-lg font-bold text-balance"
+                >{{ entry?.title ?? '—' }}</span
+              >
+            }
+          </button>
+          <div class="fighter-cap">
+            <h2>{{ entry?.title }}</h2>
+            @if (entry?.media; as media) {
+              <p class="tabular-nums">
+                {{ 'collection.media_type_one.' + media.mediaType | translate }}
+                @if (year(side(i)); as y) {
+                  · {{ y }}
+                }
+              </p>
+            }
+            @if (overview(side(i)); as text) {
+              <p class="about max-md:hidden">{{ text }}</p>
+            }
+            <button
+              type="button"
+              class="mt-auto pointer-fine:hidden"
+              [class]="chooseButton"
+              [disabled]="locked() || !entry"
+              [attr.aria-label]="
+                'versus.play.choose_title' | translate: { title: entry?.title ?? '' }
+              "
+              (click)="pick(entry)"
+            >
+              {{ 'versus.play.choose' | translate }}
+            </button>
+          </div>
+        }
+      </article>
+      @if (i === 0) {
+        <span class="arena-vs" aria-hidden="true">{{ 'versus.play.vs' | translate }}</span>
+      }
+    }
+  </div>
+</div>
+
+<shelfy-dialog
+  [open]="previewing() !== null"
+  [title]="previewEntry()?.title ?? ''"
+  size="sm"
+  (closed)="closePreview()"
+>
+  @if (previewEntry(); as entry) {
+    <div class="flex flex-col items-center gap-4 text-center">
+      @if (entry.coverUrl) {
+        <img
+          [src]="entry.coverUrl"
+          alt=""
+          class="shadow-float aspect-2/3 h-[min(48dvh,26rem)] w-auto rounded-2xl object-cover"
+          draggable="false"
+        />
+      }
+      @if (entry.media; as media) {
+        <p class="text-text-subtle text-sm tabular-nums">
+          {{ 'collection.media_type_one.' + media.mediaType | translate }}
+          @if (year(previewing()!); as y) {
+            · {{ y }}
+          }
+        </p>
+      }
+      @if (overview(previewing()!); as text) {
+        <p class="text-text-muted line-clamp-6 text-left text-sm leading-relaxed">{{ text }}</p>
+      }
+    </div>
+  }
+  <div dialogFooter class="contents">
+    <button type="button" [class]="chooseButton" (click)="pickPreviewed()">
+      {{ 'versus.play.choose' | translate }}
+    </button>
+  </div>
+</shelfy-dialog>

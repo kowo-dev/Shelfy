@@ -1,0 +1,160 @@
+@if (!isHidden()) {
+  <div
+    [class]="
+      recipes.scrim +
+      (closing()
+        ? ' duration-fast opacity-0 transition-opacity'
+        : ' duration-base transition-opacity starting:opacity-0')
+    "
+    aria-hidden="true"
+    (click)="requestClose()"
+  ></div>
+
+  <div class="pointer-events-none fixed inset-0 z-85">
+    <aside
+      #panel
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="bulk-sheet-title"
+      class="bg-surface rounded-t-sheet sm:rounded-sheet pointer-events-auto absolute inset-x-0 bottom-0 flex max-h-[94dvh] flex-col overflow-hidden shadow-[0_30px_80px_-20px_rgb(0_0_0/0.7),inset_0_1px_0_rgb(255_255_255/0.06),0_0_0_1px_rgb(255_255_255/0.06)] sm:inset-y-3 sm:right-3 sm:left-auto sm:max-h-none sm:w-115"
+      [class]="panelMotion()"
+      [style.--top]="top()"
+      [style.translate]="drag.translate()"
+      [style.transition]="drag.dragging() ? 'none' : dragSettle"
+      (animationend)="onPanelAnimationEnd($event)"
+    >
+      <div
+        [class]="recipes.handle"
+        (pointerdown)="drag.start($event)"
+        (pointermove)="drag.move($event)"
+        (pointerup)="drag.end()"
+        (pointercancel)="drag.end()"
+      >
+        <span [class]="recipes.handleBar" aria-hidden="true"></span>
+      </div>
+
+      <button
+        type="button"
+        class="bg-media-chip absolute top-3.5 right-3.5 z-10 grid size-10 cursor-pointer place-items-center rounded-full text-white backdrop-blur-[14px] transition-colors hover:bg-[rgb(14_17_22/0.85)]"
+        [attr.aria-label]="'dialog.close' | translate"
+        (click)="requestClose()"
+      >
+        <shelfy-icon name="close" size="sm" />
+      </button>
+
+      <div
+        class="flex min-h-0 flex-1 [scrollbar-width:none] flex-col overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden"
+        [style.background]="'linear-gradient(180deg, var(--top) 0, var(--top) 250px, var(--color-surface) 620px)'"
+      >
+        <header
+          class="relative grid shrink-0 grid-cols-[96px_minmax(0,1fr)] items-end gap-6 px-5 pt-14 pb-5 sm:grid-cols-[112px_minmax(0,1fr)] sm:px-6.5 sm:pt-19"
+          (pointerdown)="drag.start($event)"
+          (pointermove)="drag.move($event)"
+          (pointerup)="drag.end()"
+          (pointercancel)="drag.end()"
+        >
+          <div class="relative ml-3 aspect-2/3" aria-hidden="true">
+            @for (cover of covers(); track $index; let index = $index) {
+              <img
+                [src]="cover"
+                alt=""
+                class="absolute inset-0 size-full rounded-xl object-cover shadow-[0_20px_36px_-16px_rgb(0_0_0/0.8)]"
+                [style.z-index]="covers().length - index"
+                [style.transform]="
+                  index === 0
+                    ? 'rotate(3deg) translateX(10px)'
+                    : index === 1
+                      ? 'rotate(-5deg) translateX(-6px)'
+                      : 'rotate(-10deg) translateX(-14px)'
+                "
+                draggable="false"
+              />
+            }
+          </div>
+          <div class="animate-rise-in min-w-0">
+            <h2
+              id="bulk-sheet-title"
+              class="font-display text-[1.625rem] leading-none font-bold tracking-[-0.035em] text-balance text-white sm:text-[1.875rem]"
+            >
+              {{ 'library.bulk.title' | translate: { count: count() } }}
+            </h2>
+            <p class="mt-2 text-sm text-white/76">{{ typeSummary() }}</p>
+          </div>
+        </header>
+
+        <div class="px-5 sm:px-6.5">
+          <section
+            class="animate-rise-in pt-2 pb-5.5 [animation-delay:140ms]"
+            [attr.aria-label]="'collection.status_label' | translate"
+          >
+            <shelfy-status-picker
+              [statuses]="statuses()"
+              [value]="shownStatus()"
+              [detail]="statusDetail()"
+              (picked)="pickStatus($event)"
+            />
+
+            <div class="mt-5.5" [attr.aria-label]="'collection.sheet.rating' | translate">
+              <p class="text-text-subtle h-4 text-xs font-semibold" aria-hidden="true">
+                {{ ratingLabel() | translate }}
+              </p>
+              <div class="mt-1.5 flex items-center gap-4">
+                <shelfy-rating-slider
+                  size="xl"
+                  [value]="ratingTouched() ? ratingDraft() : (commonRating() ?? null)"
+                  [label]="'collection.sheet.rating' | translate"
+                  (changed)="onRatingChange($event)"
+                  (previewed)="ratingPreview.set($event)"
+                />
+                <b
+                  class="font-display w-16 shrink-0 text-[2rem] leading-none font-extrabold tabular-nums"
+                  [style.color]="ratingNumber().color"
+                  aria-hidden="true"
+                  >{{ ratingNumber().text }}</b
+                >
+              </div>
+              @if (mixedRatings()) {
+                <p class="text-text-subtle mt-2 text-xs">
+                  {{ 'library.bulk.mixed_hint' | translate }}
+                </p>
+              }
+            </div>
+          </section>
+
+          <section class="animate-rise-in pb-4 [animation-delay:200ms]">
+            <button type="button" [class]="textAction" (click)="clearRatings()">
+              <shelfy-icon name="star" size="18" />
+              {{ 'library.bulk.clear_ratings' | translate }}
+            </button>
+          </section>
+        </div>
+
+        <footer
+          class="bg-surface sticky bottom-0 z-4 mt-auto grid grid-cols-[auto_1fr] gap-2.5 px-5 pt-3.5 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-[0_-1px_0_rgb(255_255_255/0.06),0_-24px_24px_-8px_var(--color-surface)] sm:px-6.5 sm:pb-5.5"
+        >
+          <button
+            type="button"
+            [class]="dangerButton"
+            [disabled]="deleting() || saving()"
+            (click)="deleteAll()"
+          >
+            <shelfy-icon name="trash" size="18" />
+            {{ 'collection.bulk.delete' | translate }}
+          </button>
+          <button
+            type="button"
+            [class]="applyButton"
+            [disabled]="!hasChanges() || saving()"
+            (click)="apply()"
+          >
+            {{
+              hasChanges()
+                ? ('collection.bulk.apply' | translate: { count: count() })
+                : ('library.bulk.no_changes' | translate)
+            }}
+          </button>
+        </footer>
+      </div>
+    </aside>
+  </div>
+}

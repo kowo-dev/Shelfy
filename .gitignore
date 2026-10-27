@@ -1,0 +1,24 @@
+# Frontend
+frontend/src/environments/environment.prod.ts
+frontend/docs/
+
+# Backend
+backend/target/
+**/.env
+application-local.yml
+backend/docs/
+
+# Docker secret files
+docker/secrets/
+
+# Docs (other files stay private, public guides are listed here)
+docs/*
+!docs/federation.md
+!docs/self-hosting.md
+!docs/development.md
+
+# Database backups
+docker/backups/
+
+# Editors
+.idea/

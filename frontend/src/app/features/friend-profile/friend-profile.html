@@ -1,0 +1,237 @@
+@if (loading()) {
+  <div class="mt-24 flex justify-center"><shelfy-spinner /></div>
+} @else if (notAvailable()) {
+  <div class="mt-24 flex flex-col items-center gap-4 px-6 text-center">
+    <p class="text-text-muted text-lg">{{ 'friends.profile.not_found' | translate }}</p>
+    <a routerLink="/people" [class]="notFoundLink">
+      {{ 'community.people.title' | translate }}
+    </a>
+  </div>
+} @else if (profile(); as profile) {
+  <div
+    #scrollContainer
+    class="page-scroll h-full [scrollbar-gutter:stable] overflow-x-clip overflow-y-auto [overflow-anchor:none] max-md:pb-(--bottom-nav-clearance)"
+    (scroll)="onScroll()"
+  >
+    <shelfy-page-hero [title]="heroTitle()" [wall]="ambientWall()">
+      @if (heroStats(); as stats) {
+        <p class="text-text-muted mt-4.5 flex flex-wrap gap-x-5.5 gap-y-1.5 text-base">
+          <span
+            ><b class="text-text mr-1 font-bold tabular-nums">{{ stats.total }}</b
+            >{{ 'library.titles' | translate }}</span
+          >
+          <span
+            ><b class="text-text mr-1 font-bold tabular-nums">{{ stats.ongoing }}</b
+            >{{ 'library.in_progress' | translate }}</span
+          >
+          @if (stats.average; as average) {
+            <span
+              ><b class="text-text mr-1 font-bold tabular-nums">{{ average }}</b
+              >{{ 'library.average' | translate }}</span
+            >
+          }
+          @if (stats.common) {
+            <span
+              ><b class="text-text mr-1 font-bold tabular-nums">{{ stats.common }}</b
+              >{{ 'friends.shelf.in_common' | translate }}</span
+            >
+          }
+        </p>
+      }
+    </shelfy-page-hero>
+
+    <div #sentinel aria-hidden="true"></div>
+    @if (!shelfEmpty()) {
+      <div class="v-libbar" [class.stuck]="stuck()">
+        <shelfy-tabs
+          class="min-w-0"
+          [tabs]="statusTabs()"
+          [activeId]="activeStatusTab()"
+          [label]="'library.status' | translate"
+          (tabSelected)="onStatusTab($event)"
+        />
+        <div class="v-ltools">
+          <label class="v-lsearch">
+            <shelfy-icon name="search" size="18" class="shrink-0" />
+            <input
+              type="search"
+              autocomplete="off"
+              [placeholder]="'friends.shelf.search' | translate"
+              [attr.aria-label]="'friends.shelf.search' | translate"
+              [value]="searchDraft()"
+              (input)="onSearchInput($any($event.target).value)"
+            />
+          </label>
+          <button
+            type="button"
+            class="v-tool"
+            aria-haspopup="dialog"
+            [attr.aria-label]="'library.filters' | translate"
+            (click)="sheetOpen.set(true)"
+          >
+            <shelfy-icon name="filter" size="18" />
+            <span class="lbl">{{ 'library.filters' | translate }}</span>
+            @if (activeFilterCount()) {
+              <span class="n">{{ activeFilterCount() }}</span>
+            }
+          </button>
+        </div>
+      </div>
+    }
+
+    <p class="sr-only" aria-live="polite">{{ resultCaption() }}</p>
+    <div #gridAnchor></div>
+
+    <div class="px-gutter mx-auto pt-4.5 pb-35">
+      @if (listLoading() && visibleItems().length === 0) {
+        <div
+          class="v-lgrid animate-fade-in"
+          role="status"
+          aria-busy="true"
+          [attr.aria-label]="'shared.loading' | translate"
+        >
+          @for (slot of skeletonSlots; track slot) {
+            <div class="flex flex-col gap-3" aria-hidden="true">
+              <div class="bg-fill-subtle aspect-2/3 animate-pulse rounded-2xl"></div>
+              <div class="bg-fill-subtle h-4 w-3/4 rounded-sm"></div>
+            </div>
+          }
+        </div>
+      } @else if (visibleItems().length === 0) {
+        <div class="flex max-w-xl flex-col items-start gap-2 py-16">
+          @if (shelfEmpty()) {
+            <h2 class="font-display text-text text-[2rem] font-bold tracking-[-0.04em]">
+              {{ 'friends.shelf.empty_title' | translate }}
+            </h2>
+            <p class="text-text-muted text-base">
+              {{ 'friends.shelf.empty_body' | translate: { name: friendName() } }}
+            </p>
+          } @else if (searchTerm().trim()) {
+            <h2 class="font-display text-text text-[2rem] font-bold tracking-[-0.04em]">
+              {{ 'friends.shelf.search_title' | translate }}
+            </h2>
+            <p class="text-text-muted text-base">
+              {{
+                'friends.shelf.search_body'
+                  | translate: { name: friendName(), query: searchTerm().trim() }
+              }}
+            </p>
+            <shelfy-button class="mt-4" type="button" variant="secondary" (click)="clearSearch()">
+              {{ 'library.empty.clear_search' | translate }}
+            </shelfy-button>
+          } @else if (comparing() && activeFilterCount() === 1) {
+            <h2 class="font-display text-text text-[2rem] font-bold tracking-[-0.04em]">
+              {{ 'friends.shelf.common_empty_title' | translate }}
+            </h2>
+            <p class="text-text-muted text-base">
+              {{ 'friends.profile.compare_no_common_items' | translate }}
+            </p>
+            <shelfy-button
+              class="mt-4"
+              type="button"
+              variant="secondary"
+              (click)="setCommonOnly(false)"
+            >
+              {{ 'friends.shelf.show_everything' | translate }}
+            </shelfy-button>
+          } @else {
+            <h2 class="font-display text-text text-[2rem] font-bold tracking-[-0.04em]">
+              {{ 'library.empty.title' | translate }}
+            </h2>
+            <p class="text-text-muted text-base">{{ 'library.empty.body' | translate }}</p>
+            <shelfy-button class="mt-4" type="button" variant="secondary" (click)="clearFilters()">
+              {{ 'library.empty.reset' | translate }}
+            </shelfy-button>
+          }
+        </div>
+      } @else {
+        <div
+          class="duration-base transition-opacity"
+          [class.opacity-40]="
+            listLoading() && !scrollWindow.loadingMore() && !scrollWindow.loadingPrevious()
+          "
+          [attr.aria-busy]="listLoading()"
+        >
+          @if (!comparing() && scrollWindow.loadingPrevious()) {
+            <div class="mb-4 flex justify-center"><shelfy-spinner /></div>
+          }
+          <div class="v-lgrid">
+            @for (item of visibleItems(); track item.id) {
+              <shelfy-media-card
+                [item]="item"
+                [subtitle]="mineLine(item) ?? statusLine(item)"
+                [addable]="signedIn()"
+                [tinted]="true"
+              />
+            }
+          </div>
+          @if (!comparing() && scrollWindow.loadingMore()) {
+            <div class="mt-6 flex justify-center"><shelfy-spinner /></div>
+          }
+        </div>
+      }
+    </div>
+    <shelfy-page-footer />
+  </div>
+
+  <shelfy-filter-panel
+    [open]="sheetOpen()"
+    [title]="'library.filters' | translate"
+    [showLabel]="'library.show_count' | translate: { count: resultCount() }"
+    (closed)="sheetOpen.set(false)"
+    (cleared)="clearFilters()"
+  >
+    <shelfy-library-filters
+      ratingLabel="friends.shelf.rating"
+      [showStatus]="false"
+      [mediaTypes]="mediaTypeFilter()"
+      [mediaCounts]="mediaTypeCounts()"
+      [mediaTotal]="mediaTypeTotal()"
+      [ratingFrom]="ratingFrom()"
+      [ratingTo]="ratingTo()"
+      [includeUnrated]="includeUnrated()"
+      [hasNote]="hasNote()"
+      (mediaTypesChange)="filterHandlers.onMediaTypeFilterChange($event)"
+      (ratingRangeChange)="filterHandlers.onRatingRangeChange($event.from, $event.to)"
+      (includeUnratedChange)="filterHandlers.onIncludeUnratedChange($event)"
+      (hasNoteChange)="filterHandlers.onHasNoteChange($event)"
+    >
+      @if (canCompare()) {
+        <div role="radiogroup" [attr.aria-label]="'friends.shelf.show' | translate">
+          <p [class]="groupTitle">{{ 'friends.shelf.show' | translate }}</p>
+          <div class="flex flex-wrap gap-2">
+            <button
+              type="button"
+              role="radio"
+              [class]="tile(!comparing())"
+              [attr.aria-checked]="!comparing()"
+              (click)="setCommonOnly(false)"
+            >
+              {{ 'friends.shelf.everything' | translate }}
+              <span class="tabular-nums opacity-55">{{ stats()?.total ?? '' }}</span>
+            </button>
+            <button
+              type="button"
+              role="radio"
+              [class]="tile(comparing())"
+              [attr.aria-checked]="comparing()"
+              (click)="setCommonOnly(true)"
+            >
+              {{ 'friends.shelf.common' | translate }}
+              <span class="tabular-nums opacity-55">{{ commonItems().length }}</span>
+            </button>
+          </div>
+        </div>
+      }
+      <shelfy-library-sort
+        afterMedia
+        ratingLabel="friends.shelf.rating"
+        [inline]="true"
+        [sortBy]="sortBy()"
+        [sortDirection]="sortDirection()"
+        (sortByChange)="onSortBy($event)"
+        (directionChange)="onDirection($event)"
+      />
+    </shelfy-library-filters>
+  </shelfy-filter-panel>
+}

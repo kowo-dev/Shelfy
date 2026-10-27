@@ -1,0 +1,2 @@
+header Content-Security-Policy "frame-ancestors 'none'; object-src 'none'; base-uri 'self'"
+reverse_proxy frontend:8080

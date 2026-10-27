@@ -1,0 +1,84 @@
+<form [formGroup]="form()" (ngSubmit)="save.emit()" class="flex flex-col gap-10">
+  <div class="flex flex-col gap-6">
+    <div class="grid gap-6 sm:grid-cols-2 sm:gap-5">
+      <shelfy-input
+        formControlName="displayName"
+        [label]="'settings.display_name' | translate"
+        [maxlength]="50"
+        [counter]="true"
+        autocomplete="nickname"
+        [error]="displayNameError()"
+      />
+
+      <shelfy-input
+        formControlName="username"
+        [label]="'auth.username' | translate"
+        prefixText="@"
+        [maxlength]="50"
+        autocomplete="username"
+        [error]="usernameError()"
+      />
+    </div>
+
+    <shelfy-textarea
+      formControlName="bio"
+      [label]="'settings.bio' | translate"
+      [maxlength]="300"
+      [counter]="true"
+      [error]="bioError()"
+    />
+  </div>
+
+  <div class="flex flex-col gap-3">
+    <h3 id="settings-visibility-label" [class]="heading">
+      {{ 'settings.collection_visibility' | translate }}
+    </h3>
+    @if (federationEnabled()) {
+      <p id="settings-visibility-hint" class="text-text-muted max-w-prose text-sm leading-snug">
+        {{ 'settings.visibility_hint.' + values().profileVisibility + '_federated' | translate }}
+      </p>
+    }
+    <div
+      class="mt-1 grid gap-2.5 sm:grid-cols-2"
+      role="radiogroup"
+      aria-labelledby="settings-visibility-label"
+    >
+      @for (option of visibilities; track option.value) {
+        @let on = values().profileVisibility === option.value;
+        <button
+          type="button"
+          role="radio"
+          [class]="optionClass(on)"
+          [attr.aria-checked]="on"
+          (click)="setVisibility(option.value)"
+        >
+          <shelfy-icon
+            [name]="option.icon"
+            size="24"
+            [class]="on ? 'text-accent mt-px' : 'text-text-muted mt-px'"
+          />
+          <span class="min-w-0">
+            <b class="text-text block text-base font-semibold">{{ option.labelKey | translate }}</b>
+            <span class="text-text-muted mt-0.5 block text-sm leading-snug">{{
+              'settings.visibility_hint.' + option.value | translate
+            }}</span>
+          </span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <div [class]="submitClass()">
+    <button
+      type="submit"
+      [class]="primary"
+      [disabled]="!canSave() || saving()"
+      [attr.aria-busy]="saving() || null"
+    >
+      @if (saving()) {
+        <shelfy-spinner size="sm" />
+      }
+      {{ 'settings.save' | translate }}
+    </button>
+  </div>
+</form>

@@ -1,0 +1,474 @@
+<h2 class="sr-only">
+  {{ 'comments.title' | translate }}
+  <span aria-live="polite">{{ total() }}</span>
+</h2>
+
+@if (isAuthenticated()) {
+  <form class="flex items-start gap-3" (submit)="$event.preventDefault(); addComment()">
+    <shelfy-avatar
+      class="mt-1.5 max-sm:hidden"
+      [displayName]="currentUser()?.username ?? ''"
+      [avatarUrl]="currentUser()?.avatarUrl ?? null"
+      size="40"
+    />
+    <div class="relative min-w-0 flex-1">
+      <div [class]="fieldShell">
+        <textarea
+          rows="1"
+          class="text-text placeholder:text-text-subtle duration-base ease-smooth block field-sizing-content max-h-60 min-h-13 w-full resize-none bg-transparent py-3.5 pr-12 pl-4 text-base leading-normal caret-(--color-accent) transition-[min-height] outline-none focus:min-h-24 motion-reduce:transition-none"
+          [formControl]="commentControl"
+          [placeholder]="'comments.add_placeholder' | translate"
+          [attr.aria-label]="'comments.add_label' | translate"
+          [attr.maxlength]="maxLength()"
+          (keydown.control.enter)="submitFromKeyboard($event)"
+          (keydown.meta.enter)="submitFromKeyboard($event)"
+        ></textarea>
+        @if (charsLeft() <= counterThreshold) {
+          <span
+            class="absolute right-4 bottom-4 text-xs tabular-nums"
+            [class]="charsLeft() <= 0 ? 'text-danger-fg' : 'text-text-subtle'"
+            aria-live="polite"
+            >{{ charsLeft() }}</span
+          >
+        }
+      </div>
+      @if (mentionTarget() === 'root') {
+        <ng-container [ngTemplateOutlet]="mentions" />
+      }
+    </div>
+    <button
+      type="submit"
+      [class]="sendButton"
+      [disabled]="commentControl.invalid || posting()"
+      [attr.aria-busy]="posting() || null"
+      [attr.aria-label]="'comments.send' | translate"
+      [title]="'comments.send_hint' | translate"
+    >
+      @if (posting()) {
+        <shelfy-spinner size="sm" />
+      } @else if (sent()) {
+        <shelfy-icon name="check" size="20" />
+      } @else {
+        {{ 'comments.post' | translate }}
+      }
+    </button>
+  </form>
+} @else {
+  <div class="flex items-center gap-3">
+    <p
+      class="text-text-muted flex h-13 min-w-0 flex-1 items-center truncate rounded-2xl bg-white/8 px-4 text-base"
+    >
+      {{ 'comments.login_to_comment' | translate }}
+    </p>
+    <button type="button" [class]="primaryPill" (click)="addComment()">
+      {{ 'auth.sign_in' | translate }}
+    </button>
+  </div>
+}
+
+@if (comments().length > 1) {
+  <div class="mt-7 flex">
+    <shelfy-segmented
+      size="sm"
+      [options]="sortOptions()"
+      [value]="sortMode()"
+      [label]="'comments.sort.label' | translate"
+      (changed)="setSortMode($any($event))"
+    />
+  </div>
+}
+
+@if (comments().length === 0) {
+  <p class="animate-rise-in text-text-muted mt-8 text-base">
+    {{ 'comments.empty' | translate }}
+  </p>
+} @else {
+  <ul
+    class="duration-base mt-3 flex flex-col transition-opacity"
+    [class.opacity-50]="sorting()"
+    [attr.aria-busy]="sorting() || null"
+  >
+    @for (comment of comments(); track comment.id; let i = $index) {
+      <ng-container
+        [ngTemplateOutlet]="thread"
+        [ngTemplateOutletContext]="{ $implicit: comment, depth: 0, index: i }"
+      />
+    }
+  </ul>
+}
+@if (hasMore()) {
+  <div class="mt-5 flex justify-start sm:pl-13">
+    <button
+      type="button"
+      [class]="loadMoreButton"
+      [disabled]="loadingMore()"
+      [attr.aria-busy]="loadingMore() || null"
+      (click)="loadMore()"
+    >
+      @if (loadingMore()) {
+        <shelfy-spinner size="sm" />
+      } @else {
+        <shelfy-icon name="chevronDown" size="sm" />
+      }
+      {{ 'comments.load_more' | translate }}
+    </button>
+  </div>
+}
+
+<ng-template #thread let-comment let-depth="depth" let-index="index" let-parent="parent">
+  <li
+    class="grid"
+    [class]="depth === 0 ? 'border-b border-white/6 pb-4.5 last:border-b-0' : ''"
+    [animate.enter]="animateEnter() ? 'animate-collapse-in [animation-fill-mode:backwards]' : ''"
+    animate.leave="animate-collapse-out"
+    [style.animation-delay.ms]="enterDelay(index)"
+  >
+    <div
+      class="min-h-0 min-w-0 [.animate-collapse-in>&]:overflow-hidden [.animate-collapse-out>&]:overflow-hidden"
+    >
+      <article class="group/comment flex" [class]="depth === 0 ? 'gap-3.5 pt-4.5' : 'gap-3 pt-3.5'">
+        <div class="flex shrink-0 flex-col items-center" [class]="depth === 0 ? 'w-10' : 'w-7'">
+          @if (comment.deleted) {
+            <span
+              class="text-text-subtle grid shrink-0 place-items-center rounded-full bg-white/8"
+              [class]="depth === 0 ? 'size-10' : 'size-7'"
+              aria-hidden="true"
+            >
+              <shelfy-icon name="comment" size="sm" />
+            </span>
+          } @else {
+            <a
+              [routerLink]="['/profile', comment.authorUsername]"
+              class="duration-base h-fit shrink-0 rounded-full transition-opacity active:opacity-70"
+              [class.opacity-60]="isCollapsed(comment)"
+              tabindex="-1"
+              aria-hidden="true"
+            >
+              <shelfy-avatar
+                [displayName]="comment.authorUsername"
+                [avatarUrl]="comment.authorAvatarUrl"
+                [size]="depth === 0 ? '40' : '28'"
+              />
+            </a>
+          }
+          @if (comment.replies.length > 0 && !isCollapsed(comment)) {
+            <button
+              type="button"
+              [class]="threadLine"
+              aria-expanded="true"
+              [attr.aria-label]="'comments.collapse_thread' | translate"
+              (click)="toggleCollapsed(comment.id)"
+            >
+              <span
+                class="bg-border-strong duration-base group-hover/line:bg-text-subtle group-focus-visible/line:bg-text-muted h-full w-0.5 rounded-full transition-colors"
+              ></span>
+            </button>
+          }
+        </div>
+
+        <div class="min-w-0 flex-1">
+          <div class="flex min-h-7 items-center justify-between gap-2">
+            <p class="flex min-w-0 items-baseline gap-1.5">
+              @if (comment.deleted) {
+                <span class="text-text-subtle truncate text-sm font-semibold italic">{{
+                  'comments.deleted_comment' | translate
+                }}</span>
+              } @else {
+                <a
+                  [routerLink]="['/profile', comment.authorUsername]"
+                  class="text-text truncate font-semibold transition-opacity hover:underline hover:underline-offset-2 active:opacity-70"
+                  [class]="depth === 0 ? 'text-[0.9375rem]' : 'text-sm'"
+                  >{{ comment.authorUsername }}</a
+                >
+                <span class="text-text-subtle shrink-0 text-sm" aria-hidden="true">·</span>
+                <time
+                  class="text-text-subtle shrink-0 text-sm"
+                  [attr.datetime]="comment.createdAt"
+                  [title]="createdAtTitle(comment)"
+                  >{{ createdAtLabel(comment) }}</time
+                >
+                @if (replyMarker(depth) !== null && parent && !parent.deleted) {
+                  <span
+                    class="text-text-subtle min-w-0 shrink-[100] truncate text-sm"
+                    [class]="replyMarker(depth)"
+                    >· <span class="max-sm:sr-only">{{ 'comments.in_reply_to' | translate }}</span>
+                    <span class="text-text-muted font-semibold"
+                      >&#64;{{ parent.authorUsername }}</span
+                    ></span
+                  >
+                }
+                @if (comment.updatedAt && !isCollapsed(comment)) {
+                  <span class="text-text-subtle shrink-0 text-sm"
+                    >· {{ 'comments.edited' | translate }}</span
+                  >
+                }
+              }
+              @if (isCollapsed(comment)) {
+                <button
+                  type="button"
+                  [class]="expandButton"
+                  aria-expanded="false"
+                  (click)="toggleCollapsed(comment.id)"
+                >
+                  <span aria-hidden="true">·</span>
+                  @if (isLowVoted(comment)) {
+                    {{ 'comments.low_voted' | translate }}
+                  } @else {
+                    {{ 'comments.replies_count' | translate: { count: replyCount(comment) } }}
+                  }
+                  <shelfy-icon name="chevronDown" size="sm" />
+                </button>
+              }
+            </p>
+            @if (!comment.deleted && !isCollapsed(comment) && canDelete(comment)) {
+              <div class="relative -my-2.5 -mr-1.5">
+                <button
+                  type="button"
+                  [class]="menuButton"
+                  aria-haspopup="menu"
+                  [attr.aria-expanded]="menuOpenId() === comment.id"
+                  [attr.aria-label]="'comments.more' | translate"
+                  (click)="toggleMenu(comment.id, $event)"
+                  (keydown.escape)="menuOpenId.set(null)"
+                >
+                  <shelfy-icon name="more" size="md" />
+                </button>
+                @if (menuOpenId() === comment.id) {
+                  <div
+                    [class]="menuPanel + ' right-0 origin-top-right'"
+                    role="menu"
+                    animate.leave="animate-pop-out"
+                  >
+                    @if (isMine(comment)) {
+                      <button
+                        type="button"
+                        role="menuitem"
+                        [class]="menuItem"
+                        (click)="startEdit(comment)"
+                      >
+                        <shelfy-icon name="edit" size="sm" />
+                        {{ 'comments.edit' | translate }}
+                      </button>
+                    }
+                    <button
+                      type="button"
+                      role="menuitem"
+                      [class]="menuItem + ' hover:text-danger-fg!'"
+                      (click)="requestDelete(comment)"
+                    >
+                      <shelfy-icon name="trash" size="sm" />
+                      {{ 'comments.delete' | translate }}
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          @if (!comment.deleted) {
+            <div
+              [class]="collapse(!isCollapsed(comment) && editingId() !== comment.id)"
+              [attr.inert]="!isCollapsed(comment) && editingId() !== comment.id ? null : ''"
+            >
+              <div class="overflow-hidden">
+                <p
+                  class="text-text/85 mt-1 max-w-[68ch] text-[0.9375rem] leading-relaxed text-pretty wrap-break-word whitespace-pre-line"
+                >
+                  {{ comment.content }}
+                </p>
+              </div>
+            </div>
+
+            <div
+              [class]="collapse(editingId() === comment.id)"
+              [attr.inert]="editingId() === comment.id ? null : ''"
+            >
+              <div class="overflow-hidden">
+                @if (editShown() === comment.id) {
+                  <div class="pt-2">
+                    <div [class]="fieldShell">
+                      <textarea
+                        rows="2"
+                        class="text-text block field-sizing-content max-h-60 min-h-20 w-full resize-none bg-transparent px-4 py-2.5 text-base leading-normal outline-none"
+                        [formControl]="editControl"
+                        [attr.aria-label]="'comments.edit' | translate"
+                        [attr.maxlength]="maxLength()"
+                        (keydown.control.enter)="saveEdit(comment)"
+                        (keydown.meta.enter)="saveEdit(comment)"
+                        (keydown.escape)="cancelEdit()"
+                      ></textarea>
+                    </div>
+                    <div class="mt-2.5 flex items-center gap-2">
+                      <button
+                        type="button"
+                        [class]="primaryPill"
+                        [disabled]="editControl.invalid || savingEdit()"
+                        [attr.aria-busy]="savingEdit() || null"
+                        (click)="saveEdit(comment)"
+                      >
+                        {{ 'comments.save' | translate }}
+                      </button>
+                      <button type="button" [class]="pill" (click)="cancelEdit()">
+                        {{ 'comments.cancel' | translate }}
+                      </button>
+                      @if (editCharsLeft() <= counterThreshold) {
+                        <span
+                          class="ml-auto text-xs tabular-nums"
+                          [class]="editCharsLeft() <= 0 ? 'text-danger-fg' : 'text-text-subtle'"
+                          aria-live="polite"
+                          >{{ editCharsLeft() }}</span
+                        >
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div
+              [class]="collapse(confirmingDeleteId() === comment.id)"
+              [attr.inert]="confirmingDeleteId() === comment.id ? null : ''"
+            >
+              <div class="overflow-hidden">
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-2 pt-2.5">
+                  <p class="text-text-muted text-sm">
+                    {{ 'comments.delete_confirm' | translate }}
+                  </p>
+                  <button
+                    type="button"
+                    [class]="dangerPill"
+                    [disabled]="deletingId() === comment.id"
+                    [attr.aria-busy]="deletingId() === comment.id || null"
+                    (click)="confirmDelete(comment)"
+                  >
+                    {{ 'comments.delete' | translate }}
+                  </button>
+                  <button type="button" [class]="pill" (click)="cancelDelete()">
+                    {{ 'comments.cancel' | translate }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              [class]="collapse(!isCollapsed(comment))"
+              [attr.inert]="isCollapsed(comment) ? '' : null"
+            >
+              <div class="overflow-hidden">
+                <div [class]="actionsRow">
+                  <shelfy-comment-vote
+                    [upvotes]="comment.upvotes"
+                    [downvotes]="comment.downvotes"
+                    [myVote]="comment.myVote"
+                    [disabled]="!canVote(comment)"
+                    [pending]="pendingVoteIds().has(comment.id)"
+                    [shake]="voteShake()?.commentId === comment.id ? voteShake()!.value : null"
+                    (voteChange)="vote(comment, $event)"
+                  />
+                  <button
+                    type="button"
+                    [class]="replyButton"
+                    [attr.aria-expanded]="replyingToId() === comment.id"
+                    (click)="startReply(comment)"
+                  >
+                    <shelfy-icon name="comment" size="16" />{{ 'comments.reply' | translate }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            @if (replyingToId() === comment.id) {
+              <form
+                class="relative pt-2.5"
+                animate.enter="animate-rise-in"
+                animate.leave="animate-fade-out"
+                (submit)="$event.preventDefault(); submitReply(comment)"
+              >
+                <div [class]="fieldShell">
+                  <textarea
+                    [id]="'reply-' + comment.id"
+                    rows="2"
+                    class="text-text placeholder:text-text-subtle block field-sizing-content max-h-60 min-h-20 w-full resize-none bg-transparent px-4 py-2.5 text-base leading-normal outline-none"
+                    [formControl]="replyControl"
+                    [placeholder]="'comments.reply_placeholder' | translate"
+                    [attr.aria-label]="
+                      'comments.reply_label' | translate: { username: comment.authorUsername }
+                    "
+                    [attr.maxlength]="maxLength()"
+                    (keydown.control.enter)="$event.preventDefault(); submitReply(comment)"
+                    (keydown.meta.enter)="$event.preventDefault(); submitReply(comment)"
+                    (keydown.escape)="cancelReply()"
+                  ></textarea>
+                </div>
+                @if (mentionTarget() === 'reply') {
+                  <ng-container [ngTemplateOutlet]="mentions" />
+                }
+                <div class="mt-2.5 flex items-center gap-2">
+                  <button
+                    type="submit"
+                    [class]="primaryPill"
+                    [disabled]="replyControl.invalid || replying()"
+                    [attr.aria-busy]="replying() || null"
+                  >
+                    {{ 'comments.reply' | translate }}
+                  </button>
+                  <button type="button" [class]="pill" (click)="cancelReply()">
+                    {{ 'comments.cancel' | translate }}
+                  </button>
+                  @if (replyCharsLeft() <= counterThreshold) {
+                    <span
+                      class="ml-auto text-xs tabular-nums"
+                      [class]="replyCharsLeft() <= 0 ? 'text-danger-fg' : 'text-text-subtle'"
+                      aria-live="polite"
+                      >{{ replyCharsLeft() }}</span
+                    >
+                  }
+                </div>
+              </form>
+            }
+          }
+
+          @if (comment.replies.length > 0) {
+            <div
+              [class]="collapse(!isCollapsed(comment)) + ' ' + repliesIndent(depth)"
+              [attr.inert]="isCollapsed(comment) ? '' : null"
+            >
+              <div class="overflow-hidden">
+                <ul class="flex flex-col">
+                  @for (reply of comment.replies; track reply.id) {
+                    <ng-container
+                      [ngTemplateOutlet]="thread"
+                      [ngTemplateOutletContext]="{
+                        $implicit: reply,
+                        depth: depth + 1,
+                        index: 0,
+                        parent: comment,
+                      }"
+                    />
+                  }
+                </ul>
+              </div>
+            </div>
+          }
+        </div>
+      </article>
+    </div>
+  </li>
+</ng-template>
+
+<ng-template #mentions>
+  @if (mentionResults().length > 0) {
+    <ul [class]="mentionPanel">
+      @for (candidate of mentionResults(); track candidate.id) {
+        <li>
+          <button type="button" [class]="menuItem" (click)="selectMention(candidate)">
+            <span class="text-text font-semibold">{{ candidate.username }}</span>
+            @if (candidate.displayName) {
+              <span class="text-text-subtle">{{ candidate.displayName }}</span>
+            }
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</ng-template>

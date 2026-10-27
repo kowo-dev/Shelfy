@@ -1,0 +1,162 @@
+<section
+  class="relative isolate overflow-x-clip"
+  aria-roledescription="carousel"
+  aria-labelledby="home-stage-title"
+>
+  <div class="v-ambient v-ambient-stage" aria-hidden="true">
+    @for (layer of layers(); track layer.key) {
+      @if (layer.cover; as cover) {
+        <img
+          [src]="cover"
+          alt=""
+          animate.enter="animate-stage-in"
+          animate.leave="animate-stage-out"
+        />
+      }
+    }
+  </div>
+  <div
+    class="stage-mask pointer-events-none absolute top-[calc(-1*var(--nav-bar-height))] right-0 -bottom-15 -z-10 w-[68%] max-md:hidden"
+    aria-hidden="true"
+  >
+    @for (layer of layers(); track layer.key) {
+      <div
+        class="absolute inset-0"
+        animate.enter="animate-stage-in"
+        animate.leave="animate-stage-out"
+      >
+        @if (layer.art; as art) {
+          <img
+            [src]="art.wide"
+            [attr.srcset]="
+              art.full === art.wide ? null : art.wide + ' 1280w, ' + art.full + ' 2560w'
+            "
+            sizes="68vw"
+            alt=""
+            class="size-full object-cover object-[center_30%]"
+            fetchpriority="high"
+            draggable="false"
+          />
+        } @else {
+          <div
+            class="size-full"
+            [style.background]="
+              'radial-gradient(70% 90% at 60% 34%, color-mix(in srgb, ' +
+              (layer.tint ?? 'var(--color-surface-3)') +
+              ' 62%, var(--color-background)) 0%, var(--color-background) 80%)'
+            "
+          ></div>
+        }
+      </div>
+    }
+    <span
+      class="absolute inset-0 bg-[linear-gradient(90deg,rgb(11_11_11/0.55),rgb(11_11_11/0.15)_60%,rgb(11_11_11/0.35))]"
+    ></span>
+  </div>
+
+  <div
+    class="px-gutter mx-auto grid items-center gap-[clamp(1.5rem,4vw,4.5rem)] pt-[calc(4rem+clamp(0.5rem,2vh,1.75rem))] max-md:pb-2 max-md:text-center md:min-h-[min(74vh,720px)] md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.2fr)] md:pt-[calc(var(--nav-bar-height)+clamp(0.5rem,2vh,1.75rem))]"
+  >
+    @for (current of [copy()]; track current.key) {
+      <div class="animate-rise-in min-w-0">
+        <div class="v-meta max-md:justify-center">
+          <span>{{ current.typeKey | translate }}</span>
+          @if (current.year; as year) {
+            <i aria-hidden="true">·</i><span class="tabular-nums">{{ year }}</span>
+          }
+          @for (genre of current.genres; track genre) {
+            <i aria-hidden="true">·</i><span>{{ genre }}</span>
+          }
+          @if (current.mine; as mine) {
+            <i aria-hidden="true">·</i>
+            <span class="v-star" [style.color]="mine.color"
+              ><shelfy-icon name="star" size="14" [active]="true" />{{ mine.text }}</span
+            >
+          } @else if (current.rating; as rating) {
+            <i aria-hidden="true">·</i>
+            <span class="v-star"
+              ><shelfy-icon name="star" size="14" [active]="true" />{{ rating }}</span
+            >
+          }
+        </div>
+        <h2
+          id="home-stage-title"
+          class="font-display text-text mt-4 mb-4.5 line-clamp-3 leading-[0.86] font-extrabold tracking-[-0.055em] text-balance"
+          [class]="
+            current.long
+              ? 'text-[clamp(2.25rem,10vw,3rem)] md:text-[clamp(2.75rem,4.4vw,4.5rem)]'
+              : 'text-[clamp(2.875rem,13vw,4rem)] md:text-[clamp(3.5rem,6.6vw,7rem)]'
+          "
+        >
+          {{ current.title }}
+        </h2>
+
+        @if (current.overview; as overview) {
+          <p
+            class="text-text-muted mb-7 line-clamp-2 max-w-[52ch] text-base leading-relaxed max-md:mx-auto max-md:mb-5 max-md:text-[0.9375rem]"
+          >
+            {{ overview }}
+          </p>
+        }
+
+        <div class="flex flex-wrap items-center gap-3 max-md:justify-center">
+          <button
+            type="button"
+            [class]="primaryClass + ' max-md:flex-1'"
+            aria-haspopup="dialog"
+            (click)="primary()"
+          >
+            <shelfy-icon [name]="current.owned ? 'edit' : 'bookmarks'" size="22" />
+            <span class="truncate">{{
+              (current.owned ? 'home.on_shelf' : 'home.cta.shelve') | translate
+            }}</span>
+          </button>
+          <a
+            [routerLink]="current.route"
+            [class]="glassClass + ' max-md:w-13 max-md:px-0'"
+            [attr.aria-label]="current.title + ' – ' + ('media.details' | translate)"
+          >
+            <shelfy-icon name="info" size="22" />
+            <span class="max-md:hidden">{{ 'media.details' | translate }}</span>
+          </a>
+        </div>
+      </div>
+    }
+
+    <div
+      class="relative h-[clamp(22.5rem,64vw,30rem)] touch-pan-y outline-none select-none max-md:order-first md:h-[clamp(25rem,62vh,38.75rem)]"
+      role="group"
+      tabindex="0"
+      [attr.aria-label]="kicker()"
+      (keydown)="onKeydown($event)"
+      (pointerdown)="swipeFrom($event)"
+      (pointerup)="swipeTo($event)"
+    >
+      @for (card of cards(); track card.key) {
+        <button
+          type="button"
+          class="ease-drawer absolute top-1/2 left-1/2 aspect-2/3 w-[58vw] cursor-pointer overflow-hidden rounded-[1.25rem] shadow-[0_30px_50px_-20px_rgb(0_0_0/0.95)] transition-[transform,opacity,box-shadow] duration-700 motion-reduce:transition-none md:w-[clamp(13.75rem,21vw,20.625rem)]"
+          [class.opacity-0]="card.hidden"
+          [class.pointer-events-none]="card.hidden"
+          [class.hover:shadow-[0_30px_50px_-20px_#000,0_0_0_2px_rgb(255_255_255/0.5)]]="
+            card.away > 0
+          "
+          [animate.enter]="card.enter"
+          animate.leave="animate-card-out pointer-events-none"
+          [style.--stagger]="card.stagger"
+          [style.transform]="card.transform"
+          [style.z-index]="10 - card.away"
+          [attr.tabindex]="card.away === 0 ? -1 : null"
+          [attr.aria-hidden]="card.hidden ? 'true' : null"
+          [attr.aria-current]="card.away === 0 ? 'true' : null"
+          [attr.aria-label]="card.title"
+          (click)="pick(card.slot)"
+        >
+          @if (card.cover; as cover) {
+            <img [src]="cover" alt="" class="size-full object-cover" draggable="false" />
+          }
+        </button>
+      }
+    </div>
+  </div>
+</section>

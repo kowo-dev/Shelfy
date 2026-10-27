@@ -1,0 +1,136 @@
+<div
+  #scrollContainer
+  class="page-scroll h-full min-h-0 [scrollbar-gutter:stable] overflow-x-clip overflow-y-auto [overflow-anchor:none] max-md:pb-(--bottom-nav-clearance)"
+  (scroll)="onScroll()"
+>
+  <shelfy-page-hero [title]="title()" [wall]="wall()">
+    @if (leadUrl(); as lead) {
+      <img
+        heroLead
+        [src]="lead"
+        alt=""
+        draggable="false"
+        [class]="
+          leadShape() === 'logo'
+            ? 'aspect-square w-20 shrink-0 rounded-2xl bg-white object-contain p-2.5 shadow-[0_24px_50px_-20px_#000] md:w-28'
+            : 'aspect-2/3 w-20 shrink-0 rounded-2xl object-cover shadow-[0_24px_50px_-20px_#000] md:w-28'
+        "
+      />
+    }
+    @if (facts().length) {
+      <p class="text-text-muted mt-4.5 flex flex-wrap gap-x-5.5 gap-y-1.5 text-base">
+        @for (fact of facts(); track fact.label) {
+          <span>
+            @if (fact.value !== undefined && fact.value !== null) {
+              <b class="text-text mr-1 font-bold tabular-nums">{{ fact.value }}</b>
+            }
+            {{ fact.label }}
+          </span>
+        }
+      </p>
+    }
+  </shelfy-page-hero>
+
+  <div #barSentinel aria-hidden="true"></div>
+  <div class="v-libbar" [class.stuck]="stuck()">
+    @if (hasFilters()) {
+      <shelfy-tabs
+        class="min-w-0"
+        [tabs]="showTabs()"
+        [activeId]="show()"
+        [label]="'entity.show.label' | translate"
+        (tabSelected)="select($event)"
+      />
+    }
+    <div class="v-ltools">
+      <label class="v-lsearch">
+        <shelfy-icon name="search" size="18" class="shrink-0" />
+        <input
+          type="search"
+          autocomplete="off"
+          [placeholder]="searchLabel() | translate"
+          [attr.aria-label]="searchLabel() | translate"
+          [value]="query()"
+          (input)="query.set($any($event.target).value)"
+        />
+      </label>
+      @if (sorts().length) {
+        <shelfy-entity-sort
+          [options]="sorts()"
+          [sort]="sort()"
+          [direction]="direction()"
+          (sortChange)="sortChange.emit($event)"
+          (directionChange)="directionChange.emit($event)"
+        />
+      }
+    </div>
+  </div>
+
+  <div class="px-gutter mx-auto pt-4.5 pb-35">
+    @if (description(); as text) {
+      <div class="mb-10 max-w-[72ch]">
+        <p
+          id="entity-description"
+          class="text-text-muted text-base leading-relaxed whitespace-pre-line"
+          [class.line-clamp-3]="!descriptionExpanded()"
+        >
+          {{ text }}
+        </p>
+        @if (text.length > 240) {
+          <button
+            type="button"
+            class="text-text mt-1 cursor-pointer text-base font-semibold underline-offset-3 hover:underline"
+            aria-controls="entity-description"
+            [attr.aria-expanded]="descriptionExpanded()"
+            (click)="descriptionExpanded.set(!descriptionExpanded())"
+          >
+            {{ (descriptionExpanded() ? 'media.see_less' : 'media.see_more') | translate }}
+          </button>
+        }
+      </div>
+    }
+
+    <p class="sr-only" aria-live="polite">
+      {{ 'library.show_count' | translate: { count: visibleCount() } }}
+    </p>
+
+    <shelfy-entity-media-grid
+      class="block"
+      [items]="items()"
+      [visible]="filter()"
+      (owned)="owned.set($event)"
+    />
+
+    @if (visibleCount() === 0 && !hasMore()) {
+      <div class="flex max-w-xl flex-col items-start gap-2 py-16">
+        @if (query().trim()) {
+          <h2 class="font-display text-text text-[2rem] font-bold tracking-[-0.04em]">
+            {{ 'entity.empty.search_title' | translate }}
+          </h2>
+          <p class="text-text-muted max-w-[56ch] text-base">
+            {{ 'entity.empty.search_body' | translate: { query: query().trim() } }}
+          </p>
+          <shelfy-button class="mt-4" type="button" variant="secondary" (click)="query.set('')">
+            {{ 'library.empty.clear_search' | translate }}
+          </shelfy-button>
+        } @else if (show() === 'shelf') {
+          <h2 class="font-display text-text text-[2rem] font-bold tracking-[-0.04em]">
+            {{ 'entity.empty.shelf_title' | translate }}
+          </h2>
+          <p class="text-text-muted max-w-[56ch] text-base">
+            {{ 'entity.empty.shelf_body' | translate }}
+          </p>
+          <shelfy-button class="mt-4" type="button" variant="secondary" (click)="select('all')">
+            {{ 'entity.empty.show_all' | translate }}
+          </shelfy-button>
+        } @else {
+          <h2 class="font-display text-text text-[2rem] font-bold tracking-[-0.04em]">
+            {{ 'entity.no_results' | translate }}
+          </h2>
+        }
+      </div>
+    }
+    <div #sentinel aria-hidden="true"></div>
+  </div>
+  <shelfy-page-footer />
+</div>

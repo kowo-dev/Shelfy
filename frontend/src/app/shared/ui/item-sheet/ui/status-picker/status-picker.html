@@ -1,0 +1,27 @@
+<div
+  class="v-sh-status"
+  role="radiogroup"
+  [attr.aria-label]="'collection.status_label' | translate"
+>
+  @for (status of statuses(); track status; let index = $index) {
+    @let active = value() === status;
+    <button
+      type="button"
+      role="radio"
+      [style.--s]="statusColor(status)"
+      [attr.aria-checked]="active"
+      [attr.data-autofocus]="active ? '' : null"
+      [attr.tabindex]="index === focusIndex() ? 0 : -1"
+      (keydown)="onKeydown($event)"
+      (click)="picked.emit(status)"
+    >
+      <shelfy-icon [name]="statusIcon(status)" [active]="active" size="28" />
+      <span class="lbl"
+        >{{ label(status) | translate }}
+        @if (active && detail(); as text) {
+          <small>{{ text }}</small>
+        }
+      </span>
+    </button>
+  }
+</div>

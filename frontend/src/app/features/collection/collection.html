@@ -1,0 +1,305 @@
+<div
+  #scrollContainer
+  class="page-scroll h-full [scrollbar-gutter:stable] overflow-x-clip overflow-y-auto [overflow-anchor:none] max-md:pb-(--bottom-nav-clearance)"
+>
+  <shelfy-page-hero [title]="'library.title' | translate" [wall]="ambientWall()">
+    @if (heroStats(); as stats) {
+      <p class="text-text-muted mt-4.5 flex flex-wrap gap-x-5.5 gap-y-1.5 text-base">
+        <span
+          ><b class="text-text mr-1 font-bold tabular-nums">{{ stats.total }}</b>
+          {{ 'library.titles' | translate }}</span
+        >
+        <span
+          ><b class="text-text mr-1 font-bold tabular-nums">{{ stats.ongoing }}</b>
+          {{ 'library.in_progress' | translate }}</span
+        >
+        @if (stats.average; as average) {
+          <span
+            ><b class="text-text mr-1 font-bold tabular-nums">{{ average }}</b>
+            {{ 'library.average' | translate }}</span
+          >
+        }
+      </p>
+    }
+  </shelfy-page-hero>
+
+  <div #sentinel aria-hidden="true"></div>
+  @if (!shelfEmpty()) {
+    <div class="v-libbar v-lbar" [class.stuck]="stuck()">
+      <div class="v-lseg-scroll">
+        <div class="v-lseg" role="group" [attr.aria-label]="'library.media' | translate">
+          <button
+            type="button"
+            [attr.aria-pressed]="mediaTypeFilter().length === 0"
+            (click)="filterHandlers.onMediaTypeFilterChange([])"
+          >
+            {{ 'library.all' | translate }}
+            <small>{{ mediaTypeTotal() ?? '' }}</small>
+          </button>
+          @for (segment of typeSegments(); track segment.type) {
+            <button
+              type="button"
+              [attr.aria-pressed]="segment.on"
+              (click)="toggleMediaType(segment.type)"
+            >
+              <shelfy-icon [name]="segment.icon" size="18" [active]="segment.on" />
+              {{ 'collection.media_type.' + segment.type | translate }}
+              <small>{{ segment.count ?? '' }}</small>
+            </button>
+          }
+        </div>
+      </div>
+      <div class="v-ltools">
+        <label class="v-lsearch">
+          <shelfy-icon name="search" size="18" class="shrink-0" />
+          <input
+            type="search"
+            autocomplete="off"
+            [placeholder]="'library.search' | translate"
+            [attr.aria-label]="'library.search' | translate"
+            [value]="searchDraft()"
+            (input)="onSearchInput($any($event.target).value)"
+          />
+        </label>
+        @let media = mediaMenu();
+        <shelfy-menu-button
+          class="v-lmedia"
+          triggerClass="v-tool"
+          panelClass="right-0 w-72 origin-top-right"
+          [label]="'library.media' | translate"
+          [icon]="media.icon"
+          [text]="media.text"
+          [items]="media.items"
+          [selectedIds]="media.selected"
+          (picked)="onMediaPick($event)"
+        />
+        <button
+          type="button"
+          class="v-tool"
+          aria-haspopup="dialog"
+          [attr.aria-label]="'library.filters' | translate"
+          (click)="openSheet()"
+        >
+          <shelfy-icon name="filter" size="18" />
+          <span class="lbl">{{ 'library.filters' | translate }}</span>
+          @if (activeFilterCount()) {
+            <span class="n">{{ activeFilterCount() }}</span>
+          }
+        </button>
+      </div>
+      <shelfy-tabs
+        class="min-w-0"
+        [tabs]="statusTabs()"
+        [activeId]="activeStatusTab()"
+        [label]="'library.status' | translate"
+        (tabSelected)="onStatusTab($event)"
+      />
+    </div>
+  }
+
+  <p class="sr-only" aria-live="polite">{{ resultCaption() }}</p>
+
+  <div class="px-gutter mx-auto pt-4.5">
+    <div class="min-w-0 pb-35">
+      @if (loadFailed() && items().length === 0) {
+        <shelfy-empty-state
+          class="mt-6 block"
+          role="alert"
+          icon="warningTriangle"
+          [hint]="'collection.load_error' | translate"
+        >
+          <shelfy-button type="button" variant="primary" (click)="retryLoad()">
+            {{ 'collection.retry' | translate }}
+          </shelfy-button>
+        </shelfy-empty-state>
+      } @else if (loading() && visibleItems().length === 0) {
+        <div
+          class="v-lgrid animate-fade-in"
+          [attr.data-size]="size()"
+          role="status"
+          aria-busy="true"
+          [attr.aria-label]="'shared.loading' | translate"
+        >
+          @for (slot of skeletonSlots; track slot) {
+            <div class="flex flex-col gap-3" aria-hidden="true">
+              <div class="bg-fill-subtle aspect-2/3 animate-pulse rounded-2xl"></div>
+              <div class="bg-fill-subtle h-4 w-3/4 rounded-sm"></div>
+            </div>
+          }
+        </div>
+      } @else if (visibleItems().length === 0) {
+        <div class="mt-10 flex flex-col items-start gap-2 md:mt-16">
+          @if (shelfEmpty()) {
+            <shelfy-start-shelf class="w-full" />
+          } @else if (searchTerm().trim()) {
+            <h2 class="font-display text-text text-[1.375rem] font-bold">
+              {{ 'library.empty.search_title' | translate }}
+            </h2>
+            <p class="text-text-muted text-base">
+              {{ 'library.empty.search_body' | translate: { query: searchTerm().trim() } }}
+            </p>
+            <div class="mt-4 flex flex-wrap gap-2.5">
+              <shelfy-button type="button" variant="secondary" (click)="clearSearch()">
+                {{ 'library.empty.clear_search' | translate }}
+              </shelfy-button>
+              <shelfy-button type="button" variant="primary" (click)="searchShelfy()">
+                <shelfy-icon name="search" size="18" />
+                {{ 'library.empty.search_shelfy' | translate: { query: searchTerm().trim() } }}
+              </shelfy-button>
+            </div>
+          } @else {
+            <h2 class="font-display text-text text-[1.375rem] font-bold">
+              {{ 'library.empty.title' | translate }}
+            </h2>
+            <p class="text-text-muted text-base">{{ 'library.empty.body' | translate }}</p>
+            <shelfy-button class="mt-4" type="button" variant="secondary" (click)="clearFilters()">
+              {{ 'library.empty.reset' | translate }}
+            </shelfy-button>
+          }
+        </div>
+      } @else {
+        <div
+          class="duration-base transition-opacity"
+          [class.opacity-40]="loading() && !loadingMore() && !loadingPrevious()"
+          [class.pointer-events-none]="loading() && !loadingMore() && !loadingPrevious()"
+          [attr.aria-busy]="loading()"
+        >
+          @if (loadingPrevious()) {
+            <div class="mb-4 flex justify-center"><shelfy-spinner /></div>
+          }
+          <div class="v-lgrid" [attr.data-size]="size()">
+            @for (item of visibleItems(); track item.id; let index = $index) {
+              <shelfy-media-card
+                class="v-rise"
+                [item]="item"
+                [mine]="true"
+                [selectable]="true"
+                [selected]="selectedIds().has(item.id)"
+                [selectionMode]="selecting()"
+                [exiting]="exitingIds().has(item.id)"
+                [style.--d]="(index % 24 < 20 ? index % 24 : 20) * 18 + 'ms'"
+                (selectionToggle)="toggleItemSelection(item.id)"
+                (exited)="finalizeRemoval(item.id)"
+              />
+            }
+          </div>
+          @if (loadingMore()) {
+            <div class="mt-6 flex justify-center"><shelfy-spinner /></div>
+          } @else if (!hasMoreDown() && !loading() && newestPage() > 0) {
+            <div class="mt-16 flex flex-col items-center gap-4 text-center">
+              <p class="text-text-subtle text-sm">{{ 'discover.end_of_list' | translate }}</p>
+              <a routerLink="/explore" shelfyButtonLink variant="secondary">{{
+                'nav.explore' | translate
+              }}</a>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+  <shelfy-page-footer />
+</div>
+
+@if (selecting()) {
+  <div
+    class="bg-surface-2 shadow-pop rounded-card fixed inset-x-3 bottom-[calc(90px+env(safe-area-inset-bottom))] z-65 flex items-center justify-between gap-1.5 p-2 md:inset-x-auto md:bottom-6 md:left-1/2 md:-translate-x-1/2 md:justify-start"
+    role="toolbar"
+    [attr.aria-label]="'collection.bulk.selected_count' | translate: { count: selectedCount() }"
+    animate.enter="animate-rise-in"
+    animate.leave="animate-sink-out"
+  >
+    <button
+      type="button"
+      [class]="bulkButton + ' w-11! px-0!'"
+      [attr.aria-label]="'collection.bulk.exit_button' | translate"
+      [title]="'collection.bulk.exit_button' | translate"
+      (click)="clearSelection()"
+    >
+      <shelfy-icon name="close" size="18" />
+    </button>
+    <span
+      class="text-text flex-1 pr-3 pl-1 font-semibold whitespace-nowrap tabular-nums md:flex-none"
+      aria-live="polite"
+      >{{ 'collection.bulk.selected_count' | translate: { count: selectedCount() } }}</span
+    >
+    <button
+      type="button"
+      [class]="bulkButton + ' max-md:w-auto! max-md:px-3!'"
+      (click)="toggleSelectAll()"
+    >
+      {{
+        (allVisibleSelected() ? 'collection.bulk.unselect_all' : 'collection.bulk.select_all')
+          | translate
+      }}
+    </button>
+    <span class="bg-border-strong mx-1 h-6 w-px max-md:hidden" aria-hidden="true"></span>
+    <button
+      type="button"
+      [class]="bulkButton"
+      [attr.aria-label]="'collection.bulk.edit' | translate"
+      (click)="openBulkEdit()"
+    >
+      <shelfy-icon name="edit" size="18" />
+      <span class="max-md:hidden">{{ 'collection.bulk.edit' | translate }}</span>
+    </button>
+    <button
+      type="button"
+      [class]="bulkDanger"
+      [attr.aria-label]="'collection.bulk.delete' | translate"
+      (click)="openBulkDeleteConfirm()"
+    >
+      <shelfy-icon name="trash" size="18" />
+      <span class="max-md:hidden">{{ 'collection.bulk.delete' | translate }}</span>
+    </button>
+  </div>
+}
+
+<shelfy-filter-panel
+  [open]="sheetOpen()"
+  [title]="'library.filters' | translate"
+  [showLabel]="'library.show_count' | translate: { count: totalElements() }"
+  (closed)="sheetOpen.set(false)"
+  (cleared)="clearFilters()"
+>
+  <shelfy-library-filters
+    [showStatus]="false"
+    [showMedia]="false"
+    [ratingFrom]="ratingFrom()"
+    [ratingTo]="ratingTo()"
+    [includeUnrated]="includeUnrated()"
+    [hasNote]="hasNote()"
+    (ratingRangeChange)="filterHandlers.onRatingRangeChange($event.from, $event.to)"
+    (includeUnratedChange)="filterHandlers.onIncludeUnratedChange($event)"
+    (hasNoteChange)="filterHandlers.onHasNoteChange($event)"
+  >
+    <shelfy-library-sort
+      afterMedia
+      [inline]="true"
+      [sortBy]="sortBy()"
+      [sortDirection]="sortDirection()"
+      (sortByChange)="onSortBy($event)"
+      (directionChange)="onDirection($event)"
+    />
+  </shelfy-library-filters>
+</shelfy-filter-panel>
+
+<shelfy-dialog
+  [open]="bulkDeleteConfirmOpen()"
+  [title]="'collection.bulk.delete_confirm_title' | translate: { count: selectedCount() }"
+  (closed)="closeBulkDeleteConfirm()"
+>
+  <p class="text-text-muted">{{ 'collection.bulk.delete_confirm_message' | translate }}</p>
+  <div dialogFooter class="contents">
+    <shelfy-button type="button" variant="secondary" (click)="closeBulkDeleteConfirm()">
+      {{ 'collection.cancel' | translate }}
+    </shelfy-button>
+    <shelfy-button
+      type="button"
+      variant="danger"
+      [loading]="bulkDeleting()"
+      (click)="confirmBulkDelete()"
+    >
+      {{ 'collection.bulk.delete' | translate }}
+    </shelfy-button>
+  </div>
+</shelfy-dialog>

@@ -1,0 +1,106 @@
+<shelfy-dialog
+  [open]="!!titles()"
+  [title]="'collect.title' | translate"
+  size="sm"
+  (closed)="sheet.close()"
+>
+  <p class="text-text-muted -mt-2 mb-5 truncate text-base" [title]="subject()">
+    {{ subject() }}
+  </p>
+  <shelfy-tabs
+    [tabs]="tabs()"
+    [activeId]="kind()"
+    [label]="'collect.title' | translate"
+    (tabSelected)="kind.set($event === 'versus' ? 'versus' : 'lists')"
+  />
+
+  <div class="mt-4 flex min-h-48 flex-col" aria-live="polite">
+    @if (loading()) {
+      <div class="flex flex-col gap-1" aria-hidden="true">
+        @for (slot of [1, 2, 3]; track slot) {
+          <div class="flex items-center gap-3.5 px-2 py-2">
+            <div class="bg-fill-subtle size-12 animate-pulse rounded-xl"></div>
+            <div class="bg-fill-subtle h-4 w-1/2 animate-pulse rounded-xs"></div>
+          </div>
+        }
+      </div>
+    } @else if (failed()) {
+      <p class="text-text-muted py-8 text-center text-base">
+        {{ 'collect.load_error' | translate }}
+      </p>
+    } @else if (rows().length === 0) {
+      <p class="text-text-muted py-8 text-center text-base">
+        {{ (kind() === 'lists' ? 'collect.no_lists' : 'collect.no_versus') | translate }}
+      </p>
+    } @else {
+      <ul class="-mx-2 flex max-h-[min(24rem,50dvh)] flex-col overflow-y-auto">
+        @for (row of rows(); track row.id) {
+          @let state = stateOf(row);
+          <li>
+            <button
+              type="button"
+              class="flex w-full cursor-pointer items-center gap-3.5 rounded-2xl px-2.5 py-2.5 text-left transition-colors hover:bg-white/5 disabled:cursor-default disabled:opacity-50 disabled:hover:bg-transparent"
+              [disabled]="state === 'busy' || state === 'unavailable'"
+              [attr.aria-pressed]="state === 'in'"
+              (click)="toggle(row)"
+            >
+              <span
+                class="bg-surface-raised grid size-12 shrink-0 grid-cols-2 grid-rows-2 gap-px overflow-hidden rounded-xl"
+                aria-hidden="true"
+              >
+                @for (cover of row.covers; track $index) {
+                  <img
+                    [src]="cover"
+                    alt=""
+                    class="size-full object-cover"
+                    [class]="row.covers.length === 1 ? 'col-span-2 row-span-2' : ''"
+                    loading="lazy"
+                  />
+                } @empty {
+                  <span class="text-text-subtle col-span-2 row-span-2 grid place-items-center">
+                    <shelfy-icon [name]="kind() === 'lists' ? 'lists' : 'compare'" size="sm" />
+                  </span>
+                }
+              </span>
+              <span class="min-w-0 flex-1">
+                <span class="text-text block truncate text-base font-semibold">{{ row.name }}</span>
+                <span class="text-text-subtle block truncate text-sm">{{ meta(row) }}</span>
+              </span>
+              <span
+                class="grid size-8 shrink-0 place-items-center rounded-full transition-[background-color,color]"
+                [class]="
+                  state === 'in' ? 'bg-text text-background' : 'text-text-muted bg-fill-subtle'
+                "
+              >
+                @switch (state) {
+                  @case ('busy') {
+                    <shelfy-spinner size="sm" />
+                  }
+                  @case ('in') {
+                    <shelfy-icon name="check" size="sm" class="animate-pop-in" />
+                  }
+                  @default {
+                    <shelfy-icon name="plus" size="sm" />
+                  }
+                }
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+
+  <div dialogFooter class="contents">
+    <button type="button" [class]="secondary" [disabled]="creating()" (click)="createNew()">
+      <shelfy-icon name="plus" size="sm" />
+      {{ (kind() === 'lists' ? 'collect.new_list' : 'collect.new_versus') | translate }}
+    </button>
+    <button type="button" [class]="secondary" (click)="sheet.close('cancelled')">
+      {{ 'collection.cancel' | translate }}
+    </button>
+    <button type="button" [class]="primary" (click)="sheet.close('done')">
+      {{ 'collection.sheet.done' | translate }}
+    </button>
+  </div>
+</shelfy-dialog>

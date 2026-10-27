@@ -1,0 +1,40 @@
+# Files Git should not track
+
+# Build output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+/coverage
+
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# Editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# VS Code, shared settings are in the root .vscode folder
+.vscode/
+.history/*
+
+# Other
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+__screenshots__/
+
+# System files
+.DS_Store
+Thumbs.db

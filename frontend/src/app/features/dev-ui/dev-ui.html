@@ -1,0 +1,554 @@
+@let state = 'text-text-subtle mb-3 block text-xs font-semibold tracking-label uppercase';
+@let section = 'py-14';
+@let h2 = 'font-display text-text mb-8 text-xl font-extrabold';
+@let row = 'flex flex-wrap items-center gap-3';
+
+<div class="px-gutter mx-auto pt-[calc(var(--nav-bar-height)+24px)] pb-24">
+  <h1 class="font-display text-text text-display font-extrabold">
+    {{ 'dev_ui.title' | translate }}
+  </h1>
+  <p class="text-text-muted mt-2 text-base">{{ 'dev_ui.subtitle' | translate }}</p>
+
+  <section [class]="section">
+    <h2 [class]="h2">versus duel</h2>
+    <div class="relative h-[80dvh] [transform:translateZ(0)] overflow-hidden rounded-3xl">
+      <shelfy-versus-matchup class="h-full" [entryA]="duel[0]" [entryB]="duel[1]" />
+    </div>
+  </section>
+
+  <section [class]="section">
+    <h2 [class]="h2">{{ 'dev_ui.buttons' | translate }}</h2>
+    @for (size of sizes; track size) {
+      <span [class]="state">size = {{ size }}</span>
+      <div [class]="row" class="mb-6">
+        @for (variant of variants; track variant) {
+          <shelfy-button [variant]="variant">{{ variant }}</shelfy-button>
+        }
+        <shelfy-button variant="secondary" [iconOnly]="true" aria-label="Search">
+          <shelfy-icon name="search" />
+        </shelfy-button>
+        <shelfy-button variant="secondary" [iconOnly]="true" aria-label="Settings">
+          <shelfy-icon name="settings" />
+        </shelfy-button>
+      </div>
+    }
+    <span [class]="state">{{ 'dev_ui.states' | translate }}</span>
+    <div [class]="row" class="mb-6">
+      <shelfy-button variant="primary" [loading]="true">{{
+        'dev_ui.loading' | translate
+      }}</shelfy-button>
+      <shelfy-button variant="secondary" [loading]="true">{{
+        'dev_ui.loading' | translate
+      }}</shelfy-button>
+      <shelfy-button variant="primary" [disabled]="true">{{
+        'dev_ui.disabled' | translate
+      }}</shelfy-button>
+      <shelfy-button variant="secondary" [disabled]="true">{{
+        'dev_ui.disabled' | translate
+      }}</shelfy-button>
+      <shelfy-button variant="primary">
+        <shelfy-icon name="plus" />{{ 'collection.add_to_shelf' | translate }}
+      </shelfy-button>
+      <shelfy-button variant="secondary" [aria-pressed]="true">aria-pressed</shelfy-button>
+      <shelfy-button variant="secondary" extraClass="max-w-60">
+        <span class="truncate">{{ LONG }}</span>
+      </shelfy-button>
+    </div>
+    <span [class]="state">shelfyButtonLink</span>
+    <div [class]="row">
+      <a shelfyButtonLink variant="primary" href="#">{{ 'dev_ui.link' | translate }}</a>
+      <a shelfyButtonLink variant="secondary" href="#">{{ 'dev_ui.link' | translate }}</a>
+    </div>
+  </section>
+
+  <section [class]="section">
+    <h2 [class]="h2">{{ 'dev_ui.toolbar' | translate }}</h2>
+    <span [class]="state"
+      >select toolbar · multi-select · searchbar toolbar · {{ 'dev_ui.disabled' | translate }}</span
+    >
+    <div class="mb-8 flex flex-wrap items-center gap-1">
+      <shelfy-select
+        variant="toolbar"
+        [prefix]="'search.sort_prefix' | translate"
+        [options]="sortOptions"
+        [(ngModel)]="sort"
+      />
+      <span class="w-2" aria-hidden="true"></span>
+      <div class="w-64">
+        <shelfy-searchbar variant="toolbar" [placeholder]="'collection.search' | translate" />
+      </div>
+      <shelfy-select
+        variant="toolbar"
+        [prefix]="'search.sort_prefix' | translate"
+        [options]="sortOptions"
+        [ngModel]="sort"
+        [disabled]="true"
+      />
+    </div>
+    <span [class]="state">tabs underline</span>
+    <div class="mb-8">
+      <shelfy-tabs [tabs]="tabs" [activeId]="tab()" (tabSelected)="tab.set($event)" />
+    </div>
+    <span [class]="state">searchbar default · overlay</span>
+    <div class="grid gap-6 md:grid-cols-2">
+      <shelfy-searchbar [placeholder]="'collection.search_placeholder' | translate" />
+      <shelfy-searchbar variant="overlay" [placeholder]="'collection.search' | translate" />
+    </div>
+  </section>
+
+  <section [class]="section">
+    <h2 [class]="h2">{{ 'dev_ui.menus' | translate }}</h2>
+    <div class="grid gap-8 md:grid-cols-3">
+      <div>
+        <span [class]="state">tag</span>
+        <div [class]="row">
+          <shelfy-tag>accent</shelfy-tag>
+          <shelfy-tag variant="muted">muted</shelfy-tag>
+          <shelfy-tag variant="solid">solid</shelfy-tag>
+          <shelfy-tag size="md">md</shelfy-tag>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section [class]="section">
+    <h2 [class]="h2">{{ 'dev_ui.fields' | translate }}</h2>
+    <div class="grid gap-8 md:grid-cols-3">
+      <shelfy-input
+        [label]="'dev_ui.label' | translate"
+        [placeholder]="'collection.search_placeholder' | translate"
+        [hint]="'dev_ui.hint' | translate"
+      />
+      <shelfy-input
+        [label]="'dev_ui.label' | translate"
+        prefixIcon="search"
+        [ngModel]="LONG"
+        [error]="'dev_ui.error' | translate"
+      />
+      <shelfy-input
+        [label]="'dev_ui.disabled' | translate"
+        [ngModel]="'Hades II'"
+        [disabled]="true"
+      />
+      <shelfy-input
+        [label]="'dev_ui.password' | translate"
+        type="password"
+        [passwordToggle]="true"
+        [ngModel]="'secret-value'"
+      />
+      <shelfy-input [placeholder]="'size = sm'" />
+      <shelfy-input [placeholder]="'size = lg'" />
+      <div class="flex flex-col gap-6">
+        <shelfy-select
+          [label]="'dev_ui.label' | translate"
+          [options]="sortOptions"
+          [(ngModel)]="selectDefault"
+          [hint]="'dev_ui.hint' | translate"
+        />
+        <shelfy-select
+          [label]="'dev_ui.label' | translate"
+          [options]="sortOptions"
+          [ngModel]="''"
+          [error]="'dev_ui.error' | translate"
+        />
+      </div>
+      <div>
+        <span [class]="state">checkbox · toggle</span>
+        <div class="flex flex-col gap-4">
+          <label class="text-text-muted flex items-center gap-2.5" [for]="cb1.inputId()">
+            <shelfy-checkbox #cb1 [checked]="checked()" (checkedChange)="checked.set($event)" />
+            {{ 'dev_ui.label' | translate }}
+          </label>
+          <label class="text-text-muted flex items-center gap-2.5" [for]="cb2.inputId()">
+            <shelfy-checkbox #cb2 [ngModel]="true" [disabled]="true" />
+            {{ 'dev_ui.disabled' | translate }}
+          </label>
+          <shelfy-toggle
+            [label]="'dev_ui.label' | translate"
+            [checked]="toggled()"
+            (checkedChange)="toggled.set($event)"
+          />
+          <shelfy-toggle [label]="'dev_ui.disabled' | translate" [disabled]="true" />
+          <shelfy-toggle [label]="LONG" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section [class]="section">
+    <h2 [class]="h2">{{ 'dev_ui.surfaces' | translate }}</h2>
+    <span [class]="state">dialog · toast · auth prompt · item sheet · media picker · lightbox</span>
+    <div [class]="row" class="mb-10">
+      <shelfy-button variant="secondary" (click)="dialogOpen.set(true)">dialog</shelfy-button>
+      <shelfy-button variant="secondary" (click)="dialogWideOpen.set(true)"
+        >dialog wide</shelfy-button
+      >
+      <shelfy-button variant="secondary" (click)="showToast('success')"
+        >toast success</shelfy-button
+      >
+      <shelfy-button variant="secondary" (click)="showMediaToast()">toast media</shelfy-button>
+      <shelfy-button variant="secondary" (click)="showToast('error')">toast error</shelfy-button>
+      <shelfy-button variant="secondary" (click)="showToast('info', true)"
+        >toast long</shelfy-button
+      >
+      <shelfy-button variant="secondary" (click)="showToast('warning')"
+        >toast warning</shelfy-button
+      >
+      <shelfy-button variant="secondary" (click)="authPrompt.show()">auth prompt</shelfy-button>
+      <shelfy-button variant="secondary" (click)="sheetItem.set(items.award)"
+        >item sheet</shelfy-button
+      >
+      <shelfy-button variant="secondary" (click)="sheetItem.set(items.ongoing)"
+        >sheet · series</shelfy-button
+      >
+      <shelfy-button variant="secondary" (click)="sheetItem.set(items.game)"
+        >sheet · unrated</shelfy-button
+      >
+      <shelfy-button variant="secondary" (click)="sheetItem.set(items.noCover)"
+        >sheet · no artwork</shelfy-button
+      >
+      <shelfy-button variant="secondary" (click)="pickerOpen.set(true)">media picker</shelfy-button>
+      <shelfy-button variant="secondary" (click)="lightboxOpen.set(true)">lightbox</shelfy-button>
+    </div>
+
+    <div class="grid gap-8 md:grid-cols-2">
+      <div>
+        <span [class]="state">empty-state</span>
+        <shelfy-empty-state
+          icon="shelf"
+          [title]="'collection.empty' | translate"
+          [hint]="'collection.load_error' | translate"
+        >
+          <shelfy-button variant="primary">
+            {{ 'collection.empty_cta' | translate }}
+          </shelfy-button>
+        </shelfy-empty-state>
+      </div>
+      <div>
+        <span [class]="state">empty-state minimal</span>
+        <shelfy-empty-state [title]="'collection.no_matches' | translate" />
+      </div>
+    </div>
+
+    <span [class]="state">spoiler-guard</span>
+    <div class="grid gap-5 md:grid-cols-2">
+      <shelfy-spoiler-guard [spoiler]="true"
+        ><p class="text-text">{{ 'dev_ui.hint' | translate }}</p></shelfy-spoiler-guard
+      >
+      <shelfy-spoiler-guard [spoiler]="true" [interactive]="false"><p>—</p></shelfy-spoiler-guard>
+    </div>
+  </section>
+
+  <section [class]="section">
+    <h2 [class]="h2">{{ 'dev_ui.cards' | translate }}</h2>
+    <span [class]="state">media-card mine · {{ 'dev_ui.hover_hint' | translate }}</span>
+    <div class="v-lgrid mb-10">
+      <shelfy-media-card [item]="items.game" [mine]="true" [selectable]="true" />
+      <shelfy-media-card [item]="items.ongoing" [mine]="true" [selectable]="true" />
+      <shelfy-media-card [item]="items.done" [mine]="true" />
+      <shelfy-media-card [item]="items.planned" [mine]="true" />
+      <shelfy-media-card [item]="items.dropped" [mine]="true" />
+      <shelfy-media-card [item]="items.award" [mine]="true" />
+      <shelfy-media-card [item]="items.noCover" [mine]="true" />
+      <shelfy-media-card [item]="items.long" [subtitle]="LONG" />
+      <shelfy-media-card
+        [item]="items.ongoing"
+        [selectionMode]="true"
+        [selected]="selected()"
+        (selectionToggle)="selected.set(!selected())"
+      />
+      <shelfy-media-card [item]="items.done" [selectionMode]="true" />
+    </div>
+    <span [class]="state">media-card external · add · owned · rank</span>
+    <div class="v-lgrid mb-10">
+      <shelfy-media-card [item]="items.ongoing" [tinted]="true" />
+      <shelfy-media-card [item]="items.planned" [addable]="false" />
+      <shelfy-media-card [item]="items.game" [rank]="1" />
+      <shelfy-media-card [item]="items.award" [rank]="12" />
+    </div>
+    <span [class]="state">avatar sm / md / lg / xl</span>
+    <div class="flex flex-wrap items-end gap-4">
+      @for (size of ['sm', 'md', 'lg', 'xl']; track size) {
+        <shelfy-avatar displayName="Margot Lefèvre" [size]="$any(size)" />
+        <shelfy-avatar
+          displayName="Margot Lefèvre"
+          [size]="$any(size)"
+          [avatarUrl]="items.ongoing.media.coverUrl"
+        />
+      }
+    </div>
+    <span [class]="state">versus-entry-card · media, YouTube clip (▶)</span>
+    <div class="flex flex-col gap-3">
+      <shelfy-clip-volume class="self-start" />
+      <div class="grid w-full max-w-3xl grid-cols-3 gap-5">
+        @for (entry of versusEntries; track entry.id) {
+          <shelfy-versus-entry-card [entry]="entry" />
+        }
+      </div>
+    </div>
+  </section>
+
+  <section [class]="section">
+    <h2 [class]="h2">{{ 'dev_ui.feedback' | translate }}</h2>
+    <span [class]="state">spinner sm / md / lg · skeleton</span>
+    <div [class]="row" class="text-text-muted mb-8">
+      <shelfy-spinner size="sm" />
+      <shelfy-spinner />
+      <shelfy-spinner size="lg" />
+    </div>
+    <div class="mb-10 grid grid-cols-3 gap-[22px] sm:grid-cols-6 lg:w-2/3">
+      @for (s of [1, 2, 3, 4, 5, 6]; track s) {
+        <div
+          class="bg-surface-raised aspect-2/3 animate-pulse rounded-md motion-reduce:animate-none"
+        ></div>
+      }
+    </div>
+    <span [class]="state">comment-vote · comments</span>
+    <div class="mb-6 flex gap-6">
+      <shelfy-comment-vote [upvotes]="12" [downvotes]="1" [myVote]="1" />
+      <shelfy-comment-vote [upvotes]="0" [downvotes]="0" [disabled]="true" />
+      <shelfy-comment-vote [upvotes]="3" [downvotes]="8" [pending]="true" />
+    </div>
+    <div class="max-w-2xl">
+      <shelfy-comments
+        [source]="commentsSource"
+        [initialItems]="comments"
+        [initialTotal]="commentCount"
+      />
+    </div>
+  </section>
+
+  <section [class]="section">
+    <h2 [class]="h2">{{ 'dev_ui.social' | translate }}</h2>
+
+    <span [class]="state">like-button md / sm / readonly</span>
+    <div [class]="row" class="mb-8">
+      <shelfy-like-button
+        [liked]="liked()"
+        [count]="likes()"
+        [pending]="likePending()"
+        (toggled)="toggleLike()"
+      />
+      <shelfy-like-button size="sm" [liked]="liked()" [count]="likes()" (toggled)="toggleLike()" />
+      <shelfy-like-button [readonly]="true" [liked]="true" [count]="12" />
+      <shelfy-social-counts [likeCount]="12" [commentCount]="3" />
+    </div>
+
+    <span [class]="state">person-row</span>
+    <div class="mb-8 flex max-w-xl flex-col gap-1">
+      <shelfy-person-row displayName="Hugo" subline="@hugo" [interactive]="true">
+        <button personRowActions type="button" [class]="pill">Follow</button>
+      </shelfy-person-row>
+      <shelfy-person-row
+        displayName="A very long display name that has to truncate nicely in the row"
+        subline="@a_very_long_username_that_keeps_going"
+      />
+    </div>
+
+    <span [class]="state">versus-results · edit-bar</span>
+    <shelfy-versus-results class="mb-8 max-w-3xl" [entries]="ranking" />
+    <button type="button" [class]="pill" (click)="barVisible.set(!barVisible())">
+      {{ 'dev_ui.motion_toggle' | translate }} edit-bar
+    </button>
+    <shelfy-edit-bar
+      [visible]="barVisible()"
+      hint="Your list is ready to publish."
+      cancelLabel="Cancel"
+      saveLabel="Save"
+      savedLabel="Saved"
+      (cancelRequested)="barVisible.set(false)"
+      (saveRequested)="barVisible.set(false)"
+    />
+
+    <span [class]="state" class="mt-8">side-sheet (collaborators)</span>
+    <button type="button" [class]="pill" (click)="sheetOpen.set(true)">Open</button>
+    @if (sheetOpen()) {
+      <shelfy-collaborators-sheet
+        [isOwner]="true"
+        [members]="members"
+        [pending]="[]"
+        [candidates]="[]"
+        (closed)="sheetOpen.set(false)"
+      />
+    }
+  </section>
+  <section [class]="section">
+    <h2 [class]="h2">{{ 'dev_ui.settings' | translate }}</h2>
+    <div class="max-w-180">
+      <shelfy-settings-row
+        [title]="'settings.use_24_hour_format' | translate"
+        [description]="'settings.preferences_hint.time_format' | translate"
+      >
+        <shelfy-toggle [checked]="true" />
+      </shelfy-settings-row>
+      <shelfy-settings-row
+        [title]="'settings.language' | translate"
+        [description]="'settings.preferences_hint.language' | translate"
+      >
+        <button type="button" [class]="pill">English</button>
+        <button type="button" [class]="pill + ' bg-text! text-background! hover:bg-text!'">
+          Français
+        </button>
+      </shelfy-settings-row>
+      <shelfy-settings-row
+        [title]="'settings.danger_zone.delete_account' | translate"
+        [description]="'settings.danger_zone.delete_account_description' | translate"
+      >
+        <button type="button" [class]="dangerPill">
+          {{ 'settings.danger_zone.delete_account' | translate }}
+        </button>
+      </shelfy-settings-row>
+      <shelfy-input class="mt-6 block" [label]="'settings.display_name' | translate" value="Kowo" />
+      <shelfy-input
+        class="mt-6 block"
+        [label]="'auth.username' | translate"
+        [error]="'auth.errors.username_format' | translate"
+      />
+      <shelfy-textarea
+        class="mt-6 block"
+        [label]="'settings.bio' | translate"
+        [maxlength]="300"
+        [counter]="true"
+      />
+    </div>
+  </section>
+
+  <section [class]="section">
+    <h2 [class]="h2">{{ 'dev_ui.profile' | translate }}</h2>
+    <shelfy-profile-hero name="Kowo" [meta]="['@kowo', 'Member since 2024']" />
+    <div class="mt-8">
+      <shelfy-rail [title]="'profile.ongoing.title' | translate" [viewAllRoute]="['/lists']">
+        @for (it of essentials; track it.id) {
+          <div class="w-[186px] shrink-0 snap-start">
+            <shelfy-media-card [item]="it" [addable]="false" />
+          </div>
+        }
+      </shelfy-rail>
+    </div>
+  </section>
+
+  <section [class]="section">
+    <h2 [class]="h2">{{ 'dev_ui.motion' | translate }}</h2>
+    <span [class]="state">{{ 'dev_ui.motion_collapse' | translate }}</span>
+    <div class="mb-10 max-w-xl">
+      <button
+        type="button"
+        [class]="pill"
+        [attr.aria-expanded]="collapseOpen()"
+        (click)="collapseOpen.set(!collapseOpen())"
+      >
+        {{ 'dev_ui.motion_toggle' | translate }}
+      </button>
+      <div [class]="collapse(collapseOpen())" [attr.inert]="collapseOpen() ? null : ''">
+        <p class="text-text-muted overflow-hidden pt-3 text-base">
+          {{ 'dev_ui.hint' | translate }} {{ 'dev_ui.hint' | translate }}
+          {{ 'dev_ui.hint' | translate }}
+        </p>
+      </div>
+    </div>
+
+    <span [class]="state">{{ 'dev_ui.motion_list' | translate }}</span>
+    <div class="mb-10 max-w-xl">
+      <button type="button" [class]="pill" (click)="addMotionItem()">
+        {{ 'dev_ui.motion_add' | translate }}
+      </button>
+      <ul class="mt-3 flex flex-col gap-1.5">
+        @for (n of motionItems(); track n) {
+          <li
+            animate.enter="animate-rise-in"
+            animate.leave="animate-fade-out"
+            class="bg-fill-subtle flex items-center justify-between rounded-md py-2 pr-2 pl-4 text-base"
+          >
+            <span class="text-text tabular-nums">#{{ n }}</span>
+            <button
+              type="button"
+              [class]="pill"
+              (click)="removeMotionItem(n)"
+              [attr.aria-label]="'dev_ui.motion_remove' | translate"
+            >
+              <shelfy-icon name="close" size="sm" />
+            </button>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <span [class]="state">{{ 'dev_ui.motion_skeleton' | translate }}</span>
+    <button type="button" [class]="pill" (click)="toggleSkeleton()">
+      {{ 'dev_ui.motion_toggle' | translate }}
+    </button>
+    <div class="-mx-4 mt-4 md:-mx-10">
+      @if (skeletonOn()) {
+        <shelfy-detail-skeleton [count]="6" />
+      } @else {
+        <div class="animate-fade-in px-gutter h-[420px] pt-7">
+          <p class="text-text-muted text-base">{{ 'dev_ui.hint' | translate }}</p>
+        </div>
+      }
+    </div>
+  </section>
+</div>
+
+<shelfy-dialog
+  [open]="dialogOpen()"
+  [title]="'dev_ui.dialog_title' | translate"
+  (closed)="dialogOpen.set(false)"
+>
+  <p class="text-text-muted">{{ 'dev_ui.hint' | translate }}</p>
+  <shelfy-input
+    [label]="'dev_ui.label' | translate"
+    [placeholder]="'collection.search_placeholder' | translate"
+  />
+  <shelfy-select
+    [label]="'dev_ui.label' | translate"
+    [options]="sortOptions"
+    [(ngModel)]="selectDefault"
+  />
+  <shelfy-toggle [label]="'dev_ui.label' | translate" [checked]="true" />
+  <div dialogFooter class="contents">
+    <shelfy-button variant="secondary" (click)="dialogOpen.set(false)">{{
+      'dev_ui.cancel' | translate
+    }}</shelfy-button>
+    <shelfy-button variant="primary" (click)="dialogOpen.set(false)">{{
+      'dev_ui.save' | translate
+    }}</shelfy-button>
+  </div>
+</shelfy-dialog>
+
+<shelfy-dialog
+  [open]="dialogWideOpen()"
+  size="lg"
+  [title]="LONG"
+  (closed)="dialogWideOpen.set(false)"
+>
+  @for (
+    it of [items.game, items.ongoing, items.done, items.planned, items.dropped, items.long];
+    track $index
+  ) {
+    <div class="hover:bg-surface-raised flex items-center gap-3.5 rounded-md p-2 transition-colors">
+      <img
+        [src]="it.media.coverUrl"
+        alt=""
+        class="h-[69px] w-[46px] shrink-0 rounded-xs object-cover"
+      />
+      <div class="min-w-0">
+        <b class="text-text block truncate font-semibold">{{ it.media.title }}</b>
+        <small class="text-text-subtle text-sm">{{
+          'collection.status.' + it.status | translate
+        }}</small>
+      </div>
+    </div>
+  }
+</shelfy-dialog>
+
+<shelfy-auth-prompt-dialog />
+
+@if (sheetItem(); as it) {
+  <shelfy-item-sheet [item]="it" (closed)="sheetItem.set(null)" />
+}
+
+<shelfy-media-picker [open]="pickerOpen()" (closed)="pickerOpen.set(false)" />
+
+@if (lightboxOpen()) {
+  <shelfy-image-lightbox [images]="lightboxImages" (closed)="lightboxOpen.set(false)" />
+}

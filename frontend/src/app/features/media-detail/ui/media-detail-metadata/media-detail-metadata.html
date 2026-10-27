@@ -1,0 +1,256 @@
+@if (hasMetadata()) {
+  <dl class="grid grid-cols-2 gap-x-6 gap-y-5">
+    @for (fact of tierFacts(); track fact.label) {
+      <div [class]="row">
+        <dt class="text-text-subtle text-sm">{{ fact.label }}</dt>
+        <dd class="text-text text-base leading-snug font-medium tabular-nums">
+          {{ fact.value }}
+        </dd>
+      </div>
+    }
+    @if (tier() === 'secondary') {
+      @if (view().originalTitle; as originalTitle) {
+        @if (originalTitle !== view().title) {
+          <div [class]="row">
+            <dt class="text-text-subtle text-sm">
+              {{ 'media.original_title' | translate }}
+            </dt>
+            <dd class="text-text text-base leading-snug font-medium">
+              {{ originalTitle }}
+            </dd>
+          </div>
+        }
+      }
+    }
+    @if (tier() === 'primary') {
+      @if (view().director; as director) {
+        <div [class]="row">
+          <dt class="text-text-subtle text-sm">
+            {{ 'media.director' | translate }}
+          </dt>
+          <dd class="text-text text-base leading-snug font-medium">
+            @if (view().directorId) {
+              <a
+                [routerLink]="creditUrl(view().directorId!)"
+                class="decoration-text-subtle underline-offset-3 transition-colors hover:underline"
+                >{{ director }}</a
+              >
+            } @else {
+              {{ director }}
+            }
+          </dd>
+        </div>
+      }
+      @if (view().authors.length > 0) {
+        <div [class]="row">
+          <dt class="text-text-subtle text-sm">
+            {{ 'media.authors' | translate }}
+          </dt>
+          <dd
+            class="text-text flex flex-wrap gap-x-1 text-base leading-snug font-medium *:not-last:after:content-[',']"
+          >
+            @for (author of view().authors; track author; let i = $index) {
+              @if (view().authorKeys[i]) {
+                <a
+                  [routerLink]="authorLink(view().authorKeys[i])"
+                  class="decoration-text-subtle underline-offset-3 transition-colors hover:underline"
+                  >{{ author }}</a
+                >
+              } @else {
+                <span>{{ author }}</span>
+              }
+            }
+          </dd>
+        </div>
+      }
+      @if (view().studios.length > 0) {
+        <div [class]="row">
+          <dt class="text-text-subtle text-sm">
+            {{ 'media.studios' | translate }}
+          </dt>
+          <dd
+            class="text-text flex flex-wrap gap-x-1 text-base leading-snug font-medium *:not-last:after:content-[',']"
+          >
+            @for (studio of view().studios; track studio; let i = $index) {
+              @if (view().studioRefs[i]; as ref) {
+                <a
+                  [routerLink]="mediaType() === 'anime' ? studioUrl(ref.id) : companyUrl(ref.id)"
+                  class="decoration-text-subtle underline-offset-3 transition-colors hover:underline"
+                  >{{ studio }}</a
+                >
+              } @else {
+                <span>{{ studio }}</span>
+              }
+            }
+          </dd>
+        </div>
+      }
+      @if (view().networks.length > 0) {
+        <div [class]="row">
+          <dt class="text-text-subtle text-sm">
+            {{ 'media.networks' | translate }}
+          </dt>
+          <dd
+            class="text-text flex flex-wrap gap-x-1 text-base leading-snug font-medium *:not-last:after:content-[',']"
+          >
+            @for (network of view().networks; track network; let i = $index) {
+              @if (view().networkIds[i]) {
+                <a
+                  [routerLink]="networkUrl(view().networkIds[i])"
+                  class="decoration-text-subtle underline-offset-3 transition-colors hover:underline"
+                  >{{ network }}</a
+                >
+              } @else {
+                <span>{{ network }}</span>
+              }
+            }
+          </dd>
+        </div>
+      }
+      @if (view().developers.length > 0) {
+        <div [class]="row">
+          <dt class="text-text-subtle text-sm">
+            {{ 'media.developers' | translate }}
+          </dt>
+          <dd
+            class="text-text flex flex-wrap gap-x-1 text-base leading-snug font-medium *:not-last:after:content-[',']"
+          >
+            @for (dev of view().developers; track dev; let i = $index) {
+              <a
+                [routerLink]="gameCompanyUrl(view().developerIds[i])"
+                class="decoration-text-subtle underline-offset-3 transition-colors hover:underline"
+                >{{ dev }}</a
+              >
+            }
+          </dd>
+        </div>
+      }
+      @if (view().publishers.length > 0) {
+        <div [class]="row">
+          <dt class="text-text-subtle text-sm">
+            {{ 'media.publishers' | translate }}
+          </dt>
+          <dd
+            class="text-text flex flex-wrap gap-x-1 text-base leading-snug font-medium *:not-last:after:content-[',']"
+          >
+            @for (pub of view().publishers; track pub; let i = $index) {
+              <a
+                [routerLink]="gameCompanyUrl(view().publisherIds[i])"
+                class="decoration-text-subtle underline-offset-3 transition-colors hover:underline"
+                >{{ pub }}</a
+              >
+            }
+          </dd>
+        </div>
+      }
+      @if (view().platforms.length > 0) {
+        <div [class]="row">
+          <dt class="text-text-subtle text-sm">
+            {{ 'media.platforms' | translate }}
+          </dt>
+          <dd
+            class="text-text flex flex-wrap gap-x-1 text-base leading-snug font-medium *:not-last:after:content-[',']"
+          >
+            @for (platform of view().platforms; track platform; let i = $index) {
+              <a
+                [routerLink]="browseUrl('game', 'platform', view().platformIds[i])"
+                [queryParams]="browseQueryParams(platform)"
+                class="decoration-text-subtle underline-offset-3 transition-colors hover:underline"
+                >{{ platform }}</a
+              >
+            }
+          </dd>
+        </div>
+      }
+    }
+    @if (tier() === 'secondary') {
+      @if (view().themes.length > 0) {
+        <div [class]="row">
+          <dt class="text-text-subtle text-sm">
+            {{ 'media.themes' | translate }}
+          </dt>
+          <dd
+            class="text-text flex flex-wrap gap-x-1 text-base leading-snug font-medium *:not-last:after:content-[',']"
+          >
+            @for (theme of view().themes; track theme; let i = $index) {
+              <a
+                [routerLink]="browseUrl('game', 'theme', view().themeIds[i])"
+                [queryParams]="browseQueryParams(theme)"
+                class="decoration-text-subtle underline-offset-3 transition-colors hover:underline"
+                >{{ theme }}</a
+              >
+            }
+          </dd>
+        </div>
+      }
+      @if (view().gameModes.length > 0) {
+        <div [class]="row">
+          <dt class="text-text-subtle text-sm">
+            {{ 'media.game_modes' | translate }}
+          </dt>
+          <dd
+            class="text-text flex flex-wrap gap-x-1 text-base leading-snug font-medium *:not-last:after:content-[',']"
+          >
+            @for (mode of view().gameModes; track mode; let i = $index) {
+              <a
+                [routerLink]="browseUrl('game', 'game-mode', view().gameModeIds[i])"
+                [queryParams]="browseQueryParams(mode)"
+                class="decoration-text-subtle underline-offset-3 transition-colors hover:underline"
+                >{{ mode }}</a
+              >
+            }
+          </dd>
+        </div>
+      }
+      @if (view().source; as source) {
+        <div [class]="row">
+          <dt class="text-text-subtle text-sm">
+            {{ 'media.source' | translate }}
+          </dt>
+          <dd class="text-text text-base leading-snug font-medium">
+            {{ aniListLabel('source', source) }}
+          </dd>
+        </div>
+      }
+      @if (view().season; as season) {
+        <div [class]="row">
+          <dt class="text-text-subtle text-sm">
+            {{ 'media.season' | translate }}
+          </dt>
+          <dd class="text-text text-base leading-snug font-medium">
+            {{ aniListLabel('season', season)
+            }}{{ view().seasonYear ? ' ' + view().seasonYear : '' }}
+          </dd>
+        </div>
+      }
+      @if (view().volumes !== null) {
+        <div [class]="row">
+          <dt class="text-text-subtle text-sm">
+            {{ 'media.volumes' | translate }}
+          </dt>
+          <dd class="text-text text-base leading-snug font-medium">
+            {{ view().volumes }}
+          </dd>
+        </div>
+      }
+      @if (view().franchiseName; as franchise) {
+        <div [class]="row">
+          <dt class="text-text-subtle text-sm">
+            {{ 'media.franchise' | translate }}
+          </dt>
+          <dd class="text-text text-base leading-snug font-medium">
+            @if (view().franchiseId) {
+              <a
+                [routerLink]="franchiseUrl(view().franchiseId!)"
+                class="decoration-text-subtle underline-offset-3 transition-colors hover:underline"
+                >{{ franchise }}</a
+              >
+            } @else {
+              {{ franchise }}
+            }
+          </dd>
+        </div>
+      }
+    }
+  </dl>
+}

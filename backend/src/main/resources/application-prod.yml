@@ -1,0 +1,18 @@
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+management:
+  health:
+    mail:
+      enabled: false
+
+server:
+  forward-headers-strategy: native
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate

@@ -1,0 +1,12 @@
+<div class="flex min-w-0 flex-col items-center gap-0.5 text-center">
+  <span
+    class="font-display text-text text-[1.375rem] leading-tight font-semibold tracking-[-0.025em] whitespace-nowrap"
+    aria-live="polite"
+  >
+    {{ 'versus.play.round' | translate: { current: currentRound(), total: roundsTotal() } }}
+  </span>
+  <span class="text-text-subtle inline-flex items-center gap-1 text-[0.8125rem] tabular-nums">
+    {{ 'versus.play.choices_remaining' | translate: { count: choicesRemaining() } }}
+    <shelfy-icon name="chevronDown" size="14" />
+  </span>
+</div>

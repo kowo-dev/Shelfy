@@ -1,0 +1,44 @@
+@for (current of [status()]; track current) {
+  <div class="animate-rise-in flex flex-col items-start gap-4">
+    @switch (current) {
+      @case ('pending') {
+        <span
+          class="border-t-accent size-10 animate-spin rounded-full border-3 border-white/12"
+          aria-hidden="true"
+        ></span>
+      }
+      @case ('success') {
+        <span [class]="mark" aria-hidden="true"><shelfy-icon name="check" size="32" /></span>
+      }
+      @default {
+        <span [class]="mark" aria-hidden="true"
+          ><shelfy-icon name="warningTriangle" size="32"
+        /></span>
+      }
+    }
+    <h1 class="heading-auth">
+      {{ copy.title | translate }}
+    </h1>
+    <p class="text-text-muted text-base">
+      @switch (current) {
+        @case ('pending') {
+          {{ copy.pending | translate }}
+        }
+        @case ('success') {
+          {{ copy.success | translate }}
+        }
+        @case ('error') {
+          {{ errorText() }}
+        }
+        @default {
+          {{ copy.noToken | translate }}
+        }
+      }
+    </p>
+    @if (current !== 'pending') {
+      <a [routerLink]="back().link" [class]="linkButton">
+        {{ back().label | translate }}
+      </a>
+    }
+  </div>
+}

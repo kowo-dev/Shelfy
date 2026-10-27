@@ -1,0 +1,199 @@
+<ng-template #destination let-link>
+  <a
+    role="menuitem"
+    [routerLink]="link.path"
+    [attr.aria-current]="isActive(link) ? 'page' : null"
+    [class]="menuItem + ' group/item focus-visible:bg-fill-subtle outline-none'"
+    [class.bg-fill-subtle]="isActive(link)"
+    (click)="openMenu.set(null)"
+  >
+    <shelfy-icon
+      [name]="link.icon"
+      size="md"
+      [active]="isActive(link)"
+      class="group-hover/item:text-text transition-colors"
+      [class]="isActive(link) ? 'text-text' : 'text-text-muted'"
+    />
+    <span class="min-w-0 flex-1 truncate">{{ link.labelKey | translate }}</span>
+    @if (link.path === notificationsPath && inbox.unread() > 0) {
+      <span class="text-brand text-sm font-semibold tabular-nums">{{
+        'nav.unread_count' | translate: { count: inbox.unread() }
+      }}</span>
+    }
+  </a>
+</ng-template>
+
+<header
+  class="top-0 isolate z-60 flex h-16 items-center gap-8 px-(--frame-x) max-lg:gap-6 md:h-(--nav-bar-height)"
+  [class]="overlay() ? 'absolute inset-x-0' : 'relative md:sticky'"
+>
+  <span
+    class="v-nav-bg bg-bar duration-slow pointer-events-none absolute inset-0 -z-10 transition-opacity"
+    [class.opacity-0]="!solid()"
+    aria-hidden="true"
+  ></span>
+
+  <a
+    routerLink="/discover"
+    class="font-display text-text shrink-0 text-[1.625rem] font-extrabold tracking-[-0.05em] md:text-[1.8125rem]"
+    [attr.aria-label]="'nav.go_discover' | translate"
+    >Shelfy</a
+  >
+
+  <nav
+    class="flex h-full items-center gap-0.5 max-md:hidden"
+    [attr.aria-label]="'nav.main' | translate"
+  >
+    @for (link of primaryLinks(); track link.path) {
+      <a
+        [routerLink]="link.path"
+        [attr.aria-current]="isActive(link) ? 'page' : null"
+        class="font-display hover:text-text duration-base flex h-10 items-center px-3.5 text-[1.0625rem] font-bold tracking-[-0.015em] whitespace-nowrap transition-colors"
+        [class]="activeKey() === link.path ? 'text-text' : 'text-text-muted'"
+        >{{ link.labelKey | translate }}</a
+      >
+    }
+  </nav>
+
+  <span class="flex-1"></span>
+
+  <div class="flex shrink-0 items-center gap-2">
+    <button
+      type="button"
+      class="flex h-11 cursor-pointer items-center gap-2.5 rounded-[0.875rem] pr-2 pl-4 backdrop-blur-xl transition-[background-color,color] duration-300 hover:bg-white/14 hover:text-white max-md:hidden lg:w-64"
+      [class]="isActive(explore) ? 'bg-white/16 text-white' : 'bg-white/10 text-white/75'"
+      [attr.aria-label]="'nav.search_label' | translate"
+      [attr.aria-current]="isActive(explore) ? 'page' : null"
+      aria-keyshortcuts="Control+K Meta+K"
+      (click)="openSearch()"
+    >
+      <shelfy-icon name="search" size="20" class="shrink-0" />
+      <span class="flex-1 text-left text-[0.9375rem] font-semibold max-lg:hidden">{{
+        'nav.search' | translate
+      }}</span>
+      <kbd
+        class="inline-grid h-7 shrink-0 place-items-center rounded-sm bg-white/10 px-2 font-sans text-xs font-semibold tracking-[0.02em] text-white/70"
+        >{{ shortcutLabel }}</kbd
+      >
+    </button>
+    @if (isAuthenticated()) {
+      <div class="relative" data-menu-root="account">
+        <button
+          type="button"
+          class="grid cursor-pointer place-items-center rounded-full transition-[scale,filter] hover:brightness-110 active:scale-[0.95]"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="openMenu() === 'account'"
+          [attr.aria-controls]="menuId('account')"
+          [attr.aria-label]="('nav.account_menu' | translate) + ', ' + displayName()"
+          (click)="toggleMenu('account')"
+          (keydown)="onTriggerKeydown($event, 'account')"
+        >
+          <shelfy-avatar [displayName]="displayName()" [avatarUrl]="avatarUrl()" size="md" />
+        </button>
+
+        @if (openMenu() === 'account') {
+          <div
+            [id]="menuId('account')"
+            role="menu"
+            tabindex="-1"
+            [attr.aria-label]="'nav.account_menu' | translate"
+            [class]="
+              menuPanel +
+              ' right-0 w-80 origin-top-right max-md:fixed max-md:top-[4.25rem] max-md:right-3 max-md:w-[min(20rem,calc(100vw-1.5rem))]'
+            "
+            animate.leave="animate-pop-out"
+            (keydown)="onMenuKeydown($event, 'account')"
+          >
+            <div class="flex items-center gap-3.5 px-2.5 pt-2.5 pb-4">
+              <shelfy-avatar [displayName]="displayName()" [avatarUrl]="avatarUrl()" size="md" />
+              <span class="min-w-0">
+                <span class="text-text block truncate text-base leading-tight font-bold">{{
+                  displayName()
+                }}</span>
+                @if (username()) {
+                  <span class="text-text-muted mt-0.5 block truncate text-sm"
+                    >&#64;{{ username() }}</span
+                  >
+                }
+              </span>
+            </div>
+
+            @for (link of accountLinks; track link.path) {
+              <ng-container
+                [ngTemplateOutlet]="destination"
+                [ngTemplateOutletContext]="{ $implicit: link }"
+              />
+            }
+
+            <hr [class]="menuSeparator + ' border-border border-t'" />
+
+            @if (isAdmin()) {
+              <ng-container
+                [ngTemplateOutlet]="destination"
+                [ngTemplateOutletContext]="{ $implicit: adminLink }"
+              />
+            }
+            <ng-container
+              [ngTemplateOutlet]="destination"
+              [ngTemplateOutletContext]="{ $implicit: settings }"
+            />
+            <button
+              type="button"
+              role="menuitem"
+              [class]="
+                menuItem +
+                ' text-text-muted! hover:text-text! focus-visible:bg-fill-subtle outline-none'
+              "
+              (click)="openLogoutDialog()"
+            >
+              <shelfy-icon name="logout" size="md" />
+              {{ 'auth.sign_out' | translate }}
+            </button>
+            <hr [class]="menuSeparator + ' border-border border-t'" />
+            <p class="text-text-subtle px-2.5 pt-2 pb-1 text-xs">
+              Made by
+              <a
+                routerLink="/profile/kowo"
+                class="text-text-muted hover:text-text font-semibold"
+                (click)="openMenu.set(null)"
+                >&#64;kowo</a
+              >
+              ·
+              <a
+                href="https://github.com/kowo-dev/Shelfy"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-text-muted hover:text-text font-semibold"
+                >GitHub</a
+              >
+              · {{ version }}
+            </p>
+          </div>
+        }
+      </div>
+    } @else {
+      <a routerLink="/auth/login" [class]="signInClass">{{ 'auth.sign_in' | translate }}</a>
+      @if (registrationOpen()) {
+        <a routerLink="/auth/register" [class]="registerClass">{{
+          'auth.create_account' | translate
+        }}</a>
+      }
+    }
+  </div>
+</header>
+
+<shelfy-dialog
+  [open]="logoutDialogOpen()"
+  [title]="'auth.sign_out_confirm_title' | translate"
+  (closed)="closeLogoutDialog()"
+>
+  <p class="text-text-muted">{{ 'auth.sign_out_confirm_body' | translate }}</p>
+  <div dialogFooter class="contents">
+    <shelfy-button type="button" variant="secondary" (click)="closeLogoutDialog()">
+      {{ 'auth.sign_out_cancel' | translate }}
+    </shelfy-button>
+    <shelfy-button type="button" variant="primary" (click)="confirmLogout()">
+      {{ 'auth.sign_out' | translate }}
+    </shelfy-button>
+  </div>
+</shelfy-dialog>

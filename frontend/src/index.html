@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Shelfy · Track movies, series, games and anime in one place</title>
+    <meta
+      name="description"
+      content="Shelfy is a self-hosted media tracker: one shelf for the movies, series, games, anime, manga and webtoons you love, with lists, reviews and people to follow. No tracking."
+    />
+    <meta name="application-name" content="Shelfy" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Shelfy" />
+    <meta
+      property="og:title"
+      content="Shelfy · Track movies, series, games and anime in one place"
+    />
+    <meta
+      property="og:description"
+      content="Shelfy is a self-hosted media tracker: one shelf for the movies, series, games, anime, manga and webtoons you love, with lists, reviews and people to follow. No tracking."
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta
+      name="twitter:title"
+      content="Shelfy · Track movies, series, games and anime in one place"
+    />
+    <meta
+      name="twitter:description"
+      content="Shelfy is a self-hosted media tracker: one shelf for the movies, series, games, anime, manga and webtoons you love, with lists, reviews and people to follow. No tracking."
+    />
+    <base href="/" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="frame-src https://www.youtube-nocookie.com"
+    />
+    <link rel="icon" type="image/svg+xml" href="icons/favicon.svg" />
+    <link rel="icon" href="favicon.ico" sizes="32x32" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="preload" href="i18n/en.json" as="fetch" crossorigin="anonymous" />
+    <meta name="theme-color" content="#0b0b0b" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <style>
+      .boot-copy {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+    </style>
+    <noscript>
+      <style>
+        .boot-copy {
+          position: static;
+          width: auto;
+          height: auto;
+          overflow: visible;
+          clip-path: none;
+          white-space: normal;
+          min-height: 100dvh;
+          display: grid;
+          place-content: center;
+          gap: 1rem;
+          padding: 2rem 1rem;
+          max-width: 40rem;
+          margin: 0 auto;
+          background: #0b0b0b;
+          color: #a1a1aa;
+          font:
+            1rem/1.6 system-ui,
+            sans-serif;
+        }
+        .boot-copy h1 {
+          margin: 0;
+          color: #fafafa;
+          font-size: 2.5rem;
+          line-height: 1.1;
+        }
+        .boot-copy p {
+          margin: 0;
+        }
+        .boot-copy .boot-copy-lead {
+          color: #fafafa;
+          font-size: 1.25rem;
+        }
+      </style>
+    </noscript>
+  </head>
+  <body>
+    <shelfy-root>
+      <main class="boot-copy">
+        <h1>Shelfy</h1>
+        <p class="boot-copy-lead">One shelf for everything you watch, play and read.</p>
+        <p>
+          Track movies, TV series, video games, anime, manga and webtoons with one status model,
+          custom lists, ratings and reviews. Follow people, browse their shelves and settle debates
+          in versus matchups. Self-hosted, your data stays yours, with zero tracking.
+        </p>
+        <noscript>
+          <p class="boot-copy-lead">Shelfy needs JavaScript to run. Please enable it.</p>
+        </noscript>
+      </main>
+    </shelfy-root>
+  </body>
+</html>

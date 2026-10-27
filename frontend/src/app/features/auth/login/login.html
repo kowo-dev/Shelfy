@@ -1,0 +1,67 @@
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
+  <shelfy-auth-form-head
+    title="auth.sign_in"
+    description="auth.sign_in_desc"
+    [error]="serverError()"
+  />
+
+  <shelfy-input
+    formControlName="email"
+    type="email"
+    [label]="'auth.email' | translate"
+    [error]="emailError()"
+    prefixIcon="mail"
+  />
+
+  <shelfy-input
+    formControlName="password"
+    type="password"
+    [label]="'auth.password' | translate"
+    [error]="passwordError()"
+    prefixIcon="lock"
+    [passwordToggle]="true"
+  />
+
+  <div class="animate-rise-in stagger-4 -mt-2 text-right">
+    <a
+      routerLink="/auth/forgot-password"
+      [queryParams]="returnUrl() !== '/discover' ? { returnUrl: returnUrl() } : {}"
+      class="text-text-muted hover:text-text text-sm transition-colors"
+    >
+      {{ 'auth.forgot_password' | translate }}
+    </a>
+  </div>
+
+  <div class="animate-rise-in stagger-4">
+    <shelfy-button type="submit" variant="primary" [loading]="loading()" [block]="true">
+      {{ 'auth.sign_in' | translate }}
+    </shelfy-button>
+  </div>
+
+  @if (unverifiedEmail()) {
+    <p class="text-text-muted animate-rise-in -mt-2 text-base">
+      {{ 'auth.resend_verification_prompt' | translate }}
+      <button
+        type="button"
+        (click)="resendVerification()"
+        [disabled]="resending()"
+        class="text-text ml-1 font-medium underline decoration-white/30 underline-offset-4 transition-colors hover:decoration-white disabled:opacity-50"
+      >
+        {{ 'auth.resend_verification' | translate }}
+      </button>
+    </p>
+  }
+
+  @if (registrationOpen()) {
+    <p class="text-text-muted animate-rise-in stagger-5 mt-2 text-base">
+      {{ 'auth.no_account' | translate }}
+      <a
+        routerLink="/auth/register"
+        [queryParams]="returnUrl() !== '/discover' ? { returnUrl: returnUrl() } : {}"
+        class="text-text ml-1 font-medium underline decoration-white/30 underline-offset-4 transition-colors hover:decoration-white"
+      >
+        {{ 'auth.create_account' | translate }}
+      </a>
+    </p>
+  }
+</form>

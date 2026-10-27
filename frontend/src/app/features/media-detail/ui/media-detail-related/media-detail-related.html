@@ -1,0 +1,17 @@
+@if (rails(); as rails) {
+  @for (rail of rails; track rail.key) {
+    <shelfy-shelf-section
+      [title]="rail.title"
+      [moreLabel]="'home.see_all' | translate"
+      [moreRoute]="rail.more"
+    >
+      @for (card of rail.cards; track card.key) {
+        <shelfy-media-card [item]="card.item" [subtitle]="card.year" />
+      }
+    </shelfy-shelf-section>
+  }
+} @else {
+  <div class="px-gutter" role="status" [attr.aria-label]="'media.related.loading' | translate">
+    <shelfy-rail-skeleton />
+  </div>
+}

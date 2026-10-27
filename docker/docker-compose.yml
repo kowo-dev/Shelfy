@@ -1,0 +1,116 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: shelfy-postgres-dev
+    environment:
+      POSTGRES_DB: shelfy
+      POSTGRES_USER: shelfy
+      POSTGRES_PASSWORD: shelfy_local_dev
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - shelfy_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shelfy"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: shelfy-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: dev@shelfy.dev
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "127.0.0.1:5050:80"
+    depends_on:
+      - postgres
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: shelfy-mailpit
+    ports:
+      - "127.0.0.1:1025:1025"
+      - "127.0.0.1:8025:8025"
+
+  backend:
+    image: eclipse-temurin:25-jdk
+    container_name: shelfy-backend-dev
+    working_dir: /backend
+    ports:
+      - "127.0.0.1:8082:8082"
+      - "127.0.0.1:5005:5005"
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shelfy
+      SPRING_MAIL_HOST: mailpit
+      MAVEN_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+      APP_FEDERATION_ENABLED: "true"
+      APP_FEDERATION_HANDLE_DOMAIN: shelfy-a.test:8082
+      APP_FEDERATION_SERVER_URL: http://shelfy-a.test:8082
+      APP_FEDERATION_DEV_MODE: "true"
+    networks:
+      default:
+        aliases: [shelfy-a.test]
+    volumes:
+      - ../backend:/backend
+      - shelfy_maven_cache:/root/.m2
+      - shelfy_avatar_uploads_dev:/data/avatars
+    command: ./mvnw spring-boot:run
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres-b:
+    image: postgres:16-alpine
+    container_name: shelfy-postgres-b-dev
+    profiles: [federation]
+    environment:
+      POSTGRES_DB: shelfy
+      POSTGRES_USER: shelfy
+      POSTGRES_PASSWORD: shelfy_local_dev
+    volumes:
+      - shelfy_pgdata_b:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shelfy"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend-b:
+    image: eclipse-temurin:25-jdk
+    container_name: shelfy-backend-b-dev
+    profiles: [federation]
+    working_dir: /backend
+    ports:
+      - "127.0.0.1:8083:8082"
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-b:5432/shelfy
+      SPRING_MAIL_HOST: mailpit
+      APP_CORS_ALLOWED_ORIGIN: http://localhost:4201
+      APP_FEDERATION_ENABLED: "true"
+      APP_FEDERATION_HANDLE_DOMAIN: shelfy-b.test:8082
+      APP_FEDERATION_SERVER_URL: http://shelfy-b.test:8082
+      APP_FEDERATION_DEV_MODE: "true"
+    networks:
+      default:
+        aliases: [shelfy-b.test]
+    volumes:
+      - ../backend:/src:ro
+      - shelfy_maven_cache:/root/.m2
+      - shelfy_avatar_uploads_b_dev:/data/avatars
+    tmpfs:
+      - /backend:rw,exec,size=2g
+    command: sh -c "cp -r /src/. /backend && rm -rf /backend/target && ./mvnw spring-boot:run"
+    depends_on:
+      postgres-b:
+        condition: service_healthy
+
+volumes:
+  shelfy_pgdata:
+  shelfy_pgdata_b:
+  shelfy_avatar_uploads_b_dev:
+  shelfy_maven_cache:
+  shelfy_avatar_uploads_dev:

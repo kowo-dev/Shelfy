@@ -1,0 +1,392 @@
+@if (loading()) {
+  <shelfy-detail-skeleton [count]="6" />
+} @else if (loadFailed()) {
+  <main class="px-gutter flex min-h-full items-center justify-center pt-(--nav-bar-height)">
+    <shelfy-empty-state role="alert" icon="warningTriangle" [hint]="'media.load_error' | translate">
+      <shelfy-button variant="primary" (click)="retryLoad()">
+        {{ 'collection.retry' | translate }}
+      </shelfy-button>
+    </shelfy-empty-state>
+  </main>
+} @else {
+  <main
+    class="v-title-page animate-fade-in relative flex min-h-full flex-col pb-40 motion-reduce:animate-none"
+  >
+    @if (view().posterUrl; as poster) {
+      <div class="v-ambient" aria-hidden="true"><img [src]="poster" alt="" /></div>
+    }
+
+    <section class="v-t-hero">
+      <button
+        type="button"
+        class="v-t-poster"
+        [attr.aria-label]="'media.open_poster' | translate"
+        (click)="openImagePreview(view().posterUrl ?? '')"
+      >
+        @if (view().posterUrl; as poster) {
+          <img [src]="poster" alt="" [class.blur-2xl]="view().adultContent" draggable="false" />
+        }
+      </button>
+      <div class="v-t-info min-w-0">
+        <div class="v-meta">
+          <span>{{ 'collection.media_type_one.' + mediaType() | translate }}</span>
+          @if (view().releaseYear; as year) {
+            <i aria-hidden="true">·</i><span>{{ year }}</span>
+          }
+          @for (genre of factGenres(); track genre) {
+            <i aria-hidden="true">·</i>
+            <a
+              [routerLink]="browseUrl(mediaType(), 'genre', view().genreIds.at($index) ?? genre)"
+              [queryParams]="browseQueryParams(genre)"
+              >{{ genre }}</a
+            >
+          }
+          @if (runtimeLabel(); as runtime) {
+            <i aria-hidden="true">·</i><span>{{ runtime }}</span>
+          }
+          @if (seasonsLabel(); as seasons) {
+            <i aria-hidden="true">·</i><span>{{ seasons }}</span>
+          }
+          @if (view().adultContent) {
+            <i aria-hidden="true">·</i
+            ><span class="text-danger-fg" [title]="'media.adult_content' | translate">18+</span>
+          }
+        </div>
+        <h1 [title]="view().title">{{ view().title }}</h1>
+        <div class="v-meta">
+          @if (view().director; as director) {
+            <span>{{ 'media.page.by' | translate: { name: director } }}</span>
+          }
+          @for (value of scores(); track value.label) {
+            @if (view().director) {
+              <i aria-hidden="true">·</i>
+            }
+            <span class="inline-flex items-center gap-1.5">
+              <span class="v-star"
+                ><shelfy-icon name="star" size="14" [active]="true" />{{ value.text }}</span
+              >
+              {{ 'media.page.on_source' | translate: { source: value.label } }}
+            </span>
+          }
+          @if (shelvedItem() && view().trailerUrl) {
+            <i aria-hidden="true">·</i>
+            <a
+              class="hover:text-text inline-flex items-center gap-1.5 transition-colors"
+              [href]="view().trailerUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              ><shelfy-icon name="play" size="14" />{{ 'media.page.trailer' | translate }}</a
+            >
+          }
+        </div>
+        <div class="h-7"></div>
+
+        @if (shelvedItem(); as item) {
+          <div
+            class="grid w-full max-w-164 max-[900px]:mx-auto"
+            [animate.enter]="collapseIn()"
+            [animate.leave]="collapseOut()"
+          >
+            <div [class]="collapseBody">
+              <shelfy-item-editor
+                [mediaType]="editorType()"
+                [status]="item.status"
+                [rating]="item.rating"
+                (statusPicked)="setStatus($event)"
+                (ratingChanged)="rate($event)"
+              />
+              <div class="v-track mt-7 sm:mt-8">
+                <div class="row gap-2!">
+                  <button type="button" [class]="secondaryButton" (click)="openReview()">
+                    <shelfy-icon name="reviews" size="20" />{{
+                      (item.note ? 'collection.sheet.edit_review' : 'collection.sheet.write_review')
+                        | translate
+                    }}
+                  </button>
+                  <button type="button" [class]="secondaryButton" (click)="openLogAdd()">
+                    <shelfy-icon name="history" size="20" />{{
+                      'collection.sheet.log_viewing' | translate
+                    }}
+                  </button>
+                  <button
+                    type="button"
+                    style="flex: none"
+                    [class]="removeButton"
+                    [disabled]="removing()"
+                    [attr.aria-label]="removeLabel(item) | translate"
+                    [title]="removeLabel(item) | translate"
+                    (click)="removeFromShelf(item)"
+                  >
+                    <shelfy-icon name="trash" size="20" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        } @else {
+          <div class="grid" [animate.enter]="collapseIn()" [animate.leave]="collapseOut()">
+            <div [class]="collapseBody">
+              <div class="v-track">
+                <div class="row">
+                  @if (signedIn()) {
+                    <button type="button" [class]="primaryButton + ' acc'" (click)="runAction()">
+                      <shelfy-icon name="plus" size="20" />{{ actionLabel() }}
+                    </button>
+                  }
+                  <ng-container [ngTemplateOutlet]="trailer" />
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <div #barSentinel class="mt-6" aria-hidden="true"></div>
+    <div class="v-libbar" [class.stuck]="stuck()">
+      <shelfy-tabs
+        class="min-w-0"
+        [navigation]="true"
+        [tabs]="sectionTabs()"
+        [activeId]="activeSection()"
+        [label]="'media.page.tabs' | translate"
+        (tabSelected)="goToSection($event)"
+      />
+    </div>
+
+    <shelfy-shelf-section
+      id="sec-details"
+      class="block scroll-mt-40"
+      [rail]="null"
+      [title]="'media.sections.information' | translate"
+    >
+      <div class="v-details">
+        @if (view().overview; as overview) {
+          <div
+            #overviewText
+            id="overview-text"
+            class="v-syn"
+            [class.clamped]="!overviewExpanded()"
+            [innerHTML]="overview"
+          ></div>
+          @if (overviewClamped() || overviewExpanded()) {
+            <button
+              type="button"
+              [class]="moreLink + ' -mt-4 justify-self-start'"
+              aria-controls="overview-text"
+              [attr.aria-expanded]="overviewExpanded()"
+              (click)="overviewExpanded.set(!overviewExpanded())"
+            >
+              {{ (overviewExpanded() ? 'media.see_less' : 'media.see_more') | translate }}
+            </button>
+          }
+        }
+        <shelfy-media-detail-metadata
+          tier="primary"
+          [view]="view()"
+          [mediaType]="mediaType()"
+          [facts]="facts()"
+        />
+        @if (detailsExpanded()) {
+          <shelfy-media-detail-metadata
+            id="more-details"
+            tier="secondary"
+            [view]="view()"
+            [mediaType]="mediaType()"
+            [facts]="facts()"
+          />
+          @if (view().tags.length > 0 || view().genres.length > genreLimit) {
+            <shelfy-media-detail-categories
+              class="block min-w-0"
+              [genres]="view().genres.slice(genreLimit)"
+              [genreIds]="view().genreIds.slice(genreLimit)"
+              [tags]="view().tags"
+              [tagRefs]="view().tagRefs"
+              [mediaType]="mediaType()"
+            />
+          }
+        }
+        <shelfy-media-detail-availability
+          class="flex flex-wrap gap-2 empty:hidden"
+          [steamAppIds]="game()?.steamAppIds ?? []"
+        />
+        <button
+          type="button"
+          [class]="moreLink + ' inline-flex items-center gap-1.5 justify-self-start'"
+          aria-controls="more-details"
+          [attr.aria-expanded]="detailsExpanded()"
+          (click)="detailsExpanded.set(!detailsExpanded())"
+        >
+          {{ (detailsExpanded() ? 'media.fewer_details' : 'media.more_details') | translate }}
+          <shelfy-icon name="chevronDown" size="14" [class.rotate-180]="detailsExpanded()" />
+        </button>
+      </div>
+    </shelfy-shelf-section>
+
+    @if (episodeColumns().length) {
+      <shelfy-episodes-overview
+        id="sec-episodes"
+        class="block scroll-mt-40"
+        [columns]="episodeColumns()"
+        [source]="episodeSource()"
+        [trackerRoute]="trackerRoute()"
+        [editable]="!!episodeProgress()"
+        (watchedToggled)="setEpisodeWatched($event.cell, $event.watched)"
+        (episodeSelected)="openEpisode($event)"
+      >
+        @if (action() === 'episode') {
+          <button epTools type="button" [class]="primaryButton" (click)="runAction()">
+            <shelfy-icon [name]="actionIcon()" size="20" [active]="true" />
+            <span class="max-sm:sr-only">{{ actionLabel() }}</span>
+          </button>
+        }
+      </shelfy-episodes-overview>
+    }
+
+    @if (isOnShelf() && history(); as entries) {
+      @if (entries.length > 0) {
+        <shelfy-shelf-section
+          id="sec-history"
+          class="block scroll-mt-40"
+          [rail]="null"
+          [title]="'media.history.section' | translate"
+        >
+          <button secTools type="button" [class]="secondaryButton" (click)="openLogAdd()">
+            <shelfy-icon name="plus" size="20" />
+            <span class="max-sm:sr-only">{{ 'collection.sheet.log_viewing' | translate }}</span>
+          </button>
+          <shelfy-watch-log-timeline
+            class="block max-w-180"
+            [entries]="entries"
+            [kind]="historyKind()"
+            [limit]="historyExpanded() ? null : historyPreview"
+            (selected)="openLogEdit($event)"
+          />
+          @if (entries.length > historyPreview) {
+            <button
+              type="button"
+              [class]="moreLink"
+              [attr.aria-expanded]="historyExpanded()"
+              (click)="historyExpanded.set(!historyExpanded())"
+            >
+              {{
+                historyExpanded()
+                  ? ('media.history.show_less' | translate)
+                  : ('media.history.show_all' | translate: { count: entries.length })
+              }}
+            </button>
+          }
+        </shelfy-shelf-section>
+      }
+    }
+
+    @if (visibleGalleryImages().length > 0) {
+      <shelfy-media-detail-gallery
+        id="sec-visuals"
+        class="block scroll-mt-40"
+        [images]="visibleGalleryImages()"
+        (imageSelected)="openImagePreview($event)"
+      />
+    }
+    <shelfy-media-detail-game-strip [games]="view().dlcs" headingKey="media.dlcs" />
+
+    <div id="sec-cast" class="block scroll-mt-40">
+      <shelfy-media-detail-cast [cast]="view().cast" />
+      <shelfy-media-detail-characters
+        [animeCharacters]="view().animeCharacters"
+        [mangaCharacters]="view().mangaCharacters"
+      />
+    </div>
+
+    @if (view().storyline; as storyline) {
+      <shelfy-shelf-section [rail]="null" [title]="'media.storyline' | translate">
+        <div
+          #storylineText
+          id="storyline-text"
+          class="text-text-muted max-w-prose text-base leading-relaxed"
+          [class.line-clamp-4]="!storylineExpanded()"
+          [innerHTML]="storyline"
+        ></div>
+        @if (storylineClamped() || storylineExpanded()) {
+          <button
+            type="button"
+            [class]="moreLink"
+            aria-controls="storyline-text"
+            [attr.aria-expanded]="storylineExpanded()"
+            (click)="storylineExpanded.set(!storylineExpanded())"
+          >
+            {{ (storylineExpanded() ? 'media.see_less' : 'media.see_more') | translate }}
+          </button>
+        }
+      </shelfy-shelf-section>
+    }
+
+    <shelfy-shelf-section
+      id="sec-reviews"
+      class="block scroll-mt-40"
+      [rail]="null"
+      [title]="'media.page.reviews' | translate"
+    >
+      <div secTools class="flex items-center gap-2">
+        <shelfy-friend-activity
+          [provider]="provider()"
+          [mediaType]="mediaType()"
+          [externalId]="externalId() + ''"
+        />
+        <button type="button" [class]="secondaryButton" (click)="openReview()">
+          <shelfy-icon name="edit" size="20" />
+          <span class="max-sm:sr-only">{{ reviewLabel() | translate }}</span>
+        </button>
+      </div>
+      @if (reviews().length) {
+        <shelfy-media-detail-reviews [reviews]="reviews()" />
+      } @else {
+        <p class="text-text-muted text-base">{{ 'media.page.no_reviews' | translate }}</p>
+      }
+    </shelfy-shelf-section>
+
+    @defer (on idle) {
+      <div id="sec-similar" class="scroll-mt-40">
+        <shelfy-media-detail-related [mediaType]="mediaType()" [externalId]="externalId()" />
+      </div>
+    } @placeholder {
+      <div class="px-gutter" aria-hidden="true"><shelfy-rail-skeleton /></div>
+    }
+    <shelfy-page-footer />
+  </main>
+}
+
+<ng-template #trailer>
+  @if (view().trailerUrl; as url) {
+    <a [href]="url" target="_blank" rel="noopener noreferrer" [class]="secondaryButton">
+      <shelfy-icon name="play" size="20" />{{ 'media.page.trailer' | translate }}
+    </a>
+  }
+</ng-template>
+
+@if (selectedImageIndex() !== null) {
+  <shelfy-image-lightbox
+    [images]="previewImages()"
+    [startIndex]="selectedImageIndex() ?? 0"
+    [imageAlt]="view().title ?? ''"
+    [closeLabel]="'media.close_image' | translate"
+    [previousLabel]="'media.previous_image' | translate"
+    [nextLabel]="'media.next_image' | translate"
+    (closed)="closeImagePreview()"
+  />
+}
+
+@if (openedEpisode(); as cell) {
+  <shelfy-episode-sheet
+    [cell]="cell"
+    [editable]="!!episodeProgress()"
+    [showTitle]="view().title ?? ''"
+    [hasPrevious]="!!episodeNeighbours().previous"
+    [hasNext]="!!episodeNeighbours().next"
+    (stepped)="stepEpisode($event)"
+    (addRequested)="setStatus('planned')"
+    (watchedToggled)="setEpisodeWatched(cell, $event)"
+    (rated)="rateEpisode(cell, $event)"
+    (closed)="openedKey.set(null)"
+  />
+}

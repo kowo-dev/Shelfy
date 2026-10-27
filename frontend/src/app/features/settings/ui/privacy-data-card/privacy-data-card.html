@@ -1,0 +1,33 @@
+<shelfy-settings-row
+  [class]="tile"
+  [title]="'settings.privacy.export_data' | translate"
+  [description]="'settings.privacy.export_data_description' | translate"
+>
+  <button
+    type="button"
+    [class]="pill"
+    [disabled]="exporting()"
+    [attr.aria-busy]="exporting() || null"
+    (click)="exportData.emit()"
+  >
+    @if (exporting()) {
+      <shelfy-spinner size="sm" />
+    }
+    {{ 'settings.privacy.export_data' | translate }}
+  </button>
+</shelfy-settings-row>
+<nav [class]="rows + ' mt-2'" [attr.aria-label]="'settings.privacy.legal_title' | translate">
+  @for (doc of legal; track doc.route) {
+    <a
+      [routerLink]="doc.route"
+      class="group/legal flex min-h-16 items-center justify-between gap-6"
+    >
+      <span class="text-text text-[1.0625rem] font-bold">{{ doc.label | translate }}</span>
+      <shelfy-icon
+        name="chevronRight"
+        size="20"
+        class="text-text-muted group-hover/legal:text-text transition-colors"
+      />
+    </a>
+  }
+</nav>

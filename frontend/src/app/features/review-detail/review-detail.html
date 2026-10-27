@@ -1,0 +1,210 @@
+@if (review(); as review) {
+  @if (review.media.isAdult && !review.media.title) {
+    <main
+      class="px-gutter flex min-h-full flex-col items-center justify-center gap-4 py-24 text-center"
+    >
+      <shelfy-adult-badge size="5rem" />
+      <h1 class="heading-page">{{ 'adult.gate_title' | translate }}</h1>
+      <p class="text-text-muted max-w-md text-base">{{ 'adult.gate_body' | translate }}</p>
+      <button type="button" [class]="softButton" (click)="openAdultGate()">
+        {{ 'adult.unlock' | translate }}
+      </button>
+    </main>
+  } @else {
+    <main class="animate-fade-in flex min-h-full flex-col motion-reduce:animate-none">
+      <shelfy-media-header
+        [title]="review.media.title"
+        [posterUrl]="review.media.coverUrl"
+        [backdropUrl]="heroBackdrop()"
+        [adult]="!!review.media.isAdult"
+        (posterOpened)="posterOpen.set(true)"
+      >
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-4 max-[900px]:justify-center">
+          <a
+            [routerLink]="['/profile', review.username]"
+            class="group/author inline-flex min-w-0 items-center gap-3 text-left"
+          >
+            <shelfy-avatar size="md" [displayName]="authorName()" [avatarUrl]="review.avatarUrl" />
+            <span class="min-w-0">
+              <b class="text-text block truncate text-[1.0625rem] group-hover/author:underline">{{
+                authorName()
+              }}</b>
+              <small class="text-text-subtle block text-sm"
+                >&#64;{{ review.username }} · {{ createdAtLabel() }}</small
+              >
+            </span>
+          </a>
+          @if (isMine(review.userId)) {
+            <span
+              [class]="social + ' cursor-default'"
+              [attr.aria-label]="'community.likes_count' | translate: { count: likeCount() }"
+            >
+              <shelfy-icon name="like" size="22" />
+              <b class="tabular-nums">{{ likeCount() }}</b>
+            </span>
+          } @else {
+            <button
+              type="button"
+              [class]="social + (liked() ? ' text-accent!' : '')"
+              [attr.aria-pressed]="liked()"
+              [attr.aria-label]="(liked() ? 'community.liked' : 'community.like') | translate"
+              [disabled]="liking()"
+              (click)="toggleLike()"
+            >
+              <shelfy-icon name="like" size="22" [active]="liked()" />
+              <b class="tabular-nums">{{ likeCount() }}</b>
+            </button>
+          }
+          <button
+            type="button"
+            [class]="social"
+            [attr.aria-label]="'comments.title' | translate"
+            (click)="goToComments()"
+          >
+            <shelfy-icon name="comment" size="22" />
+            <b class="tabular-nums">{{ commentCount() }}</b>
+          </button>
+        </div>
+        @if (review.rating !== null) {
+          <div class="mt-5 flex flex-wrap items-center gap-3.5 max-[900px]:justify-center">
+            <span class="sr-only"
+              >{{ 'community.review.rating_by' | translate: { name: authorName() } }}
+              {{ ratingText() }}</span
+            >
+            <span inert aria-hidden="true">
+              <shelfy-rating-slider size="md" tone="white" [value]="review.rating" />
+            </span>
+            <b
+              class="font-display text-[2.125rem] leading-none font-extrabold tracking-[-0.05em] tabular-nums"
+              [style.color]="ratingColor()"
+              aria-hidden="true"
+              >{{ ratingText() }}</b
+            >
+            <span
+              class="text-[0.9375rem] font-semibold"
+              [style.color]="ratingColor()"
+              aria-hidden="true"
+              >{{ verdictKey() | translate }}</span
+            >
+          </div>
+        }
+        @if (isMine(review.userId)) {
+          <div class="mt-7 flex flex-wrap items-center gap-3 max-[900px]:justify-center">
+            <a [routerLink]="['/reviews', review.id, 'edit']" [class]="primaryButton">
+              <shelfy-icon name="edit" size="20" />{{ 'review.studio.edit' | translate }}
+            </a>
+          </div>
+        }
+      </shelfy-media-header>
+
+      <div #barSentinel class="md:scroll-mt-(--nav-bar-height)" aria-hidden="true"></div>
+      <div class="v-libbar v-title-axis" [class.stuck]="stuck()">
+        <shelfy-tabs
+          class="min-w-0"
+          [tabs]="pageTabs()"
+          [activeId]="tab()"
+          [label]="review.media.title"
+          panelId="review-tab-panel"
+          (tabSelected)="selectTab($event)"
+        />
+      </div>
+
+      <div
+        id="review-tab-panel"
+        role="tabpanel"
+        class="px-gutter v-title-axis grid w-full gap-x-16 gap-y-12 pt-4.5 pb-35 2xl:grid-cols-[minmax(0,44rem)_20rem]"
+      >
+        @for (current of [tab()]; track current) {
+          <div class="animate-rise-in min-w-0">
+            @switch (current) {
+              @case ('viewings') {
+                <shelfy-watch-log-timeline
+                  class="block max-w-176"
+                  [entries]="viewings()"
+                  [kind]="viewingKind()"
+                  [readonly]="true"
+                />
+              }
+              @case ('discussion') {
+                <section id="comments" class="max-w-176">
+                  <shelfy-comments
+                    [source]="commentsSource(review.id)"
+                    [resetKey]="review.id"
+                    [initialItems]="review.comments"
+                    [initialTotal]="review.commentCount"
+                    (totalChange)="commentTotal.set($event)"
+                  />
+                </section>
+              }
+              @default {
+                <article class="max-w-176 min-w-0 pt-6">
+                  @if (pullQuote(); as quote) {
+                    <figure class="mb-8" aria-hidden="true">
+                      <blockquote
+                        class="font-display text-text text-[clamp(1.625rem,2.4vw,2.25rem)] leading-[1.15] font-bold tracking-[-0.035em] text-balance"
+                      >
+                        “{{ quote }}”
+                      </blockquote>
+                    </figure>
+                  }
+                  <shelfy-spoiler-guard [spoiler]="review.containsSpoilers" [resetKey]="review.id">
+                    <shelfy-rich-text-view
+                      [content]="review.content"
+                      class="review-prose text-text block"
+                    />
+                  </shelfy-spoiler-guard>
+                  @if (showUpdatedAt()) {
+                    <p class="text-text-subtle mt-8 text-sm">
+                      {{ 'review.panel.edited' | translate }} {{ updatedAtLabel() }}
+                    </p>
+                  }
+                </article>
+              }
+            }
+          </div>
+        }
+
+        <aside class="flex flex-col gap-3 2xl:pt-6" [attr.aria-label]="review.media.title">
+          <h2 class="text-text-subtle text-[0.8125rem] font-semibold">
+            {{ 'community.review.the_title' | translate }}
+          </h2>
+          <a [routerLink]="mediaRoute()" class="group/title flex items-center gap-3.5">
+            <span
+              class="bg-surface block aspect-2/3 w-14 shrink-0 overflow-hidden rounded-[0.625rem]"
+            >
+              @if (review.media.coverUrl; as cover) {
+                <img
+                  [src]="cover"
+                  alt=""
+                  class="size-full object-cover"
+                  [class.blur-md]="review.media.isAdult"
+                />
+              }
+            </span>
+            <span class="min-w-0">
+              <b class="text-text block truncate text-[0.9375rem] group-hover/title:underline">{{
+                review.media.title
+              }}</b>
+              <small class="text-text-muted block text-[0.8125rem]">{{ mediaMeta() }}</small>
+            </span>
+          </a>
+        </aside>
+      </div>
+      <shelfy-page-footer />
+    </main>
+
+    @if (posterOpen() && review.media.coverUrl) {
+      <shelfy-image-lightbox
+        [images]="[review.media.coverUrl]"
+        [startIndex]="0"
+        [imageAlt]="review.media.title"
+        [closeLabel]="'media.close_image' | translate"
+        [previousLabel]="'media.previous_image' | translate"
+        [nextLabel]="'media.next_image' | translate"
+        (closed)="posterOpen.set(false)"
+      />
+    }
+  }
+} @else {
+  <shelfy-detail-skeleton [count]="0" />
+}

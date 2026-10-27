@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: shelfy-api
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/shelfy}
+    username: ${SPRING_DATASOURCE_USERNAME:shelfy}
+    password: ${SPRING_DATASOURCE_PASSWORD:shelfy_local_dev}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate.default_batch_fetch_size: 50
+  flyway:
+    enabled: true
+  mail:
+    host: localhost
+
+app:
+  jwt:
+    access-token-secret: "test-only-access-token-secret-do-not-use-in-production-min-32-bytes"
+    issuer: "shelfy-api"
+    audience: "shelfy-web"
+    access-token-expiration-minutes: 15
+    refresh-token-expiration-days: 7
+  cors:
+    allowed-origin: "http://localhost:4200"
+  discover:
+    refresh-enabled: false
+  tmdb:
+    url: "https://api.themoviedb.org/3"
+    access-token: "test-token"
+    image-base-url: "https://image.tmdb.org/t/p/"
+  igdb:
+    auth-url: "https://id.twitch.tv"
+    url: "https://api.igdb.com/v4"
+    image-base-url: "https://images.igdb.com/igdb/image/upload/t_1080p/"
+    client-id: "test-client-id"
+    client-secret: "test-client-secret"
+  anilist:
+    url: "https://graphql.anilist.co"
+  steam:
+    api-base-url: "https://api.steampowered.com"
+    community-base-url: "https://steamcommunity.com"
+    authorize-url: "https://steamcommunity.com/openid/login"
+  avatar:
+    directory: "/tmp/shelfy-test-avatars"
+    public-base-url: "http://localhost:8082"
+    max-size-bytes: 2097152

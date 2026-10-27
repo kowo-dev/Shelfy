@@ -1,0 +1,92 @@
+@let status = summary();
+@if (active()) {
+  <div class="flex flex-col gap-2">
+    <div
+      class="bg-fill h-1 w-full overflow-hidden rounded-full"
+      role="progressbar"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      [attr.aria-valuenow]="progress()"
+    >
+      <div
+        class="bg-text duration-slow ease-smooth h-full origin-left rounded-full transition-transform"
+        [style.transform]="'scaleX(' + progress() / 100 + ')'"
+      ></div>
+    </div>
+    <p class="text-text-muted text-sm tabular-nums">
+      {{ prefix() + '.importing' | translate: { imported: status.imported, total: status.total } }}
+    </p>
+  </div>
+} @else if (status.status === 'completed') {
+  <p class="text-text-muted text-sm tabular-nums">
+    {{
+      prefix() + '.import_completed'
+        | translate: { imported: status.imported, skipped: status.skipped }
+    }}
+  </p>
+} @else if (status.status === 'failed') {
+  <p class="text-danger-fg text-sm font-medium">
+    {{ prefix() + '.import_failed' | translate }}
+  </p>
+}
+
+<button
+  type="button"
+  [class]="detailsToggle"
+  [attr.aria-expanded]="expanded()"
+  (click)="toggleDetails.emit()"
+>
+  {{ prefix() + (expanded() ? '.hide_details' : '.view_details') | translate }}
+  <shelfy-icon
+    name="chevronDown"
+    size="sm"
+    class="ease-smooth transition-transform"
+    [class.rotate-180]="expanded()"
+  />
+</button>
+
+@if (expanded()) {
+  @if (loading()) {
+    <div class="flex justify-center py-3">
+      <shelfy-spinner size="sm" />
+    </div>
+  } @else if (entryCount() !== null) {
+    <div
+      class="bg-fill-subtle animate-fade-in flex max-h-80 flex-col gap-5 overflow-y-auto rounded-md p-4 motion-reduce:animate-none"
+    >
+      @if (skipped().length > 0) {
+        <div class="flex flex-col gap-2">
+          <p class="label">
+            {{ prefix() + '.skipped_count' | translate: { count: skipped().length } }}
+          </p>
+          @for (row of skipped(); track row.key) {
+            <div class="flex items-center justify-between gap-3 text-sm">
+              <span class="text-text min-w-0 truncate">{{ row.name }}</span>
+              <span class="text-text-subtle shrink-0">{{ reasonLabel(row.reason) }}</span>
+            </div>
+          }
+        </div>
+      }
+      @if (imported().length > 0) {
+        <div class="flex flex-col gap-2">
+          <p class="label">
+            {{ prefix() + '.imported_count' | translate: { count: imported().length } }}
+          </p>
+          @for (row of imported(); track row.key) {
+            <div class="flex items-center justify-between gap-3 text-sm">
+              <span class="text-text min-w-0 truncate">{{ row.name }}</span>
+              @if (row.detail) {
+                <span class="text-text-subtle min-w-0 shrink truncate">{{ row.detail }}</span>
+              }
+            </div>
+          }
+        </div>
+      }
+      @if (entryCount() === 0) {
+        <p class="text-text-subtle text-sm">
+          {{ prefix() + '.no_entries' | translate }}
+        </p>
+      }
+    </div>
+  }
+}

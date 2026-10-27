@@ -1,0 +1,22 @@
+@if (cast().length > 0) {
+  <shelfy-shelf-section [title]="'media.cast' | translate" [rail]="null">
+    <div class="v-cast">
+      @for (member of cast(); track member.id) {
+        <a
+          [routerLink]="personUrl(member.id)"
+          [attr.aria-label]="member.name + (member.character ? ' – ' + member.character : '')"
+        >
+          <span>
+            @if (castProfileUrl(member.profilePath); as photo) {
+              <img [src]="photo" alt="" loading="lazy" draggable="false" />
+            }
+          </span>
+          <b>{{ member.name }}</b>
+          @if (member.character; as role) {
+            <small>{{ role }}</small>
+          }
+        </a>
+      }
+    </div>
+  </shelfy-shelf-section>
+}

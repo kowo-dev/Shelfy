@@ -1,0 +1,27 @@
+@if (hasCategories()) {
+  <div class="flex flex-col gap-4">
+    @if (genres().length > 0) {
+      <div class="flex flex-wrap gap-2">
+        @for (genre of genres(); track genre) {
+          <a
+            [routerLink]="browseUrl(mediaType(), 'genre', genreIds().at($index) ?? genre)"
+            [queryParams]="browseQueryParams(genre)"
+            class="rounded-full outline-offset-2 transition-opacity hover:opacity-80"
+            ><shelfy-tag variant="muted" size="md">{{ genre }}</shelfy-tag></a
+          >
+        }
+      </div>
+    }
+    @if (tags().length > 0) {
+      <div class="flex flex-wrap gap-x-4 gap-y-1.5">
+        @for (tag of tags(); track tag) {
+          <a
+            [routerLink]="browseUrl(mediaType(), 'tag', tagRefs()[$index])"
+            class="text-text-subtle hover:text-text text-sm transition-colors"
+            >#{{ tag }}</a
+          >
+        }
+      </div>
+    }
+  </div>
+}

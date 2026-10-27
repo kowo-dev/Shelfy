@@ -1,0 +1,13 @@
+@if (spoiler() && !revealed()) {
+  <div class="bg-surface flex flex-col items-center gap-2 rounded-lg p-5 text-center">
+    <shelfy-icon name="eyeClosed" size="md" class="text-text-subtle" />
+    <p class="text-text-subtle text-sm">{{ 'review.spoiler_warning' | translate }}</p>
+    @if (interactive()) {
+      <shelfy-button type="button" variant="secondary" (click)="reveal($event)">
+        {{ 'review.spoiler_reveal' | translate }}
+      </shelfy-button>
+    }
+  </div>
+} @else {
+  <ng-content />
+}
