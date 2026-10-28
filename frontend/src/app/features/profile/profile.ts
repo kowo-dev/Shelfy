@@ -47,6 +47,7 @@ import { ToastService } from '@app/core/services/toast/toast';
 import { catchAndToastError } from '@shared/utils/catch-and-toast-error.util';
 import { TranslatePipe } from '@app/shared/pipes/translate';
 import { AvatarComponent } from '@shared/ui/avatar/avatar';
+import { BackLinkComponent, type BackTarget } from '@shared/ui/back-link/back-link';
 import type { EssentialEntry } from '@app/core/services/essentials/essentials.model';
 import { buttonClasses } from '@shared/ui/button/button';
 import { IconComponent } from '@shared/ui/icon/icon';
@@ -74,6 +75,7 @@ type ProfileLoadState = 'loading' | 'ready' | 'private' | 'not_found' | 'error';
   imports: [
     PageFooterComponent,
     AvatarComponent,
+    BackLinkComponent,
     IconComponent,
     ProfileEssentialsComponent,
     ShelfSectionComponent,
@@ -242,6 +244,12 @@ export class ProfilePageComponent {
   readonly isOwner = computed(() => {
     const me = this.currentUser();
     return !!me && this.profile()?.id === me.id;
+  });
+
+  readonly back = computed<BackTarget | null>(() => {
+    this.translate.lang();
+    if (!this.currentUser() || this.isOwner()) return null;
+    return { to: ['/people'], label: this.translate.get('nav.people') };
   });
 
   readonly displayName = computed(() => {

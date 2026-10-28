@@ -1,0 +1,41 @@
+.create-tiles {
+  display: grid;
+  gap: 10px;
+}
+
+.create-tile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 84px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: rgb(255 255 255 / 0.06);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.5s var(--ease-expo);
+
+  &:hover {
+    background: color-mix(in srgb, var(--color-brand) 14%, #1f1f1f);
+  }
+
+  & > shelfy-icon {
+    flex: none;
+    color: var(--color-brand);
+  }
+
+  & b {
+    display: block;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  & small {
+    display: block;
+    margin-top: 3px;
+    font-size: 14px;
+    color: var(--color-text-muted);
+  }
+}

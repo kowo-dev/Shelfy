@@ -1,3 +1,4 @@
+import { BackLinkComponent } from '@shared/ui/back-link/back-link';
 import {
   afterNextRender,
   ChangeDetectionStrategy,
@@ -53,6 +54,7 @@ import { mediaLogKind } from '@shared/utils/media-log-kind.util';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    BackLinkComponent,
     AdultBadgeComponent,
     AvatarComponent,
     RichTextViewComponent,

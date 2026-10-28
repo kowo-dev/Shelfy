@@ -1,0 +1,66 @@
+.auth-wall {
+  background: #090909;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, var(--color-background) 0%, rgb(11 11 11 / 0) 22%);
+    pointer-events: none;
+
+    @media (max-width: 1023px) {
+      background: linear-gradient(0deg, var(--color-background) 0%, rgb(11 11 11 / 0) 60%);
+    }
+  }
+}
+
+.poster-wall {
+  position: absolute;
+  inset: -8% -4%;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  transform: rotate(-8deg) scale(1.08);
+  -webkit-mask: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
+  mask: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
+
+  & > div {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    animation: poster-wall-drift 240s linear infinite;
+    will-change: transform;
+
+    @media (max-width: 1023px) {
+      gap: 12px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+
+  & > div:nth-child(even) {
+    animation-direction: reverse;
+    animation-duration: 300s;
+  }
+
+  & img {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: 16px;
+    box-shadow: 0 30px 50px -24px #000;
+  }
+
+  @media (max-width: 1023px) {
+    transform: rotate(-8deg) scale(1.15);
+    gap: 12px;
+  }
+}
+
+@keyframes poster-wall-drift {
+  to {
+    transform: translateY(calc(-50% - 8px));
+  }
+}

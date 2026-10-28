@@ -1,3 +1,4 @@
+import { BackLinkComponent } from '@shared/ui/back-link/back-link';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '@app/core/services/auth/auth';
@@ -33,6 +34,7 @@ import { VersusPodiumComponent } from '../ui/versus-podium/versus-podium';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    BackLinkComponent,
     RouterLink,
     TranslatePipe,
     AvatarComponent,

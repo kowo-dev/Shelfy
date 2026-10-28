@@ -24,7 +24,15 @@
       [backdropUrl]="backdrop()"
       (titleChange)="edit.name.set($event)"
     >
-      <div headerArt [class]="artCovers().length ? 'v-vs' : 'v-fan-empty'">
+      <shelfy-back-link
+        heroBack
+        [target]="{
+          to: ['/creations'],
+          query: { f: 'versus' },
+          label: ('nav.creations' | translate),
+        }"
+      />
+      <div headerArt [class]="artCovers().length ? 'versus-pair' : 'cover-fan-empty'">
         @for (cover of artCovers().slice(0, 2); track cover.id) {
           <span>
             @if (cover.adult) {
@@ -44,7 +52,7 @@
           <shelfy-icon name="compare" size="40" aria-hidden="true" />
         }
         @if (artCovers().length > 1) {
-          <b class="v-vs-disc" aria-hidden="true">vs</b>
+          <b class="versus-pair-disc" aria-hidden="true">vs</b>
         }
       </div>
 
@@ -267,7 +275,7 @@
     }
 
     <div #barSentinel aria-hidden="true"></div>
-    <div class="v-libbar" [class.stuck]="stuck()">
+    <div class="page-bar" [class.is-stuck]="stuck()">
       <shelfy-tabs
         class="min-w-0"
         [tabs]="pageTabs()"
@@ -277,7 +285,7 @@
         (tabSelected)="selectTab($event)"
       />
       @if (tab() === 'entries') {
-        <div class="v-ltools">
+        <div class="bar-tools">
           @if (hasClip()) {
             <shelfy-clip-volume />
           }
@@ -369,7 +377,7 @@
                     (selectionToggle)="toggleMedia($event)"
                   />
                 } @else {
-                  <div class="v-lgrid" [attr.data-size]="edit.kind() === 'clips' ? 'w' : 'l'">
+                  <div class="poster-grid" [attr.data-size]="edit.kind() === 'clips' ? 'w' : 'l'">
                     @for (entry of edit.entries(); track entry.id; let i = $index) {
                       <div
                         class="animate-rise-in [animation-fill-mode:backwards] motion-reduce:animate-none"

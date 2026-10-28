@@ -1,6 +1,6 @@
 @if (characters().length > 0) {
   <shelfy-shelf-section [title]="'media.characters' | translate" [rail]="null">
-    <div class="v-cast">
+    <div class="cast-rail">
       @for (character of characters(); track character.name) {
         <div class="min-w-0">
           <a [routerLink]="characterUrl(character.characterId)" class="block">

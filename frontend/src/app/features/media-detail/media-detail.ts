@@ -1,5 +1,6 @@
-import { Location, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { PageFooterComponent } from '@shared/ui/page-footer/page-footer';
+import { BackLinkComponent, exploreBack } from '@shared/ui/back-link/back-link';
 import { browseQueryParams, browseUrl } from './data-access/media-detail-links.util';
 import { Title } from '@angular/platform-browser';
 import {
@@ -112,6 +113,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageFooterComponent,
+    BackLinkComponent,
     ButtonComponent,
     NgTemplateOutlet,
     DetailSkeletonComponent,
@@ -143,7 +145,6 @@ import {
 export class MediaDetailPageComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly location = inject(Location);
   private readonly documentTitle = inject(Title);
   private readonly pageMeta = inject(PageMetaService);
   private readonly tmdb = inject(TmdbService);
@@ -177,6 +178,10 @@ export class MediaDetailPageComponent {
 
   private readonly params = toSignal(this.route.paramMap, { requireSync: true });
   readonly mediaType = computed(() => this.params().get('mediaType') as DetailMediaType);
+  readonly back = computed(() => {
+    this.translate.lang();
+    return exploreBack(this.mediaType(), this.translate.get('nav.explore'));
+  });
   readonly provider = computed(() => providerForMediaType(this.mediaType()));
   readonly externalId = computed<number | string>(() => {
     const raw = this.params().get('externalId') ?? '';

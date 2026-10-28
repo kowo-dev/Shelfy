@@ -1,6 +1,7 @@
 @if (result(); as result) {
   <main class="flex min-h-full flex-col">
     <shelfy-page-hero [title]="result.poolName" [backdropUrl]="winnerBackdrop()">
+      <shelfy-back-link heroBack [target]="{ to: ['/versus', poolId], label: result.poolName }" />
       <p class="text-text-muted mt-4.5 flex flex-wrap gap-x-5.5 gap-y-1.5 text-base">
         @for (part of meta(); track $index) {
           <span>{{ part }}</span>
@@ -69,7 +70,7 @@
           <h3 class="text-text-subtle mt-9 mb-4 text-sm font-semibold">
             {{ 'versus.result.gaps_title' | translate }}
           </h3>
-          <div class="v-lgrid" data-size="s">
+          <div class="poster-grid" data-size="s">
             @for (gap of result.gaps; track gap.entry.id) {
               @let rank =
                 'versus.result.gap'
@@ -77,16 +78,16 @@
               @if (gap.entry.media; as media) {
                 <shelfy-media-card [item]="placeholder(media)" [subtitle]="rank" />
               } @else {
-                <article class="v-poster">
-                  <span class="v-art">
+                <article class="poster">
+                  <span class="cover">
                     @if (gap.entry.coverUrl) {
                       <img [src]="gap.entry.coverUrl" alt="" loading="lazy" draggable="false" />
                     }
                   </span>
-                  <span class="v-cap"
+                  <span class="caption"
                     ><b>{{ gap.entry.title || ('adult.hidden' | translate) }}</b></span
                   >
-                  <span class="v-sub">{{ rank }}</span>
+                  <span class="caption-sub">{{ rank }}</span>
                 </article>
               }
             }

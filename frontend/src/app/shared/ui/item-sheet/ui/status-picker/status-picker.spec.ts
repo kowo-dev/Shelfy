@@ -32,7 +32,7 @@ describe('StatusPickerComponent', () => {
     const root = fixture.nativeElement as HTMLElement;
 
     expect(root.querySelectorAll('[role=radio]').length).toBe(4);
-    expect(root.querySelector('[role=radiogroup]')?.classList).toContain('v-sh-status');
+    expect(root.querySelector('[role=radiogroup]')?.classList).toContain('status-picker');
     const active = root.querySelector('[aria-checked=true]') as HTMLElement;
     expect(active.textContent).toContain('collection.status.done');
     expect(active.style.getPropertyValue('--s')).toBe('var(--color-status-done)');

@@ -11,13 +11,13 @@ import { IconComponent } from '@shared/ui/icon/icon';
   template: `
     <button
       type="button"
-      class="v-poster w-full touch-manipulation text-left outline-none"
+      class="poster w-full touch-manipulation text-left outline-none"
       [attr.aria-pressed]="selected()"
       [attr.aria-label]="title()"
       (click)="toggled.emit()"
     >
       <span
-        class="v-art outline-3 outline-offset-3 transition-[outline-color]"
+        class="cover outline-3 outline-offset-3 transition-[outline-color]"
         [class]="selected() ? 'outline-accent' : 'outline-transparent'"
       >
         @if (poster(); as src) {
@@ -36,14 +36,14 @@ import { IconComponent } from '@shared/ui/icon/icon';
             {{ title() }}
           </span>
         }
-        <span class="v-check" [class.on]="selected()" aria-hidden="true">
+        <span class="cover-check" [class.is-on]="selected()" aria-hidden="true">
           <shelfy-icon name="check" size="16" />
         </span>
       </span>
-      <span class="v-cap">
+      <span class="caption">
         <b [title]="title()">{{ title() }}</b>
       </span>
-      <span class="v-sub">
+      <span class="caption-sub">
         <span class="flex min-w-0 items-center gap-1 tabular-nums">
           @if (owned()) {
             <shelfy-icon

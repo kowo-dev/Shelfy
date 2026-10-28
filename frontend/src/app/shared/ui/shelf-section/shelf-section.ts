@@ -19,25 +19,25 @@ import { IconComponent } from '@shared/ui/icon/icon';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, TranslatePipe, IconComponent],
   template: `
-    <section class="v-sec" [class.v-band]="band()" [attr.aria-label]="title()">
-      <div class="v-sec-h">
+    <section class="section" [class.is-band]="band()" [attr.aria-label]="title()">
+      <div class="section-head">
         <div class="min-w-0">
           <h2>{{ title() }}</h2>
           @if (subtitle(); as text) {
             <p>{{ text }}</p>
           }
         </div>
-        <div class="v-tools">
+        <div class="section-tools">
           <ng-content select="[secTools]" />
           @if (moreRoute(); as route) {
-            <a class="v-more" [routerLink]="route" [queryParams]="moreQuery()">
+            <a class="section-more" [routerLink]="route" [queryParams]="moreQuery()">
               {{ moreLabel() }}
             </a>
           }
           @if (rail() !== null && paged() && overflowing()) {
             <button
               type="button"
-              class="v-pg"
+              class="section-arrow"
               [disabled]="atStart()"
               [attr.aria-label]="'profile.rail.previous' | translate"
               (click)="page(-1)"
@@ -46,7 +46,7 @@ import { IconComponent } from '@shared/ui/icon/icon';
             </button>
             <button
               type="button"
-              class="v-pg"
+              class="section-arrow"
               [disabled]="atEnd()"
               [attr.aria-label]="'profile.rail.next' | translate"
               (click)="page(1)"
@@ -57,7 +57,11 @@ import { IconComponent } from '@shared/ui/icon/icon';
         </div>
       </div>
       <ng-content select="[secLead]" />
-      <div #scroller [class]="rail() === null ? '' : 'v-rail ' + rail()" (scroll)="measure()">
+      <div
+        #scroller
+        [class]="rail() === null ? '' : rail() ? 'rail is-' + rail() : 'rail'"
+        (scroll)="measure()"
+      >
         <ng-content />
       </div>
     </section>

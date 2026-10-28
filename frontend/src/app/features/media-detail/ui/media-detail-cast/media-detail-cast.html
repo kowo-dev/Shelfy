@@ -1,6 +1,6 @@
 @if (cast().length > 0) {
   <shelfy-shelf-section [title]="'media.cast' | translate" [rail]="null">
-    <div class="v-cast">
+    <div class="cast-rail">
       @for (member of cast(); track member.id) {
         <a
           [routerLink]="personUrl(member.id)"

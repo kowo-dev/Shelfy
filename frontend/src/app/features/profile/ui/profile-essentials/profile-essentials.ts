@@ -41,8 +41,8 @@ interface EssentialsSlot {
   host: { class: 'block min-w-0' },
   template: `
     @if (slots().length > 0) {
-      <section class="v-sec v-band v-ess-band" aria-labelledby="essentials-title">
-        <div class="v-essf-h">
+      <section class="section is-band is-essentials" aria-labelledby="essentials-title">
+        <div class="essentials-head">
           <div>
             <h2 id="essentials-title">{{ 'profile.essentials.title' | translate }}</h2>
             <p>
@@ -54,31 +54,31 @@ interface EssentialsSlot {
             </p>
           </div>
           @if (owner() && entries().length > 0) {
-            <button type="button" class="v-essf-edit" (click)="picking.set(true)">
+            <button type="button" class="essentials-edit" (click)="picking.set(true)">
               <shelfy-icon name="edit" size="18" />{{ 'profile.essentials.edit' | translate }}
             </button>
           }
         </div>
-        <div class="v-essf-row">
+        <div class="essentials-row">
           @for (slot of slots(); track slot.index) {
             @if (slot.entry; as entry) {
               @if (hidden(entry)) {
                 <button
                   type="button"
-                  class="v-essf-it"
+                  class="essentials-item"
                   [attr.aria-label]="'adult.hidden' | translate"
                   (click)="openAdultGate()"
                 >
-                  <span class="v-art grid place-items-center">
+                  <span class="cover grid place-items-center">
                     <shelfy-adult-badge size="2rem" />
                   </span>
                 </button>
               } @else {
                 <a
-                  class="v-essf-it"
+                  class="essentials-item"
                   [routerLink]="['/media', entry.media.mediaType, entry.media.externalId]"
                 >
-                  <span class="v-art">
+                  <span class="cover">
                     @if (cover(entry); as url) {
                       <img [src]="url" alt="" draggable="false" loading="lazy" />
                     }
@@ -90,11 +90,11 @@ interface EssentialsSlot {
             } @else {
               <button
                 type="button"
-                class="v-essf-it"
+                class="essentials-item"
                 [attr.aria-label]="'profile.essentials.add' | translate"
                 (click)="picking.set(true)"
               >
-                <span class="v-art v-essf-empty">
+                <span class="cover essentials-empty">
                   <shelfy-icon name="plus" size="lg" />
                 </span>
               </button>

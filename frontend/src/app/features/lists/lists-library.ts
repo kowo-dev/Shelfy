@@ -23,6 +23,7 @@ import type { VersusPoolSummaryResponse } from '@app/core/services/versus/versus
 import { mergeCreations } from '@shared/utils/merge-creations.util';
 import { CreationTileComponent } from '@shared/ui/creation-card/creation-tile';
 import { ReviewCardComponent } from '@shared/ui/creation-card/review-card';
+import { BackLinkComponent, type BackTarget } from '@shared/ui/back-link/back-link';
 import { PageHeroComponent } from '@shared/ui/page-hero/page-hero';
 import { TabsComponent } from '@shared/ui/tabs/tabs';
 import { IconComponent } from '@shared/ui/icon/icon';
@@ -49,6 +50,7 @@ type LibraryFilter = 'all' | 'reviews' | 'lists' | 'versus';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    BackLinkComponent,
     TranslatePipe,
     CreationTileComponent,
     ReviewCardComponent,
@@ -307,6 +309,13 @@ export class ListsLibraryPageComponent {
   readonly profileLink = computed(() =>
     this.isOwner() ? '/profile' : ['/profile', this.profileUsername()],
   );
+
+  readonly back = computed<BackTarget>(() => {
+    this.translate.lang();
+    return this.isOwner()
+      ? { to: ['/profile'], label: this.translate.get('nav.profile') }
+      : { to: ['/profile', this.profileUsername()], label: this.profileUsername() };
+  });
 
   readonly bandTitle = computed(() =>
     this.isOwner()

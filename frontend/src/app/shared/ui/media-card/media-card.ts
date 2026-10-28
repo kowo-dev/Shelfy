@@ -20,6 +20,7 @@ import { AdultBadgeComponent } from '@shared/ui/adult-badge/adult-badge';
 import { IconComponent } from '@shared/ui/icon/icon';
 import { buildAddTarget } from '@shared/utils/add-target.util';
 import { formatRating, ratingToTextColor } from '@shared/utils/collection-rating.util';
+import { formatGap, ratingGap } from '@shared/utils/rating-gap.util';
 import { collectionStatusColor, statusLabelKey } from '@shared/utils/collection-status.util';
 import { imageRendition } from '@shared/utils/image-rendition.util';
 
@@ -35,19 +36,19 @@ const LONG_PRESS_MS = 450;
     @if (masked()) {
       <button
         type="button"
-        class="v-poster w-full"
+        class="poster w-full"
         [attr.aria-label]="'adult.hidden' | translate"
         (click)="openAdultGate()"
       >
-        <span class="v-art text-text-muted grid place-items-center">
+        <span class="cover text-text-muted grid place-items-center">
           <shelfy-adult-badge size="4rem" />
         </span>
       </button>
     } @else {
       <article
-        class="v-poster group/card"
+        class="poster group/card"
         tabindex="0"
-        [class.sel]="selectionMode() && selected()"
+        [class.is-selected]="selectionMode() && selected()"
         [class.animate-pop-out]="exiting()"
         [class.pointer-events-none]="exiting()"
         [attr.role]="selectionMode() ? 'checkbox' : null"
@@ -62,7 +63,7 @@ const LONG_PRESS_MS = 450;
         (contextmenu)="onContextMenu($event)"
         (animationend)="onAnimationEnd($event)"
       >
-        <span class="v-art">
+        <span class="cover">
           @if (view.cover && brokenCover() !== view.cover) {
             <img
               [src]="view.cover"
@@ -72,18 +73,20 @@ const LONG_PRESS_MS = 450;
               (error)="brokenCover.set(view.cover)"
             />
           } @else {
-            <span class="v-noimg" aria-hidden="true"><shelfy-icon name="noImage" size="32" /></span>
+            <span class="cover-empty" aria-hidden="true"
+              ><shelfy-icon name="noImage" size="32"
+            /></span>
           }
           <ng-content select="[cardOverlay]" />
           @if (selectionMode()) {
-            <span class="v-check" [class.on]="selected()" aria-hidden="true">
+            <span class="cover-check" [class.is-on]="selected()" aria-hidden="true">
               <shelfy-icon name="check" size="16" />
             </span>
           } @else {
             @if (selectable()) {
               <button
                 type="button"
-                class="v-check v-select"
+                class="cover-check cover-select"
                 [attr.aria-label]="'collection.bulk.select_item' | translate: { title: view.title }"
                 (click)="$event.stopPropagation(); selectionToggle.emit()"
               >
@@ -93,7 +96,7 @@ const LONG_PRESS_MS = 450;
             @if (mine()) {
               <button
                 type="button"
-                class="v-add"
+                class="cover-add"
                 [attr.aria-label]="('collection.edit' | translate) + ' · ' + view.title"
                 (click)="$event.stopPropagation(); itemSheet.open(item())"
               >
@@ -103,7 +106,7 @@ const LONG_PRESS_MS = 450;
               @if (owned(); as shelf) {
                 <button
                   type="button"
-                  class="v-add done"
+                  class="cover-add is-done"
                   [attr.aria-label]="('collection.edit' | translate) + ' · ' + shelf.media.title"
                   (click)="$event.stopPropagation(); itemSheet.open(shelf)"
                 >
@@ -112,7 +115,7 @@ const LONG_PRESS_MS = 450;
               } @else {
                 <button
                   type="button"
-                  class="v-add"
+                  class="cover-add"
                   [attr.aria-label]="('collection.backlog.add' | translate) + ' · ' + view.title"
                   (click)="$event.stopPropagation(); shelve()"
                 >
@@ -123,38 +126,58 @@ const LONG_PRESS_MS = 450;
           }
         </span>
         @if (rank(); as value) {
-          <div class="v-rk-row">
-            <span class="rk" [class.top]="value <= 3">{{ value }}</span>
+          <div class="ranked-caption">
+            <span class="ranked-caption-rank" [class.is-top]="value <= 3">{{ value }}</span>
             <div>
-              <span class="v-cap">
+              <span class="caption">
                 <b>{{ view.title }}</b>
                 @if (view.rating; as rating) {
-                  <span class="v-star"
+                  <span class="score"
                     ><shelfy-icon name="star" size="14" [active]="true" />{{ rating }}</span
                   >
                 }
               </span>
-              <span class="v-sub">{{ subtitle() ?? view.meta }}</span>
+              <span class="caption-sub">{{ subtitle() ?? view.meta }}</span>
             </div>
           </div>
         } @else {
-          <span class="v-cap">
+          <span class="caption">
             <b>{{ view.title }}</b>
             @if (view.rating; as rating) {
-              <span class="v-star" [style.color]="tinted() || mine() ? view.color : null"
+              <span class="score" [style.color]="tinted() || mine() ? view.color : null"
                 ><shelfy-icon name="star" size="14" [active]="true" />{{ rating }}</span
               >
             }
           </span>
-          @if (subtitle(); as text) {
-            <span class="v-sub">{{ text }}</span>
-          } @else if (mine()) {
-            <span class="v-sub v-status">
-              <span class="v-dot" [style.--s]="statusColor()"></span>
+          @if (versusView(); as other) {
+            <span class="caption-sub status-line">
+              {{ 'friends.shelf.you' | translate }}
+              @if (other.rating) {
+                <span class="score" [style.color]="other.color"
+                  ><shelfy-icon name="star" size="13" [active]="true" />{{ other.rating }}</span
+                >
+              } @else {
+                <span class="status-dot" [style.--s]="other.dot"></span>
+                {{ other.statusKey | translate }}
+              }
+            </span>
+            @if (other.verdictKey; as key) {
+              <span class="caption-sub rating-gap">
+                {{ key | translate }}
+                @if (other.delta; as delta) {
+                  · <span class="tabular-nums">{{ delta }}</span>
+                }
+              </span>
+            }
+          } @else if (subtitle(); as text) {
+            <span class="caption-sub">{{ text }}</span>
+          } @else if (mine() || status()) {
+            <span class="caption-sub status-line">
+              <span class="status-dot" [style.--s]="statusColor()"></span>
               {{ statusKey() | translate }} · {{ view.type }}
             </span>
           } @else {
-            <span class="v-sub">{{ view.type }}</span>
+            <span class="caption-sub">{{ view.type }}</span>
           }
         }
       </article>
@@ -172,6 +195,8 @@ export class MediaCardComponent {
 
   item = input.required<CollectionItemResponse>();
   subtitle = input<string | null>(null);
+  versus = input<CollectionItemResponse | null>(null);
+  status = input(false);
   protected readonly brokenCover = signal<string | null>(null);
   rank = input<number | null>(null);
   addable = input(true);
@@ -192,6 +217,23 @@ export class MediaCardComponent {
     statusLabelKey(this.item().status, this.item().media.mediaType),
   );
   readonly statusColor = computed(() => collectionStatusColor(this.item().status));
+
+  readonly versusView = computed(() => {
+    const other = this.versus();
+    if (!other) return null;
+    const theirs = this.item().rating;
+    const gap = ratingGap(theirs, other.rating);
+    const verdict =
+      gap?.kind ?? (other.rating ? 'unrated_by_them' : theirs ? 'rate_to_compare' : null);
+    return {
+      rating: other.rating ? formatRating(other.rating) : null,
+      color: other.rating ? ratingToTextColor(other.rating, 100) : null,
+      dot: collectionStatusColor(other.status),
+      statusKey: statusLabelKey(other.status, other.media.mediaType),
+      verdictKey: verdict ? 'friends.shelf.gap.' + verdict : null,
+      delta: gap && gap.delta !== 0 ? formatGap(gap.delta) : null,
+    };
+  });
 
   readonly card = computed(() => {
     this.translate.lang();

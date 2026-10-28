@@ -15,11 +15,7 @@ import {
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of, switchMap } from 'rxjs';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import {
-  COLLECTION_STATUSES,
-  countsForStatuses,
-  statusLabelKey,
-} from '@shared/utils/collection-status.util';
+import { COLLECTION_STATUSES, countsForStatuses } from '@shared/utils/collection-status.util';
 import type {
   CollectionItemResponse,
   CollectionSortBy,
@@ -41,6 +37,7 @@ import { CollectionService } from '@app/core/services/collection/collection';
 import { LocalStorageService } from '@app/core/services/local-storage/local-storage';
 import { AuthService } from '@app/core/services/auth/auth';
 import { AddSheetService } from '@app/core/services/add-sheet/add-sheet';
+import { BackLinkComponent } from '@shared/ui/back-link/back-link';
 import { PageHeroComponent } from '@shared/ui/page-hero/page-hero';
 import { createShelfBackdrop } from '../collection/state/collection-banner-state';
 import { LibraryFiltersComponent } from '../collection/ui/library-filters/library-filters';
@@ -69,6 +66,7 @@ const SEARCH_DEBOUNCE_MS = 250;
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    BackLinkComponent,
     TabsComponent,
     TranslatePipe,
     IconComponent,
@@ -360,12 +358,6 @@ export class FriendProfilePageComponent {
     return FILTER_TILE + ' ' + (on ? FILTER_TILE_ON : FILTER_TILE_OFF);
   }
 
-  statusLine(item: CollectionItemResponse): string {
-    const status = this.translate.get(statusLabelKey(item.status, item.media.mediaType));
-    const type = this.translate.get('collection.media_type_one.' + item.media.mediaType);
-    return `${status} · ${type}`;
-  }
-
   onStatusTab(id: string): void {
     this.filterHandlers.onStatusFilterChange(id === 'all' ? [] : [id as UserMediaStatus]);
   }
@@ -415,14 +407,8 @@ export class FriendProfilePageComponent {
     return this.state.ownItemFor(item);
   }
 
-  mineLine(item: CollectionItemResponse): string | null {
-    const own = this.ownItemFor(item);
-    if (!this.comparing() || !own) return null;
-    const status = this.translate.get(statusLabelKey(own.status, item.media.mediaType));
-    const parts = [status, own.rating === null ? null : formatRating(own.rating) + '/5'];
-    return this.translate.get('friends.shelf.mine', {
-      value: parts.filter(Boolean).join(' · '),
-    });
+  versusItem(item: CollectionItemResponse): CollectionItemResponse | null {
+    return this.comparing() ? this.ownItemFor(item) : null;
   }
 
   onScroll(): void {

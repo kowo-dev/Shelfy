@@ -3,7 +3,7 @@
   aria-roledescription="carousel"
   aria-labelledby="home-stage-title"
 >
-  <div class="v-ambient v-ambient-stage" aria-hidden="true">
+  <div class="ambient is-stage" aria-hidden="true">
     @for (layer of layers(); track layer.key) {
       @if (layer.cover; as cover) {
         <img
@@ -59,7 +59,7 @@
   >
     @for (current of [copy()]; track current.key) {
       <div class="animate-rise-in min-w-0">
-        <div class="v-meta max-md:justify-center">
+        <div class="meta-line max-md:justify-center">
           <span>{{ current.typeKey | translate }}</span>
           @if (current.year; as year) {
             <i aria-hidden="true">·</i><span class="tabular-nums">{{ year }}</span>
@@ -69,12 +69,12 @@
           }
           @if (current.mine; as mine) {
             <i aria-hidden="true">·</i>
-            <span class="v-star" [style.color]="mine.color"
+            <span class="score" [style.color]="mine.color"
               ><shelfy-icon name="star" size="14" [active]="true" />{{ mine.text }}</span
             >
           } @else if (current.rating; as rating) {
             <i aria-hidden="true">·</i>
-            <span class="v-star"
+            <span class="score"
               ><shelfy-icon name="star" size="14" [active]="true" />{{ rating }}</span
             >
           }

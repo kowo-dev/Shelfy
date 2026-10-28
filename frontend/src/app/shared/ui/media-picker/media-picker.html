@@ -37,9 +37,9 @@
         </button>
       </div>
 
-      <div class="v-exbar flex shrink-0 flex-wrap items-center px-4 pt-5 pb-1 sm:px-7">
+      <div class="explore-bar flex shrink-0 flex-wrap items-center px-4 pt-5 pb-1 sm:px-7">
         <shelfy-explore-omnibox
-          class="v-omni-wrap"
+          class="omnibox-wrap"
           [omni]="true"
           [query]="exploreQuery()"
           (added)="addCriterion($event)"
@@ -50,19 +50,19 @@
         @let filtered = filterCount() + (hideOwned() ? 1 : 0);
         <button
           type="button"
-          class="v-tool"
+          class="bar-tool"
           aria-controls="picker-filters"
           [attr.aria-expanded]="filtersOpen()"
           [attr.aria-label]="'explore.filters.title' | translate"
           (click)="filtersOpen.set(!filtersOpen())"
         >
           <shelfy-icon name="filter" size="18" />
-          <span class="lbl">{{ 'explore.filters.title' | translate }}</span>
+          <span class="bar-tool-label">{{ 'explore.filters.title' | translate }}</span>
           @if (filtered) {
-            <span class="n">{{ filtered }}</span>
+            <span class="bar-tool-count">{{ filtered }}</span>
           }
         </button>
-        <div class="v-exrow">
+        <div class="explore-row">
           <shelfy-tabs
             class="[&_.from-background]:from-surface min-w-0"
             [tabs]="typeTabs()"

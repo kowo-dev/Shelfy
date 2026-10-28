@@ -1,8 +1,8 @@
 @if (profile(); as profile) {
   <main class="animate-fade-in relative flex min-h-full flex-col pb-40 motion-reduce:animate-none">
-    <section class="v-p-hero">
+    <section class="profile-hero">
       @if (profile.profileBannerUrl; as banner) {
-        <div class="v-p-banner" aria-hidden="true">
+        <div class="profile-banner" aria-hidden="true">
           <img
             [src]="banner"
             alt=""
@@ -12,23 +12,26 @@
           />
         </div>
       } @else if (ambientCover(); as cover) {
-        <div class="v-ambient" aria-hidden="true"><img [src]="cover" alt="" /></div>
+        <div class="ambient" aria-hidden="true"><img [src]="cover" alt="" /></div>
+      }
+      @if (back(); as target) {
+        <shelfy-back-link [target]="target" />
       }
       <shelfy-avatar
-        class="v-p-av"
+        class="profile-avatar"
         [displayName]="displayName()"
         [avatarUrl]="profile.avatarUrl"
         size="xl"
       />
       <h1>{{ displayName() }}</h1>
-      <p class="v-p-sub">
-        <span class="handle">&#64;{{ profile.username }}</span>
+      <p class="profile-bio">
+        <span class="profile-handle">&#64;{{ profile.username }}</span>
         @if (profile.bio; as bio) {
           {{ bio }}
         }
       </p>
-      <div class="v-p-row">
-        <nav class="v-p-stats" [attr.aria-label]="'profile.title' | translate">
+      <div class="profile-row">
+        <nav class="profile-stats" [attr.aria-label]="'profile.title' | translate">
           @for (stat of bigStats(); track stat.key) {
             <a [routerLink]="stat.route" [queryParams]="stat.query">
               <b [style.color]="stat.color"
@@ -41,7 +44,7 @@
             </a>
           }
         </nav>
-        <div class="v-p-act">
+        <div class="profile-actions">
           @if (isOwner()) {
             <a [routerLink]="collectionRoute()" [class]="primaryButton">
               <shelfy-icon name="grid" size="20" />{{ 'profile.my_collection' | translate }}
@@ -99,12 +102,12 @@
       <shelfy-shelf-section
         [title]="'profile.now.title' | translate"
         [subtitle]="nowItems().length ? nowSubtitle() : null"
-        [rail]="nowItems().length ? 'w' : null"
+        [rail]="nowItems().length ? 'wide' : null"
       >
         @if (nowItems().length) {
           @for (item of nowItems(); track item.id) {
             <shelfy-home-tile [item]="item" [art]="art" [addable]="false">
-              <span class="v-cap2">
+              <span class="caption-stack">
                 <b>{{ item.media.title }}</b>
                 <span>{{ startedMeta(item) }}</span>
               </span>
@@ -159,7 +162,7 @@
           [rail]="null"
         >
           @if (reviews().length) {
-            <div class="v-revs">
+            <div class="card-grid">
               @for (review of reviews().slice(0, 3); track review.id) {
                 <shelfy-review-card [review]="review" />
               }
@@ -184,7 +187,7 @@
           [moreRoute]="['/profile', profile.username, 'lists']"
           [rail]="null"
         >
-          <div class="v-crea">
+          <div class="card-grid">
             @for (creation of creations().slice(0, 3); track creation.kind + creation.id) {
               @switch (creation.kind) {
                 @case ('list') {

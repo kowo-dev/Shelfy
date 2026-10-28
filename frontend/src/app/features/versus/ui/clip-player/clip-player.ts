@@ -58,8 +58,8 @@ interface PlayerSession {
     @if (button()) {
       <button
         type="button"
-        class="v-play pointer-events-auto"
-        [class.on]="playing()"
+        class="cover-play pointer-events-auto"
+        [class.is-on]="playing()"
         [attr.aria-label]="(playing() ? 'versus.clip.stop' : 'versus.clip.play') | translate"
         [attr.aria-pressed]="playing()"
         (click)="toggle($event)"

@@ -26,27 +26,29 @@ import type { HomeArtResolver } from '../../data-access/home-art';
   imports: [TranslatePipe, IconComponent],
   template: `
     <article
-      class="v-tile"
+      class="tile"
       tabindex="0"
       [attr.aria-label]="item().media.title"
       (click)="open()"
       (keydown.enter)="open()"
     >
-      <span class="v-art">
+      <span class="cover">
         @if (backdrop(); as url) {
           <img [src]="url" alt="" loading="lazy" draggable="false" />
         } @else if (cover(); as url) {
-          <img class="v-blur" [src]="url" alt="" aria-hidden="true" loading="lazy" />
-          <img class="v-fit" [src]="url" alt="" loading="lazy" draggable="false" />
+          <img class="cover-blur" [src]="url" alt="" aria-hidden="true" loading="lazy" />
+          <img class="cover-fit" [src]="url" alt="" loading="lazy" draggable="false" />
         } @else {
-          <span class="v-noimg" aria-hidden="true"><shelfy-icon name="noImage" size="32" /></span>
+          <span class="cover-empty" aria-hidden="true"
+            ><shelfy-icon name="noImage" size="32"
+          /></span>
         }
         <ng-content select="[tileArt]" />
         @if (addable()) {
           @if (owned(); as mine) {
             <button
               type="button"
-              class="v-add done"
+              class="cover-add is-done"
               [attr.aria-label]="('collection.edit' | translate) + ' · ' + mine.media.title"
               (click)="$event.stopPropagation(); itemSheet.open(mine)"
             >
@@ -55,7 +57,7 @@ import type { HomeArtResolver } from '../../data-access/home-art';
           } @else {
             <button
               type="button"
-              class="v-add"
+              class="cover-add"
               [attr.aria-label]="
                 ('collection.backlog.add' | translate) + ' · ' + item().media.title
               "

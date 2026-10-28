@@ -20,11 +20,11 @@ import { MediaCardComponent } from '@shared/ui/media-card/media-card';
       [moreLabel]="'home.see_all' | translate"
       [moreRoute]="['/discover', 'soon']"
       [moreQuery]="query()"
-      rail="soon"
+      rail="medium"
     >
       @for (entry of entries(); track entry.key) {
-        <div class="v-day">
-          <div class="v-day-h">
+        <div class="day">
+          <div class="day-head">
             <b>{{ entry.parts.day }}</b>
             <span
               >{{ entry.parts.month }}<small>{{ entry.when }}</small></span

@@ -1,4 +1,3 @@
-import { Location } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -29,6 +28,7 @@ import type {
 } from '@app/core/services/watch-log/watch-log.model';
 import { TranslatePipe } from '@app/shared/pipes/translate';
 import { CheckboxComponent } from '@shared/ui/checkbox/checkbox';
+import { BACK_BUTTON } from '@shared/ui/back-link/back-link';
 import { MediaHeaderComponent } from '@shared/ui/media-header/media-header';
 import { RatingBlockComponent } from '@shared/ui/rating-block/rating-block';
 import { buttonClasses } from '@shared/ui/button/button';
@@ -81,8 +81,6 @@ interface Work {
 export class ReviewStudioPageComponent implements UnsavedChangesAware {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly location = inject(Location);
-  private readonly openedInApp = !!this.router.currentNavigation()?.previousNavigation;
   private readonly collection = inject(CollectionService);
   private readonly watchLog = inject(WatchLogService);
   private readonly auth = inject(AuthService);
@@ -97,6 +95,7 @@ export class ReviewStudioPageComponent implements UnsavedChangesAware {
   });
   protected readonly ghostButton =
     'text-text-muted hover:text-text h-13 cursor-pointer px-4 text-base font-semibold transition-colors';
+  protected readonly closeButton = BACK_BUTTON;
   readonly item = signal<CollectionItemResponse | null>(null);
   readonly work = signal<Work | null>(null);
   readonly loading = signal(true);
@@ -231,9 +230,11 @@ export class ReviewStudioPageComponent implements UnsavedChangesAware {
   close(): void {
     const item = this.item();
     if (item && !this.logMode) this.flush();
-    if (this.openedInApp) this.location.back();
-    else if (item) void this.router.navigate(['/reviews', item.id], { replaceUrl: true });
-    else void this.router.navigateByUrl('/creations', { replaceUrl: true });
+    const work = this.work();
+    if (item) void this.router.navigate(['/reviews', item.id], { replaceUrl: true });
+    else if (work) {
+      void this.router.navigate(['/media', work.mediaType, work.externalId], { replaceUrl: true });
+    } else void this.router.navigateByUrl('/creations?f=reviews', { replaceUrl: true });
   }
 
   finish(): void {
@@ -337,8 +338,7 @@ export class ReviewStudioPageComponent implements UnsavedChangesAware {
   }
 
   private leave(id: string): void {
-    if (this.openedInApp) this.location.back();
-    else void this.router.navigate(['/reviews', id], { replaceUrl: true });
+    void this.router.navigate(['/reviews', id], { replaceUrl: true });
   }
 
   private loadItem(id: string): void {

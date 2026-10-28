@@ -189,7 +189,7 @@ describe('MediaDetailRelatedComponent', () => {
     ]);
 
     expect(headings(fixture)).toEqual([expect.stringContaining('Zelda')]);
-    expect(fixture.nativeElement.querySelector('.v-more')?.getAttribute('href')).toBe(
+    expect(fixture.nativeElement.querySelector('.section-more')?.getAttribute('href')).toBe(
       '/franchises/5',
     );
     expect(

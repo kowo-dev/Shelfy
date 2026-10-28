@@ -25,7 +25,7 @@ const FETCHED = 10;
         [band]="true"
         [rail]="null"
       >
-        <div class="v-revs">
+        <div class="card-grid">
           @for (review of cards().slice(0, 3); track review.id) {
             <shelfy-review-card [review]="review" />
           }

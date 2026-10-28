@@ -151,8 +151,8 @@ describe('CollectionPageComponent', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
     const labels = () =>
-      [...(fixture.nativeElement as HTMLElement).querySelectorAll('.v-lseg button')].map((button) =>
-        button.textContent?.replace(/\s+/g, ' ').trim(),
+      [...(fixture.nativeElement as HTMLElement).querySelectorAll('.segmented button')].map(
+        (button) => button.textContent?.replace(/\s+/g, ' ').trim(),
       );
 
     expect(labels()).toEqual([

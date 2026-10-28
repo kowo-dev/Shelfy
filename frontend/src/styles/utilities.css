@@ -51,6 +51,3 @@ img[data-broken] {
   object-position: center !important;
   background: linear-gradient(160deg, #222, #161616) !important;
 }
-img.v-blur[data-broken] {
-  display: none;
-}

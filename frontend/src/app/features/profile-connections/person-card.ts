@@ -11,8 +11,8 @@ import type { Connection } from './connections';
   imports: [RouterLink, TranslatePipe],
   host: { class: 'block' },
   template: `
-    <article class="v-pc">
-      <div class="v-pc-art">
+    <article class="person-card">
+      <div class="person-card-art">
         @if (person().bannerUrl; as banner) {
           <span
             ><img [src]="rendition(banner, 'wide')" alt="" loading="lazy" draggable="false"
@@ -21,25 +21,25 @@ import type { Connection } from './connections';
           <span class="bg-profile-fallback"></span>
         }
         @if (note(); as key) {
-          <small class="v-pc-note">{{ key | translate }}</small>
+          <small class="person-card-note">{{ key | translate }}</small>
         }
       </div>
-      <div class="v-pc-body">
+      <div class="person-card-body">
         @if (person().avatarUrl; as avatar) {
-          <img class="v-pc-av" [src]="avatar" alt="" draggable="false" />
+          <img class="person-card-avatar" [src]="avatar" alt="" draggable="false" />
         } @else {
-          <span class="v-pc-av">{{ initials() }}</span>
+          <span class="person-card-avatar">{{ initials() }}</span>
         }
-        <div class="v-pc-id">
+        <div class="person-card-id">
           <a [routerLink]="['/profile', person().username]">{{ person().name }}</a>
           <span>&#64;{{ person().username }}</span>
         </div>
       </div>
-      <div class="v-pc-foot">
+      <div class="person-card-foot">
         @let followers = person().followersCount ?? null;
         @let titles = person().titleCount;
         @if (followers !== null || titles !== null) {
-          <p class="v-pc-stats">
+          <p class="person-card-stats">
             @if (followers !== null) {
               <span
                 ><b>{{ followers }}</b>
@@ -54,7 +54,7 @@ import type { Connection } from './connections';
             }
           </p>
         }
-        <div class="v-pc-acts">
+        <div class="person-card-actions">
           <ng-content />
         </div>
       </div>

@@ -370,7 +370,7 @@ describe('ProfilePageComponent', () => {
       const harness = await render('user-1');
       const el = harness.routeNativeElement as HTMLElement;
 
-      expect(el.querySelectorAll('shelfy-profile-essentials .v-essf-it')).toHaveLength(5);
+      expect(el.querySelectorAll('shelfy-profile-essentials .essentials-item')).toHaveLength(5);
       expect(text(el)).toContain('profile.essentials.owner_hint');
     });
 
@@ -397,7 +397,7 @@ describe('ProfilePageComponent', () => {
       ]);
       harness.detectChanges();
 
-      expect(el.querySelectorAll('shelfy-profile-essentials .v-essf-it')).toHaveLength(1);
+      expect(el.querySelectorAll('shelfy-profile-essentials .essentials-item')).toHaveLength(1);
       expect(
         el.querySelector('shelfy-profile-essentials a[href="/media/movie/42"]'),
       ).not.toBeNull();
@@ -429,11 +429,11 @@ describe('ProfilePageComponent', () => {
 
     it('shows the banner on the right only when one is set', async () => {
       const bare = await render('user-1');
-      expect((bare.routeNativeElement as HTMLElement).querySelector('.v-p-banner')).toBeNull();
+      expect((bare.routeNativeElement as HTMLElement).querySelector('.profile-banner')).toBeNull();
 
       const banner = await render('user-1', { profileBannerUrl: 'https://img/banner.jpg' });
       const el = banner.routeNativeElement as HTMLElement;
-      expect(el.querySelector('.v-p-banner img')?.getAttribute('src')).toBe(
+      expect(el.querySelector('.profile-banner img')?.getAttribute('src')).toBe(
         'https://img/banner.jpg',
       );
     });

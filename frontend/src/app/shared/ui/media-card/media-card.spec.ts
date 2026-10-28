@@ -72,7 +72,7 @@ describe('MediaCardComponent', () => {
 
   it('greys an external rating and colours a personal one', () => {
     const star = (item = ITEM) =>
-      (create(false, item).nativeElement.querySelector('.v-star') as HTMLElement).style.color;
+      (create(false, item).nativeElement.querySelector('.score') as HTMLElement).style.color;
 
     expect(star()).toBe('');
     TestBed.resetTestingModule();

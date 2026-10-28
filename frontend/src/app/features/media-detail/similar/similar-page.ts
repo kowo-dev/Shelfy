@@ -53,6 +53,7 @@ import { injectSearchResultCover } from '@shared/utils/search-result-cover.util'
     } @else {
       <shelfy-entity-shelf
         [title]="'media.related.similar' | translate"
+        [back]="{ to: ['/media', mediaType(), externalId()] }"
         [facts]="facts()"
         [items]="cardItems()"
         [hasMore]="hasMore()"

@@ -27,7 +27,7 @@
   </shelfy-page-hero>
 
   <div #barSentinel aria-hidden="true"></div>
-  <div class="v-libbar" [class.stuck]="stuck()">
+  <div class="page-bar" [class.is-stuck]="stuck()">
     <shelfy-tabs
       class="min-w-0"
       [tabs]="tabs()"

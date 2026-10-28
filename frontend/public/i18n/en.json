@@ -360,6 +360,8 @@
     "to_discover": "Back to Discover"
   },
   "nav": {
+    "back": "Back",
+    "back_to": "Back to {{page}}",
     "breadcrumb": "Breadcrumb",
     "admin": "Administration",
     "discover": "Home",
@@ -1113,7 +1115,16 @@
       "show_everything": "Show the whole library",
       "common_empty_title": "Nothing in common yet",
       "rating": "Their rating",
-      "mine": "You: {{value}}",
+      "you": "You",
+      "gap": {
+        "same": "Same rating",
+        "close": "Nearly the same",
+        "more": "You liked it more",
+        "less": "You liked it less",
+        "far": "Far apart",
+        "rate_to_compare": "Rate it to compare",
+        "unrated_by_them": "Not rated on their side"
+      },
       "empty_title": "An empty library",
       "empty_body": "{{name}} hasn't added any title yet.",
       "search_title": "Not in this library",

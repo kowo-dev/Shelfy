@@ -1,5 +1,6 @@
 <main class="animate-fade-in flex min-h-full flex-col motion-reduce:animate-none">
   <shelfy-page-hero [title]="bandTitle()" [wall]="wall()">
+    <shelfy-back-link heroBack [target]="back()" />
     <div class="mt-4.5 flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
       <p class="text-text-muted flex flex-wrap gap-x-5.5 gap-y-1.5 text-base">
         @if (!loading() && total() > 0) {
@@ -27,7 +28,7 @@
 
   <div #sentinel aria-hidden="true"></div>
   @if (!loading() && !profileFailed() && total() > 0) {
-    <div class="v-libbar" [class.stuck]="stuck()">
+    <div class="page-bar" [class.is-stuck]="stuck()">
       @if (kindCount() > 1) {
         <shelfy-tabs
           class="min-w-0"
@@ -37,8 +38,8 @@
           (tabSelected)="setFilter($event)"
         />
       }
-      <div class="v-ltools">
-        <label class="v-lsearch">
+      <div class="bar-tools">
+        <label class="bar-search">
           <shelfy-icon name="search" size="18" class="shrink-0" />
           <input
             type="search"
@@ -57,7 +58,7 @@
     <div class="min-w-0 pb-35">
       @if (loading()) {
         <div class="pt-2" aria-busy="true">
-          <div class="v-crea v-cgrid" aria-hidden="true">
+          <div class="card-grid creation-grid" aria-hidden="true">
             @for (slot of skeletonSlots; track slot) {
               <div
                 class="bg-fill-subtle rounded-card h-55 animate-pulse motion-reduce:animate-none"
@@ -114,7 +115,7 @@
                     >
                   </h2>
                 }
-                <div [class]="(group.id === 'reviews' ? 'v-revs' : 'v-crea') + ' v-cgrid'">
+                <div class="card-grid creation-grid">
                   @for (creation of group.items; track creation.kind + creation.id) {
                     @switch (creation.kind) {
                       @case ('review') {

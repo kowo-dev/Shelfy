@@ -1,0 +1,344 @@
+.page-bar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding: 18px var(--frame-x);
+  margin-top: clamp(24px, 4vh, 40px);
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
+
+  &.is-stuck {
+    background: var(--color-bar);
+    box-shadow: 0 22px 30px -26px #000;
+  }
+
+  @media (min-width: 768px) {
+    top: var(--nav-bar-height);
+  }
+
+  @media (max-width: 640px) {
+    padding: 12px var(--frame-x);
+
+    & > shelfy-tabs {
+      margin-inline: calc(-1 * var(--frame-x));
+      max-width: none;
+    }
+
+    & > shelfy-tabs nav {
+      padding-inline: var(--frame-x);
+      scroll-padding-inline: var(--frame-x);
+    }
+  }
+}
+
+.type-bar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 var(--frame-x);
+  transition:
+    background 0.3s,
+    box-shadow 0.3s;
+
+  &.is-stuck {
+    background: var(--color-bar);
+    box-shadow: 0 22px 30px -26px #000;
+  }
+
+  @media (min-width: 768px) {
+    top: var(--nav-bar-height);
+  }
+
+  @media (max-width: 767px) {
+    flex-wrap: wrap;
+    row-gap: 0;
+
+    & > shelfy-tabs {
+      flex: 1 1 100%;
+      max-width: none;
+      margin-inline: calc(-1 * var(--frame-x));
+    }
+
+    & > shelfy-tabs nav {
+      padding-inline: var(--frame-x);
+      scroll-padding-inline: var(--frame-x);
+    }
+
+    & > .section-more {
+      margin-right: 0;
+      padding-bottom: 12px;
+    }
+  }
+}
+
+.nav-bg {
+  box-shadow: 0 22px 30px -26px #000;
+  transition:
+    opacity var(--duration-slow) var(--ease-smooth),
+    box-shadow 0.3s;
+
+  @media (min-width: 768px) {
+    html:has(.page-bar.is-stuck, .type-bar.is-stuck) & {
+      box-shadow: none;
+    }
+  }
+}
+
+.bar-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+
+  @media (max-width: 640px) {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+.bar-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 300px;
+  height: 52px;
+  padding: 0 16px;
+  border-radius: 16px;
+  background: rgb(255 255 255 / 0.08);
+  color: var(--color-text-muted);
+  transition: background-color 0.3s;
+
+  &:focus-within {
+    background: rgb(255 255 255 / 0.13);
+  }
+
+  & input {
+    flex: 1;
+    min-width: 0;
+    background: none;
+    border: 0;
+    outline: none;
+    color: var(--color-text);
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  & input::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+  }
+
+  @media (max-width: 1100px) {
+    width: 200px;
+  }
+
+  @media (max-width: 640px) {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    height: 48px;
+  }
+}
+
+.bar-tool {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 52px;
+  padding: 0 18px;
+  border-radius: 16px;
+  background: rgb(255 255 255 / 0.08);
+  color: var(--color-text-muted);
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+
+  &:hover,
+  &:focus-visible,
+  &[aria-expanded='true'] {
+    background: rgb(255 255 255 / 0.14);
+    color: #fff;
+  }
+
+  @media (max-width: 640px) {
+    flex: none;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+  }
+}
+
+.bar-tool-count {
+  display: grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: var(--color-brand);
+  color: var(--color-on-brand);
+  font-size: 12px;
+  font-weight: 800;
+
+  @media (max-width: 640px) {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+  }
+}
+
+.bar-tool-label {
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+.library-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'tools'
+    'tabs';
+
+  & > shelfy-tabs {
+    grid-area: tabs;
+  }
+
+  & .bar-tools {
+    grid-area: tools;
+    margin-left: 0;
+  }
+
+  & .bar-search {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+  }
+
+  @media (min-width: 1360px) {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'seg tools'
+      'tabs tabs';
+
+    & .bar-tools {
+      justify-content: flex-end;
+      min-width: 0;
+    }
+
+    & .bar-search {
+      flex: 0 1 300px;
+      min-width: 180px;
+    }
+  }
+
+  @media (max-width: 1359px) {
+    & .bar-tools > .bar-tool {
+      justify-content: center;
+      width: 52px;
+      padding: 0;
+    }
+
+    & .bar-tools > .bar-tool .bar-tool-label {
+      display: none;
+    }
+
+    & .bar-tools > .bar-tool .bar-tool-count {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+    }
+  }
+}
+
+.library-media {
+  @media (min-width: 1360px) {
+    display: none;
+  }
+
+  @media (max-width: 640px) {
+    & .bar-tool {
+      width: auto;
+      padding: 0 14px;
+    }
+  }
+}
+
+.segmented-scroll {
+  grid-area: seg;
+  display: none;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (min-width: 1360px) {
+    display: block;
+  }
+}
+
+.segmented {
+  display: inline-flex;
+  gap: 2px;
+  height: 52px;
+  padding: 4px;
+  border-radius: 16px;
+  background: rgb(255 255 255 / 0.08);
+  vertical-align: top;
+
+  & button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 16px;
+    border-radius: 12px;
+    color: var(--color-text-muted);
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color 0.35s var(--ease-smooth),
+      color 0.35s var(--ease-smooth),
+      box-shadow 0.35s var(--ease-smooth);
+
+    &:focus-visible {
+      outline-offset: -2px;
+    }
+
+    &:hover {
+      color: #fff;
+    }
+
+    &[aria-pressed='true'] {
+      background: var(--color-text);
+      color: var(--color-background);
+      box-shadow: 0 6px 16px -8px rgb(0 0 0 / 0.6);
+    }
+  }
+
+  & small {
+    font-size: 12px;
+    font-weight: 700;
+    opacity: 0.6;
+    font-variant-numeric: tabular-nums;
+  }
+}

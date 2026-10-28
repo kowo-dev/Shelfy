@@ -19,6 +19,14 @@
         [adult]="!!review.media.isAdult"
         (posterOpened)="posterOpen.set(true)"
       >
+        <shelfy-back-link
+          heroBack
+          [target]="{
+            to: ['/creations'],
+            query: { f: 'reviews' },
+            label: ('nav.creations' | translate),
+          }"
+        />
         <div class="flex flex-wrap items-center gap-x-6 gap-y-4 max-[900px]:justify-center">
           <a
             [routerLink]="['/profile', review.username]"
@@ -98,7 +106,7 @@
       </shelfy-media-header>
 
       <div #barSentinel class="md:scroll-mt-(--nav-bar-height)" aria-hidden="true"></div>
-      <div class="v-libbar v-title-axis" [class.stuck]="stuck()">
+      <div class="page-bar media-axis" [class.is-stuck]="stuck()">
         <shelfy-tabs
           class="min-w-0"
           [tabs]="pageTabs()"
@@ -112,7 +120,7 @@
       <div
         id="review-tab-panel"
         role="tabpanel"
-        class="px-gutter v-title-axis grid w-full gap-x-16 gap-y-12 pt-4.5 pb-35 2xl:grid-cols-[minmax(0,44rem)_20rem]"
+        class="px-gutter media-axis grid w-full gap-x-16 gap-y-12 pt-4.5 pb-35 2xl:grid-cols-[minmax(0,44rem)_20rem]"
       >
         @for (current of [tab()]; track current) {
           <div class="animate-rise-in min-w-0">

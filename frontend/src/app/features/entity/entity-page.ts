@@ -14,6 +14,7 @@ import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner';
 import { TranslatePipe } from '@app/shared/pipes/translate';
 import { appendDistinct } from '@shared/utils/append-distinct.util';
+import { exploreBack } from '@shared/ui/back-link/back-link';
 import { EntityShelfComponent, type EntityFact } from './ui/entity-shelf';
 import type { EntitySortDirection, EntitySortOption } from './ui/entity-sort';
 import type { EntityKind } from './entity.model';
@@ -131,6 +132,11 @@ export class EntityPageComponent {
       );
   });
 
+  readonly back = computed(() => {
+    this.translate.lang();
+    return exploreBack(dominantType(this.displayedItems()), this.translate.get('nav.explore'));
+  });
+
   openMedia(item: CollectionItemResponse): void {
     this.router.navigate(['/media', item.media.mediaType, item.media.externalId]);
   }
@@ -182,4 +188,14 @@ export class EntityPageComponent {
   private isTvCredit(credit: PersonCredit): boolean {
     return credit.mediaType === 'tv' || credit.mediaType === 'tv_show';
   }
+}
+
+function dominantType(items: readonly CollectionItemResponse[]): string | null {
+  const counts = new Map<string, number>();
+  for (const item of items) {
+    counts.set(item.media.mediaType, (counts.get(item.media.mediaType) ?? 0) + 1);
+  }
+  let best: string | null = null;
+  for (const [type, count] of counts) if (!best || count > counts.get(best)!) best = type;
+  return best;
 }

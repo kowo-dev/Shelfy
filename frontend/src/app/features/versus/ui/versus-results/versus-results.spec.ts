@@ -53,12 +53,12 @@ describe('VersusResultsComponent', () => {
   it('ranks every entry in a grid with its rank numeral', () => {
     const fixture = setup(14);
     const root = fixture.nativeElement as HTMLElement;
-    const numerals = Array.from(root.querySelectorAll('.v-rk-row .rk')).map((el) =>
+    const numerals = Array.from(root.querySelectorAll('.ranked-caption-rank')).map((el) =>
       el.textContent?.trim(),
     );
     expect(numerals).toHaveLength(14);
     expect(numerals.slice(0, 3)).toEqual(['1', '2', '3']);
-    expect(root.querySelectorAll('.v-rk-row .rk.top')).toHaveLength(3);
+    expect(root.querySelectorAll('.ranked-caption-rank.is-top')).toHaveLength(3);
   });
 
   it('shows the win rate and duels, never the average points', () => {

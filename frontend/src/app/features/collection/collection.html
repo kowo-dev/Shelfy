@@ -25,9 +25,9 @@
 
   <div #sentinel aria-hidden="true"></div>
   @if (!shelfEmpty()) {
-    <div class="v-libbar v-lbar" [class.stuck]="stuck()">
-      <div class="v-lseg-scroll">
-        <div class="v-lseg" role="group" [attr.aria-label]="'library.media' | translate">
+    <div class="page-bar library-bar" [class.is-stuck]="stuck()">
+      <div class="segmented-scroll">
+        <div class="segmented" role="group" [attr.aria-label]="'library.media' | translate">
           <button
             type="button"
             [attr.aria-pressed]="mediaTypeFilter().length === 0"
@@ -49,8 +49,8 @@
           }
         </div>
       </div>
-      <div class="v-ltools">
-        <label class="v-lsearch">
+      <div class="bar-tools">
+        <label class="bar-search">
           <shelfy-icon name="search" size="18" class="shrink-0" />
           <input
             type="search"
@@ -63,8 +63,8 @@
         </label>
         @let media = mediaMenu();
         <shelfy-menu-button
-          class="v-lmedia"
-          triggerClass="v-tool"
+          class="library-media"
+          triggerClass="bar-tool"
           panelClass="right-0 w-72 origin-top-right"
           [label]="'library.media' | translate"
           [icon]="media.icon"
@@ -75,15 +75,15 @@
         />
         <button
           type="button"
-          class="v-tool"
+          class="bar-tool"
           aria-haspopup="dialog"
           [attr.aria-label]="'library.filters' | translate"
           (click)="openSheet()"
         >
           <shelfy-icon name="filter" size="18" />
-          <span class="lbl">{{ 'library.filters' | translate }}</span>
+          <span class="bar-tool-label">{{ 'library.filters' | translate }}</span>
           @if (activeFilterCount()) {
-            <span class="n">{{ activeFilterCount() }}</span>
+            <span class="bar-tool-count">{{ activeFilterCount() }}</span>
           }
         </button>
       </div>
@@ -114,7 +114,7 @@
         </shelfy-empty-state>
       } @else if (loading() && visibleItems().length === 0) {
         <div
-          class="v-lgrid animate-fade-in"
+          class="poster-grid animate-fade-in"
           [attr.data-size]="size()"
           role="status"
           aria-busy="true"
@@ -167,10 +167,10 @@
           @if (loadingPrevious()) {
             <div class="mb-4 flex justify-center"><shelfy-spinner /></div>
           }
-          <div class="v-lgrid" [attr.data-size]="size()">
+          <div class="poster-grid" [attr.data-size]="size()">
             @for (item of visibleItems(); track item.id; let index = $index) {
               <shelfy-media-card
-                class="v-rise"
+                class="stagger-rise"
                 [item]="item"
                 [mine]="true"
                 [selectable]="true"

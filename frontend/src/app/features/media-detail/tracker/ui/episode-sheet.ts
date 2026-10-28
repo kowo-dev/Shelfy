@@ -204,7 +204,7 @@ import { SEASON_ARROW } from './rating-matrix';
                   [value]="ep.mine"
                   (changed)="rated.emit($event)"
                 />
-                <div class="v-sh-status" style="grid-template-columns: minmax(0, 1fr)">
+                <div class="status-picker" style="grid-template-columns: minmax(0, 1fr)">
                   <button
                     type="button"
                     role="switch"
@@ -214,7 +214,7 @@ import { SEASON_ARROW } from './rating-matrix';
                     (click)="watchedToggled.emit(!ep.watched)"
                   >
                     <shelfy-icon name="checkCircle" [active]="ep.watched" size="28" />
-                    <span class="lbl">{{
+                    <span class="status-picker-label">{{
                       (ep.watched ? 'media.tracker.watched' : 'media.tracker.mark_watched')
                         | translate
                     }}</span>

@@ -20,6 +20,7 @@ import { IgdbService } from '@app/core/services/igdb/igdb';
 import { TmdbService } from '@app/core/services/tmdb/tmdb';
 import { TranslateService } from '@app/core/services/translate/translate';
 import { TranslatePipe } from '@app/shared/pipes/translate';
+import { BackLinkComponent, type BackTarget } from '@shared/ui/back-link/back-link';
 import { PageHeroComponent } from '@shared/ui/page-hero/page-hero';
 import { TabsComponent } from '@shared/ui/tabs/tabs';
 import { LayoutService } from '@app/core/services/layout/layout';
@@ -54,6 +55,7 @@ const WALL = 30;
     TranslatePipe,
     PageHeroComponent,
     PageFooterComponent,
+    BackLinkComponent,
     TabsComponent,
     MediaCardComponent,
   ],
@@ -63,10 +65,12 @@ const WALL = 30;
       class="page-scroll h-full min-h-0 [scrollbar-gutter:stable] overflow-x-clip overflow-y-auto [overflow-anchor:none] max-md:pb-(--bottom-nav-clearance)"
       (scroll)="onScroll()"
     >
-      <shelfy-page-hero [title]="title()" [wall]="wall()" />
+      <shelfy-page-hero [title]="title()" [wall]="wall()">
+        <shelfy-back-link heroBack [target]="back()" />
+      </shelfy-page-hero>
 
       <div #barSentinel aria-hidden="true"></div>
-      <div class="v-libbar" [class.stuck]="stuck()">
+      <div class="page-bar" [class.is-stuck]="stuck()">
         <shelfy-tabs
           class="min-w-0"
           [tabs]="tabs()"
@@ -90,7 +94,7 @@ const WALL = 30;
                 {{ 'home.feed_empty' | translate }}
               </p>
             }
-            <div class="v-lgrid">
+            <div class="poster-grid">
               @for (entry of shown(); track entry.item.id) {
                 <shelfy-media-card [item]="entry.item" [subtitle]="entry.subtitle" />
               }
@@ -140,6 +144,15 @@ export class DiscoverFeedPageComponent {
   readonly typeQuery = computed(() => {
     const filter = this.filter();
     return filter === 'all' ? {} : { type: filter };
+  });
+
+  readonly back = computed<BackTarget>(() => {
+    this.translate.lang();
+    return {
+      to: ['/discover'],
+      query: this.typeQuery(),
+      label: this.translate.get('nav.discover'),
+    };
   });
 
   readonly items = signal<CollectionItemResponse[]>([]);

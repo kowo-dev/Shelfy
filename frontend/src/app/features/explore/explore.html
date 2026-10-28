@@ -12,9 +12,9 @@
   </shelfy-page-hero>
 
   <div #sentinelTop aria-hidden="true"></div>
-  <div class="v-libbar v-exbar" [class.stuck]="stuck()">
+  <div class="page-bar explore-bar" [class.is-stuck]="stuck()">
     <shelfy-explore-omnibox
-      class="v-omni-wrap"
+      class="omnibox-wrap"
       [omni]="true"
       [query]="exploreQuery()"
       (added)="addCriterion($event)"
@@ -25,18 +25,18 @@
     @let filtered = activeFilterCount() + (hideOwned() ? 1 : 0);
     <button
       type="button"
-      class="v-tool"
+      class="bar-tool"
       aria-haspopup="dialog"
       [attr.aria-label]="'explore.filters.title' | translate"
       (click)="filtersOpen.set(true)"
     >
       <shelfy-icon name="filter" size="18" />
-      <span class="lbl">{{ 'explore.filters.title' | translate }}</span>
+      <span class="bar-tool-label">{{ 'explore.filters.title' | translate }}</span>
       @if (filtered) {
-        <span class="n">{{ filtered }}</span>
+        <span class="bar-tool-count">{{ filtered }}</span>
       }
     </button>
-    <div class="v-exrow">
+    <div class="explore-row">
       <shelfy-tabs
         class="min-w-0"
         [tabs]="typeTabs()"
@@ -80,7 +80,7 @@
     }
 
     @if (results.loading() && results.results().length === 0) {
-      <div class="v-lgrid" aria-hidden="true">
+      <div class="poster-grid" aria-hidden="true">
         @for (skeleton of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]; track skeleton) {
           <div>
             <div
@@ -133,7 +133,7 @@
       </div>
     } @else {
       <div
-        class="v-lgrid duration-base transition-opacity"
+        class="poster-grid duration-base transition-opacity"
         [class]="results.refreshing() ? 'opacity-45 delay-150' : 'opacity-100'"
       >
         @for (result of shownResults(); track resultKey(result)) {
@@ -178,7 +178,7 @@
           [moreQuery]="{ q }"
           [rail]="null"
         >
-          <div class="v-pgrid">
+          <div class="people-grid">
             @for (person of found.people; track person.key) {
               <shelfy-person-card [person]="person" />
             }
@@ -193,7 +193,7 @@
           [moreQuery]="{ f: 'lists', q }"
           [rail]="null"
         >
-          <div class="v-crea">
+          <div class="card-grid">
             @for (list of found.lists; track list.id) {
               <shelfy-creation-tile [list]="list" />
             }
@@ -208,7 +208,7 @@
           [moreQuery]="{ f: 'versus', q }"
           [rail]="null"
         >
-          <div class="v-crea">
+          <div class="card-grid">
             @for (pool of found.versus; track pool.id) {
               <shelfy-creation-tile [pool]="pool" />
             }
@@ -223,7 +223,7 @@
           [moreQuery]="{ f: 'reviews', q }"
           [rail]="null"
         >
-          <div class="v-revs">
+          <div class="card-grid">
             @for (review of found.reviews; track review.id) {
               <shelfy-review-card [review]="review" />
             }

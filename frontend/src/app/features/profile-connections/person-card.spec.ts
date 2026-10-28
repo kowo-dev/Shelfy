@@ -80,8 +80,8 @@ describe('PersonCardComponent', () => {
     const { root, text } = render(person({ titleCount: 12, followersCount: 41 }));
 
     expect(text).toContain('Alice Archer');
-    expect(root.querySelector('.v-pc-id > span')?.textContent?.trim()).toBe('@alice');
-    const stats = Array.from(root.querySelectorAll('.v-pc-stats > span')).map((span) =>
+    expect(root.querySelector('.person-card-id > span')?.textContent?.trim()).toBe('@alice');
+    const stats = Array.from(root.querySelectorAll('.person-card-stats > span')).map((span) =>
       span.textContent?.replace(/\s+/g, ' ').trim(),
     );
     expect(stats).toEqual([
@@ -98,13 +98,13 @@ describe('PersonCardComponent', () => {
     TestBed.resetTestingModule();
     const { root } = render(person({ titleCount: null, followersCount: null }));
 
-    expect(root.querySelector('.v-pc-stats')).toBeNull();
+    expect(root.querySelector('.person-card-stats')).toBeNull();
   });
 
   it('shows the relation note as a tag on the banner', () => {
     const { root } = render(person(), 'community.people.follows_you');
 
-    expect(root.querySelector('.v-pc-art .v-pc-note')?.textContent).toBe(
+    expect(root.querySelector('.person-card-art .person-card-note')?.textContent).toBe(
       'community.people.follows_you',
     );
   });

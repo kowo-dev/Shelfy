@@ -26,20 +26,20 @@ import { HomeTileComponent } from '../home-tile/home-tile';
       [moreLabel]="'home.see_all' | translate"
       [moreRoute]="['/discover', 'upcoming']"
       [moreQuery]="query()"
-      rail="big"
+      rail="large"
     >
       @for (tile of tiles(); track tile.key) {
         <shelfy-home-tile [item]="tile.item" [wide]="tile.image" [addable]="false">
-          <span class="v-ant-cap">
-            <span class="d">{{ tile.date }}</span>
+          <span class="countdown-caption">
+            <span class="countdown-caption-days">{{ tile.date }}</span>
             <span class="flex min-w-0 flex-1 flex-col gap-0.5">
               <b>{{ tile.title }}</b>
               <span>{{ tile.meta }}</span>
             </span>
             <button
               type="button"
-              class="v-mini-btn"
-              [class.done]="!!tile.owned"
+              class="mini-button"
+              [class.is-done]="!!tile.owned"
               aria-haspopup="dialog"
               [attr.aria-label]="
                 (tile.owned ? 'home.edit_on_shelf' : 'home.add_backlog')
