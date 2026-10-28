@@ -3,6 +3,7 @@
 } @else if (header(); as header) {
   <shelfy-entity-shelf
     [title]="header.name"
+    [back]="back()"
     [leadUrl]="header.imageUrl ?? null"
     [leadShape]="leadShape()"
     [facts]="facts()"

@@ -1,3 +1,4 @@
+import { BackLinkComponent, type BackTarget } from '@shared/ui/back-link/back-link';
 import { SegmentedComponent } from '@shared/ui/segmented/segmented';
 import {
   afterNextRender,
@@ -84,6 +85,7 @@ import { createCollaborationState } from '@shared/utils/collaboration-state';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    BackLinkComponent,
     SegmentedComponent,
     SelectionToggleComponent,
     SelectionRemoveComponent,
@@ -173,6 +175,15 @@ export class ListDetailPageComponent implements UnsavedChangesAware {
   readonly libraryRoute = computed(() => {
     const username = this.params().get('username');
     return username ? ['/profile', username, 'lists'] : ['/creations'];
+  });
+  readonly back = computed<BackTarget>(() => {
+    this.translate.lang();
+    const scoped = !!this.params().get('username');
+    return {
+      to: this.libraryRoute(),
+      query: { f: 'lists' },
+      label: this.translate.get(scoped ? 'nav.lists' : 'nav.creations'),
+    };
   });
   readonly isOwner = computed(() => this.list()?.userId === this.auth.currentUser()?.id);
   readonly isCollaborator = computed(() => this.list()?.viewerCollaboratorStatus === 'ACCEPTED');

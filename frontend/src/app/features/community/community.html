@@ -39,7 +39,7 @@
   </shelfy-page-hero>
 
   <div #sentinel aria-hidden="true"></div>
-  <div class="v-libbar" [class.stuck]="stuck()">
+  <div class="page-bar" [class.is-stuck]="stuck()">
     <shelfy-tabs
       class="min-w-0"
       [tabs]="tabs()"
@@ -48,8 +48,8 @@
       (tabSelected)="selectView($event)"
     />
     @if (!landing()) {
-      <div class="v-ltools">
-        <label class="v-lsearch">
+      <div class="bar-tools">
+        <label class="bar-search">
           <shelfy-icon name="search" size="18" class="shrink-0" />
           <input
             #searchInput
@@ -63,15 +63,15 @@
         </label>
         <button
           type="button"
-          class="v-tool"
+          class="bar-tool"
           aria-haspopup="dialog"
           [attr.aria-label]="'library.filters' | translate"
           (click)="filtersOpen.set(true)"
         >
           <shelfy-icon name="filter" size="18" />
-          <span class="lbl">{{ 'library.filters' | translate }}</span>
+          <span class="bar-tool-label">{{ 'library.filters' | translate }}</span>
           @if (filterCount()) {
-            <span class="n">{{ filterCount() }}</span>
+            <span class="bar-tool-count">{{ filterCount() }}</span>
           }
         </button>
       </div>
@@ -93,7 +93,7 @@
             [band]="even"
             [rail]="null"
           >
-            <div [class]="rail.items[0]?.kind === 'review' ? 'v-revs' : 'v-crea'">
+            <div class="card-grid">
               @for (entry of rail.items.slice(0, 3); track entry.id) {
                 <ng-container
                   [ngTemplateOutlet]="card"
@@ -185,7 +185,7 @@
   } @else if (window.items().length === 0) {
     <ng-container [ngTemplateOutlet]="emptyState" />
   } @else {
-    <div [class]="(view() === 'reviews' ? 'v-revs' : 'v-crea') + ' v-cgrid'">
+    <div class="card-grid creation-grid">
       @for (entry of window.items(); track entry.id) {
         <ng-container [ngTemplateOutlet]="card" [ngTemplateOutletContext]="{ $implicit: entry }" />
       }
@@ -248,9 +248,9 @@
   [title]="'community.create' | translate"
   (closed)="createOpen.set(false)"
 >
-  <div class="v-ctiles">
+  <div class="create-tiles">
     @for (item of createItems(); track item.id) {
-      <button type="button" class="v-ctile" (click)="createOpen.set(false); onCreate(item.id)">
+      <button type="button" class="create-tile" (click)="createOpen.set(false); onCreate(item.id)">
         <shelfy-icon [name]="item.icon!" size="32" />
         <span>
           <b>{{ item.label }}</b>

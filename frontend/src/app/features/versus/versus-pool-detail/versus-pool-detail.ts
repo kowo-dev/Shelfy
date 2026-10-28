@@ -1,3 +1,4 @@
+import { BackLinkComponent } from '@shared/ui/back-link/back-link';
 import {
   afterNextRender,
   ChangeDetectionStrategy,
@@ -79,6 +80,7 @@ import { SelectionRemoveComponent } from '@shared/ui/selection-remove/selection-
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    BackLinkComponent,
     SelectionToggleComponent,
     SelectionRemoveComponent,
     TranslatePipe,

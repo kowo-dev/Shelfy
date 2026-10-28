@@ -22,21 +22,21 @@ import { HomeTileComponent } from '../home-tile/home-tile';
       [moreLabel]="'home.mood.more' | translate: { genre: view.genreLower }"
       [moreRoute]="['/explore']"
       [moreQuery]="mood().more"
-      rail="three"
+      rail="wide"
     >
       @for (item of mood().items; track item.id) {
         <shelfy-home-tile [item]="item" [art]="art()">
-          <span class="v-cap">
+          <span class="caption">
             <b>{{ item.media.title }}</b>
             @if (item.rating) {
-              <span class="v-star"
+              <span class="score"
                 ><shelfy-icon name="star" size="14" [active]="true" />{{
                   rating(item.rating)
                 }}</span
               >
             }
           </span>
-          <span class="v-sub">{{ meta(item) }}</span>
+          <span class="caption-sub">{{ meta(item) }}</span>
         </shelfy-home-tile>
       }
     </shelfy-shelf-section>

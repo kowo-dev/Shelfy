@@ -13,6 +13,9 @@
   >
     @let stats = heroStats();
     <shelfy-page-hero [title]="heroTitle()">
+      @if (back(); as target) {
+        <shelfy-back-link heroBack [target]="target" />
+      }
       @if (stats.following !== null || stats.followers !== null) {
         <p class="text-text-muted mt-4.5 flex flex-wrap gap-x-5.5 gap-y-1.5 text-base">
           @if (stats.following !== null) {
@@ -32,7 +35,7 @@
     </shelfy-page-hero>
 
     <div #sentinel aria-hidden="true"></div>
-    <div class="v-libbar" [class.stuck]="stuck()">
+    <div class="page-bar" [class.is-stuck]="stuck()">
       <shelfy-tabs
         class="min-w-0"
         [tabs]="tabs()"
@@ -40,8 +43,8 @@
         [label]="'community.show_label' | translate"
         (tabSelected)="selectTab($event)"
       />
-      <div class="v-ltools">
-        <label class="v-lsearch">
+      <div class="bar-tools">
+        <label class="bar-search">
           <shelfy-icon name="search" size="18" class="shrink-0" />
           <input
             type="search"
@@ -199,8 +202,8 @@
       @let starred = isFavorite(person);
       <button
         type="button"
-        class="v-pc-fav"
-        [class.on]="starred"
+        class="person-card-favorite"
+        [class.is-on]="starred"
         [attr.aria-pressed]="starred"
         [attr.aria-label]="'connections.favorite' | translate: { name: person.name }"
         [title]="(starred ? 'connections.unfavorite' : 'connections.favorite_short') | translate"

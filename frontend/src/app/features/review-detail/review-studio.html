@@ -5,6 +5,17 @@
 } @else {
   <main class="animate-fade-in flex min-h-full flex-col motion-reduce:animate-none">
     <shelfy-media-header [title]="title()" [posterUrl]="coverUrl()" [backdropUrl]="heroBackdrop()">
+      <div heroBack class="mb-5 flex md:mb-7">
+        <button
+          type="button"
+          [class]="closeButton"
+          [attr.aria-label]="'studio.close' | translate"
+          [title]="'studio.close' | translate"
+          (click)="close()"
+        >
+          <shelfy-icon name="close" size="20" />
+        </button>
+      </div>
       <p
         class="text-text-muted flex flex-wrap items-center gap-x-3.5 gap-y-1 text-[0.9375rem] max-[900px]:justify-center"
       >

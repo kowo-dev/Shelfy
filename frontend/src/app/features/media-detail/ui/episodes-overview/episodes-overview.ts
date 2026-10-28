@@ -40,7 +40,7 @@ const TOGGLE =
   host: { class: 'block' },
   template: `
     <shelfy-shelf-section
-      rail="soon"
+      rail="medium"
       [title]="'media.tracker.episodes' | translate"
       [subtitle]="subtitle()"
       [moreLabel]="'profile.rail.view_all' | translate"

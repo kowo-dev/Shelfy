@@ -1,5 +1,5 @@
 @if (reviews().length > 0) {
-  <div class="v-revs">
+  <div class="card-grid">
     @for (review of reviews(); track review.id) {
       <article
         class="group/rev bg-fill-subtle hover:bg-fill has-[a:focus-visible]:bg-fill relative flex min-w-0 flex-col rounded-lg p-5 transition-colors md:p-6"

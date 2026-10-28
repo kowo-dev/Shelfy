@@ -20,7 +20,8 @@
       [backdropUrl]="backdrop()"
       (titleChange)="edit.name.set($event)"
     >
-      <div headerArt [class]="artCovers().length ? 'v-fan' : 'v-fan-empty'">
+      <shelfy-back-link heroBack [target]="back()" />
+      <div headerArt [class]="artCovers().length ? 'cover-fan' : 'cover-fan-empty'">
         @for (cover of artCovers(); track $index) {
           <span [style.--i]="$index">
             @if (cover.isAdult) {
@@ -263,7 +264,7 @@
     }
 
     <div #barSentinel aria-hidden="true"></div>
-    <div class="v-libbar" [class.stuck]="stuck()">
+    <div class="page-bar" [class.is-stuck]="stuck()">
       <shelfy-tabs
         class="min-w-0"
         [tabs]="pageTabs()"
@@ -273,7 +274,7 @@
         (tabSelected)="selectTab($event)"
       />
       @if (tab() === 'titles') {
-        <div class="v-ltools">
+        <div class="bar-tools">
           @if (edit.media().length > 0) {
             <shelfy-segmented
               [options]="filterLinks()"

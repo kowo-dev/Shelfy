@@ -41,32 +41,32 @@ function shuffled<T>(items: readonly T[], random: () => number): T[] {
         [rail]="null"
       >
         @if (canShuffle()) {
-          <button secTools type="button" class="v-more" (click)="shuffle()">
+          <button secTools type="button" class="section-more" (click)="shuffle()">
             <shelfy-icon name="shuffle" size="18" />
             {{ 'home.shuffle' | translate }}
           </button>
         }
-        <div class="v-picks">
+        <div class="pick-grid">
           @for (pick of picks(); track pick.item.id) {
             <article
-              class="v-pick"
+              class="pick"
               tabindex="0"
               (click)="open(pick.route)"
               (keydown.enter)="open(pick.route)"
             >
-              <span class="v-pick-art">
+              <span class="pick-cover">
                 @if (pick.cover; as cover) {
                   <img [src]="cover" alt="" loading="lazy" />
                 }
               </span>
-              <span class="v-pick-txt">
-                <span class="v-sub">{{ pick.since }}</span>
+              <span class="pick-text">
+                <span class="caption-sub">{{ pick.since }}</span>
                 <b>{{ pick.item.media.title }}</b>
-                <span class="v-meta"
+                <span class="meta-line"
                   >{{ pick.meta }}
                   @if (pick.rating; as rating) {
                     <i>·</i>
-                    <span class="v-star"
+                    <span class="score"
                       ><shelfy-icon name="star" size="14" [active]="true" />{{ rating }}</span
                     >
                   }

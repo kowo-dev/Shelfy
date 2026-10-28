@@ -33,7 +33,7 @@
   </shelfy-page-hero>
 
   <div #barSentinel aria-hidden="true"></div>
-  <div class="v-libbar" [class.stuck]="stuck()">
+  <div class="page-bar" [class.is-stuck]="stuck()">
     <shelfy-tabs
       class="min-w-0"
       [tabs]="tabs()"
@@ -41,37 +41,37 @@
       [label]="'notifications.show_label' | translate"
       (tabSelected)="select($event)"
     />
-    <div class="v-ltools">
+    <div class="bar-tools">
       @if (inbox.hasUnread()) {
         <button
           type="button"
-          class="v-tool"
+          class="bar-tool"
           [attr.aria-label]="'notifications.mark_all_read' | translate"
           (click)="feed.markAllRead()"
         >
           <shelfy-icon name="check" size="18" />
-          <span class="lbl">{{ 'notifications.mark_all_read' | translate }}</span>
+          <span class="bar-tool-label">{{ 'notifications.mark_all_read' | translate }}</span>
         </button>
       }
       @if (feed.clearable()) {
         <button
           type="button"
-          class="v-tool"
+          class="bar-tool"
           [attr.aria-label]="'notifications.clear_all' | translate"
           (click)="feed.clearAll()"
         >
           <shelfy-icon name="trash" size="18" />
-          <span class="lbl">{{ 'notifications.clear_all' | translate }}</span>
+          <span class="bar-tool-label">{{ 'notifications.clear_all' | translate }}</span>
         </button>
       }
       <a
         routerLink="/settings"
         [queryParams]="{ section: 'notifications' }"
-        class="v-tool"
+        class="bar-tool"
         [attr.aria-label]="'notifications.settings' | translate"
       >
         <shelfy-icon name="settings" size="18" />
-        <span class="lbl">{{ 'nav.settings' | translate }}</span>
+        <span class="bar-tool-label">{{ 'nav.settings' | translate }}</span>
       </a>
     </div>
   </div>

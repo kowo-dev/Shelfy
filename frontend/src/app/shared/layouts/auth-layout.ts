@@ -33,10 +33,10 @@ export function posterColumns(sources: string[][], columns: number, perColumn: n
   template: `
     <div class="bg-background min-h-dvh lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)]">
       <aside
-        class="v-auth-wall relative h-[34vh] overflow-hidden lg:order-2 lg:h-auto"
+        class="auth-wall relative h-[34vh] overflow-hidden lg:order-2 lg:h-auto"
         aria-hidden="true"
       >
-        <div class="v-wall animate-fade-in">
+        <div class="poster-wall animate-fade-in">
           @for (column of wall(); track $index) {
             <div>
               @for (url of column; track $index) {

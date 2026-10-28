@@ -14,6 +14,7 @@
     (scroll)="onScroll()"
   >
     <shelfy-page-hero [title]="heroTitle()" [wall]="ambientWall()">
+      <shelfy-back-link heroBack [target]="{ to: ['/profile', username()], label: friendName() }" />
       @if (heroStats(); as stats) {
         <p class="text-text-muted mt-4.5 flex flex-wrap gap-x-5.5 gap-y-1.5 text-base">
           <span
@@ -42,7 +43,7 @@
 
     <div #sentinel aria-hidden="true"></div>
     @if (!shelfEmpty()) {
-      <div class="v-libbar" [class.stuck]="stuck()">
+      <div class="page-bar" [class.is-stuck]="stuck()">
         <shelfy-tabs
           class="min-w-0"
           [tabs]="statusTabs()"
@@ -50,8 +51,8 @@
           [label]="'library.status' | translate"
           (tabSelected)="onStatusTab($event)"
         />
-        <div class="v-ltools">
-          <label class="v-lsearch">
+        <div class="bar-tools">
+          <label class="bar-search">
             <shelfy-icon name="search" size="18" class="shrink-0" />
             <input
               type="search"
@@ -64,15 +65,15 @@
           </label>
           <button
             type="button"
-            class="v-tool"
+            class="bar-tool"
             aria-haspopup="dialog"
             [attr.aria-label]="'library.filters' | translate"
             (click)="sheetOpen.set(true)"
           >
             <shelfy-icon name="filter" size="18" />
-            <span class="lbl">{{ 'library.filters' | translate }}</span>
+            <span class="bar-tool-label">{{ 'library.filters' | translate }}</span>
             @if (activeFilterCount()) {
-              <span class="n">{{ activeFilterCount() }}</span>
+              <span class="bar-tool-count">{{ activeFilterCount() }}</span>
             }
           </button>
         </div>
@@ -85,7 +86,7 @@
     <div class="px-gutter mx-auto pt-4.5 pb-35">
       @if (listLoading() && visibleItems().length === 0) {
         <div
-          class="v-lgrid animate-fade-in"
+          class="poster-grid animate-fade-in"
           role="status"
           aria-busy="true"
           [attr.aria-label]="'shared.loading' | translate"
@@ -155,11 +156,12 @@
           @if (!comparing() && scrollWindow.loadingPrevious()) {
             <div class="mb-4 flex justify-center"><shelfy-spinner /></div>
           }
-          <div class="v-lgrid">
+          <div class="poster-grid">
             @for (item of visibleItems(); track item.id) {
               <shelfy-media-card
                 [item]="item"
-                [subtitle]="mineLine(item) ?? statusLine(item)"
+                [status]="true"
+                [versus]="versusItem(item)"
                 [addable]="signedIn()"
                 [tinted]="true"
               />

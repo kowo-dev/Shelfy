@@ -10,7 +10,7 @@ import { ClipPlayerComponent } from '../clip-player/clip-player';
 import { ClipVolumeComponent } from '../clip-player/clip-volume';
 
 const TOP = 10;
-const GRID = 'v-lgrid';
+const GRID = 'poster-grid';
 const WIDE_GRID = 'grid grid-cols-1 gap-x-5 gap-y-9 sm:grid-cols-2 xl:grid-cols-3';
 
 @Component({
@@ -67,8 +67,8 @@ const WIDE_GRID = 'grid grid-cols-1 gap-x-5 gap-y-9 sm:grid-cols-2 xl:grid-cols-
 
     <ng-template #cell let-entry="entry" let-rank="rank">
       @if (wide()) {
-        <li class="v-tile min-w-0 cursor-default">
-          <span class="v-art">
+        <li class="tile min-w-0 cursor-default">
+          <span class="cover">
             @if (entry.entry.coverUrl) {
               <img [src]="entry.entry.coverUrl" alt="" loading="lazy" />
             }
@@ -84,8 +84,8 @@ const WIDE_GRID = 'grid grid-cols-1 gap-x-5 gap-y-9 sm:grid-cols-2 xl:grid-cols-
           <shelfy-media-card [item]="placeholder(media)" [rank]="rank" [subtitle]="stats(entry)" />
         </li>
       } @else {
-        <li class="v-poster min-w-0 cursor-default">
-          <span class="v-art">
+        <li class="poster min-w-0 cursor-default">
+          <span class="cover">
             @if (entry.entry.coverUrl) {
               <img [src]="entry.entry.coverUrl" alt="" loading="lazy" />
             }
@@ -99,8 +99,8 @@ const WIDE_GRID = 'grid grid-cols-1 gap-x-5 gap-y-9 sm:grid-cols-2 xl:grid-cols-
     </ng-template>
 
     <ng-template #rankRow let-entry="entry" let-rank="rank" let-author="author">
-      <div class="v-rk-row">
-        <span class="rk" [class.top]="rank <= 3">{{ rank }}</span>
+      <div class="ranked-caption">
+        <span class="ranked-caption-rank" [class.is-top]="rank <= 3">{{ rank }}</span>
         <div>
           <b>{{ entry.entry.title }}</b>
           <span class="tabular-nums"

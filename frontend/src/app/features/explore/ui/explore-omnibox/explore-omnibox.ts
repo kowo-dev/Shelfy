@@ -78,7 +78,7 @@ export class ExploreOmniboxComponent {
   readonly catalogOptions = signal<ExploreOption[]>([]);
   readonly menuPanel = MENU_PANEL;
   readonly fieldClass = computed(() => {
-    if (this.omni()) return 'v-omni';
+    if (this.omni()) return 'omnibox';
     if (this.compact()) return TOOLBAR_FIELD;
     return this.showChips()
       ? `${SEARCH_FIELD} h-auto min-h-13 py-1.5 pr-1.5 pl-4 max-sm:[scrollbar-width:none] max-sm:overflow-x-auto sm:flex-wrap [&::-webkit-scrollbar]:hidden`

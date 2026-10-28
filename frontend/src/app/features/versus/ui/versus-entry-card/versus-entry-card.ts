@@ -14,12 +14,12 @@ import { clipSourceUrl } from '../clip-player/clip-embed.util';
   imports: [TranslatePipe, AdultBadgeComponent, IconComponent, ClipPlayerComponent],
   template: `
     <div
-      class="v-poster group/card"
-      [class.v-tile]="!!entry().clip"
-      [class.v-dim]="selectionMode() && !selected()"
+      class="poster group/card"
+      [class.tile]="!!entry().clip"
+      [class.is-dim]="selectionMode() && !selected()"
     >
       <span
-        class="v-art outline-3 outline-offset-3 transition-[outline-color]"
+        class="cover outline-3 outline-offset-3 transition-[outline-color]"
         [class]="selectionMode() && selected() ? 'outline-accent' : 'outline-transparent'"
       >
         <button
@@ -55,13 +55,13 @@ import { clipSourceUrl } from '../clip-player/clip-embed.util';
           }
         }
         @if (selectionMode()) {
-          <span class="v-check" [class.on]="selected()" aria-hidden="true">
+          <span class="cover-check" [class.is-on]="selected()" aria-hidden="true">
             <shelfy-icon name="check" size="16" />
           </span>
         }
         <ng-content select="[cardOverlay]" />
       </span>
-      <span class="v-cap">
+      <span class="caption">
         @if (entry().clip && entry().media) {
           <button
             type="button"
@@ -75,7 +75,7 @@ import { clipSourceUrl } from '../clip-player/clip-embed.util';
           <b [title]="label()">{{ label() }}</b>
         }
       </span>
-      <span class="v-sub">
+      <span class="caption-sub">
         <span class="flex min-w-0 items-center gap-1.5">
           @if (entry().clip) {
             <shelfy-icon [name]="kindIcon()" size="14" class="shrink-0" />

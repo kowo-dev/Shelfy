@@ -242,7 +242,7 @@
   <section [class]="section">
     <h2 [class]="h2">{{ 'dev_ui.cards' | translate }}</h2>
     <span [class]="state">media-card mine · {{ 'dev_ui.hover_hint' | translate }}</span>
-    <div class="v-lgrid mb-10">
+    <div class="poster-grid mb-10">
       <shelfy-media-card [item]="items.game" [mine]="true" [selectable]="true" />
       <shelfy-media-card [item]="items.ongoing" [mine]="true" [selectable]="true" />
       <shelfy-media-card [item]="items.done" [mine]="true" />
@@ -260,7 +260,7 @@
       <shelfy-media-card [item]="items.done" [selectionMode]="true" />
     </div>
     <span [class]="state">media-card external · add · owned · rank</span>
-    <div class="v-lgrid mb-10">
+    <div class="poster-grid mb-10">
       <shelfy-media-card [item]="items.ongoing" [tinted]="true" />
       <shelfy-media-card [item]="items.planned" [addable]="false" />
       <shelfy-media-card [item]="items.game" [rank]="1" />

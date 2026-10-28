@@ -31,9 +31,9 @@ import { displayScore, scoreOf, type EpisodeCell, type RatingSource } from '../e
   },
   template: `
     @let ep = cell();
-    <div class="v-tile cursor-default">
+    <div class="tile cursor-default">
       <span
-        class="v-art outline-3 outline-offset-3"
+        class="cover outline-3 outline-offset-3"
         [class]="
           (highlighted() ? 'outline-accent ' : 'outline-transparent ') +
           (ep.released ? '' : 'opacity-45')
@@ -66,8 +66,8 @@ import { displayScore, scoreOf, type EpisodeCell, type RatingSource } from '../e
         @if (editable() && ep.released) {
           <button
             type="button"
-            class="v-add show"
-            [class.done]="ep.watched"
+            class="cover-add is-visible"
+            [class.is-done]="ep.watched"
             [attr.aria-pressed]="ep.watched"
             [attr.aria-label]="
               (ep.watched ? 'media.tracker.watched' : 'media.tracker.mark_watched') | translate
@@ -78,7 +78,7 @@ import { displayScore, scoreOf, type EpisodeCell, type RatingSource } from '../e
           </button>
         }
       </span>
-      <span class="v-cap">
+      <span class="caption">
         <b
           ><span class="text-text-subtle tabular-nums">E{{ ep.episode }}</span>
           @if (ep.title) {
@@ -96,7 +96,7 @@ import { displayScore, scoreOf, type EpisodeCell, type RatingSource } from '../e
         }
       </span>
       @if (!ep.released) {
-        <span class="v-sub">{{ 'media.tracker.not_aired' | translate }}</span>
+        <span class="caption-sub">{{ 'media.tracker.not_aired' | translate }}</span>
       } @else if (editable()) {
         <div class="mt-2.5 flex items-center gap-3.5">
           <shelfy-rating-slider

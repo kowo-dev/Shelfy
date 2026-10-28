@@ -62,7 +62,7 @@ describe('HomeStageComponent', () => {
     const el = fixture.nativeElement as HTMLElement;
 
     expect(el.querySelector('#home-stage-title')?.textContent?.trim()).toBe('Title a');
-    expect(el.querySelector('.v-meta')?.textContent?.replace(/\s+/g, '')).toContain(
+    expect(el.querySelector('.meta-line')?.textContent?.replace(/\s+/g, '')).toContain(
       'collection.media_type_one.movie·2026',
     );
     expect(text(fixture)).toContain('Story of a');

@@ -10,16 +10,17 @@
   </main>
 } @else {
   <main
-    class="v-title-page animate-fade-in relative flex min-h-full flex-col pb-40 motion-reduce:animate-none"
+    class="media-page animate-fade-in relative flex min-h-full flex-col pb-40 motion-reduce:animate-none"
   >
     @if (view().posterUrl; as poster) {
-      <div class="v-ambient" aria-hidden="true"><img [src]="poster" alt="" /></div>
+      <div class="ambient" aria-hidden="true"><img [src]="poster" alt="" /></div>
     }
 
-    <section class="v-t-hero">
+    <div class="media-back"><shelfy-back-link [target]="back()" /></div>
+    <section class="media-hero">
       <button
         type="button"
-        class="v-t-poster"
+        class="media-poster"
         [attr.aria-label]="'media.open_poster' | translate"
         (click)="openImagePreview(view().posterUrl ?? '')"
       >
@@ -27,8 +28,8 @@
           <img [src]="poster" alt="" [class.blur-2xl]="view().adultContent" draggable="false" />
         }
       </button>
-      <div class="v-t-info min-w-0">
-        <div class="v-meta">
+      <div class="media-info min-w-0">
+        <div class="meta-line">
           <span>{{ 'collection.media_type_one.' + mediaType() | translate }}</span>
           @if (view().releaseYear; as year) {
             <i aria-hidden="true">·</i><span>{{ year }}</span>
@@ -53,7 +54,7 @@
           }
         </div>
         <h1 [title]="view().title">{{ view().title }}</h1>
-        <div class="v-meta">
+        <div class="meta-line">
           @if (view().director; as director) {
             <span>{{ 'media.page.by' | translate: { name: director } }}</span>
           }
@@ -62,7 +63,7 @@
               <i aria-hidden="true">·</i>
             }
             <span class="inline-flex items-center gap-1.5">
-              <span class="v-star"
+              <span class="score"
                 ><shelfy-icon name="star" size="14" [active]="true" />{{ value.text }}</span
               >
               {{ 'media.page.on_source' | translate: { source: value.label } }}
@@ -95,8 +96,8 @@
                 (statusPicked)="setStatus($event)"
                 (ratingChanged)="rate($event)"
               />
-              <div class="v-track mt-7 sm:mt-8">
-                <div class="row gap-2!">
+              <div class="tracker mt-7 sm:mt-8">
+                <div class="tracker-row gap-2!">
                   <button type="button" [class]="secondaryButton" (click)="openReview()">
                     <shelfy-icon name="reviews" size="20" />{{
                       (item.note ? 'collection.sheet.edit_review' : 'collection.sheet.write_review')
@@ -110,14 +111,14 @@
                   </button>
                   <button
                     type="button"
-                    style="flex: none"
-                    [class]="removeButton"
+                    [class]="removeButton + ' tracker-remove'"
                     [disabled]="removing()"
                     [attr.aria-label]="removeLabel(item) | translate"
                     [title]="removeLabel(item) | translate"
                     (click)="removeFromShelf(item)"
                   >
                     <shelfy-icon name="trash" size="20" />
+                    <span class="sm:hidden">{{ removeLabel(item) | translate }}</span>
                   </button>
                 </div>
               </div>
@@ -126,10 +127,14 @@
         } @else {
           <div class="grid" [animate.enter]="collapseIn()" [animate.leave]="collapseOut()">
             <div [class]="collapseBody">
-              <div class="v-track">
-                <div class="row">
+              <div class="tracker">
+                <div class="tracker-row">
                   @if (signedIn()) {
-                    <button type="button" [class]="primaryButton + ' acc'" (click)="runAction()">
+                    <button
+                      type="button"
+                      [class]="primaryButton + ' tracker-primary'"
+                      (click)="runAction()"
+                    >
                       <shelfy-icon name="plus" size="20" />{{ actionLabel() }}
                     </button>
                   }
@@ -143,7 +148,7 @@
     </section>
 
     <div #barSentinel class="mt-6" aria-hidden="true"></div>
-    <div class="v-libbar" [class.stuck]="stuck()">
+    <div class="page-bar" [class.is-stuck]="stuck()">
       <shelfy-tabs
         class="min-w-0"
         [navigation]="true"
@@ -160,13 +165,13 @@
       [rail]="null"
       [title]="'media.sections.information' | translate"
     >
-      <div class="v-details">
+      <div class="details">
         @if (view().overview; as overview) {
           <div
             #overviewText
             id="overview-text"
-            class="v-syn"
-            [class.clamped]="!overviewExpanded()"
+            class="synopsis"
+            [class.is-clamped]="!overviewExpanded()"
             [innerHTML]="overview"
           ></div>
           @if (overviewClamped() || overviewExpanded()) {

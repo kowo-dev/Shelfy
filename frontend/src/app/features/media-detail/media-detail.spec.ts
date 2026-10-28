@@ -234,7 +234,7 @@ describe('MediaDetailPageComponent', () => {
       const fixture = await setup(null, true);
       const el = fixture.nativeElement as HTMLElement;
 
-      expect(el.querySelector('.v-track .acc')).toBeNull();
+      expect(el.querySelector('.tracker .acc')).toBeNull();
       expect(el.querySelector('shelfy-item-editor')).toBeNull();
     });
 
@@ -243,13 +243,13 @@ describe('MediaDetailPageComponent', () => {
       const el = fixture.nativeElement as HTMLElement;
       const radios = [...el.querySelectorAll('shelfy-item-editor [role="radio"]')];
 
-      expect(el.querySelector('.v-t-info shelfy-item-editor')).not.toBeNull();
+      expect(el.querySelector('.media-info shelfy-item-editor')).not.toBeNull();
       expect(radios).toHaveLength(4);
       expect(radios.filter((radio) => radio.getAttribute('aria-checked') === 'true')).toHaveLength(
         1,
       );
       expect(
-        [...el.querySelectorAll('.v-t-info .v-track button')].find((button) =>
+        [...el.querySelectorAll('.media-info .tracker button')].find((button) =>
           button.getAttribute('aria-label')?.includes('collection.sheet.remove'),
         ),
       ).toBeDefined();
@@ -259,7 +259,7 @@ describe('MediaDetailPageComponent', () => {
       const fixture = await setup(null, true);
       const el = fixture.nativeElement as HTMLElement;
 
-      expect(el.querySelector('.v-t-info #overview-text')).toBeNull();
+      expect(el.querySelector('.media-info #overview-text')).toBeNull();
       expect(text(el, '#sec-details #overview-text')).toBe('overview');
     });
   });

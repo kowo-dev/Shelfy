@@ -49,7 +49,7 @@ export const POSTER_GRID: Record<PosterSize, string> = {
   l: 'grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-x-3 gap-y-6 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] md:gap-x-5 md:gap-y-7.5',
 };
 
-export const TOOLBAR_BUTTON = 'v-tool shrink-0 aria-pressed:text-text';
+export const TOOLBAR_BUTTON = 'bar-tool shrink-0 aria-pressed:text-text';
 export const FILTER_TILE =
   'inline-flex h-11 cursor-pointer items-center gap-2.25 rounded-[0.875rem] px-4 text-[0.9375rem] font-semibold whitespace-nowrap transition-[background-color,color] duration-slow ease-expo';
 export const FILTER_TILE_ON =

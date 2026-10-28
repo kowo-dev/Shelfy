@@ -42,6 +42,7 @@ import { ButtonComponent, buttonClasses } from '@shared/ui/button/button';
 import { IconComponent } from '@shared/ui/icon/icon';
 import { TabsComponent, type TabItem } from '@shared/ui/tabs/tabs';
 import { ActivityFeedComponent } from './activity-feed';
+import { BackLinkComponent, type BackTarget } from '@shared/ui/back-link/back-link';
 import { PageHeroComponent } from '@shared/ui/page-hero/page-hero';
 import { catchAndToastError } from '@shared/utils/catch-and-toast-error.util';
 
@@ -72,6 +73,7 @@ import { PersonCardComponent } from './person-card';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    BackLinkComponent,
     TabsComponent,
     ActivityFeedComponent,
     PageFooterComponent,
@@ -100,7 +102,7 @@ export class ProfileConnectionsPageComponent {
   readonly scrollContainer = viewChild<ElementRef<HTMLDivElement>>('scrollContainer');
 
   protected readonly notFoundLink = buttonClasses({ variant: 'secondary' });
-  protected readonly grid = 'v-pgrid';
+  protected readonly grid = 'people-grid';
   protected readonly followButton = buttonClasses({
     variant: 'primary',
     size: 'sm',
@@ -130,6 +132,14 @@ export class ProfileConnectionsPageComponent {
   readonly displayName = computed(() => {
     const profile = this.profile();
     return profile?.displayName || profile?.username || this.username();
+  });
+  readonly back = computed<BackTarget | null>(() => {
+    this.translate.lang();
+    const username = this.params().get('username');
+    if (!username) return null;
+    return username === this.auth.currentUser()?.username
+      ? { to: ['/profile'], label: this.translate.get('nav.profile') }
+      : { to: ['/profile', username], label: this.displayName() };
   });
   readonly heroTitle = computed(() => {
     this.translate.lang();

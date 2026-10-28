@@ -23,7 +23,7 @@
   }
 
   <div #sentinel class="mt-6 md:mt-8" aria-hidden="true"></div>
-  <div class="v-typebar" [class.stuck]="stuck()">
+  <div class="type-bar" [class.is-stuck]="stuck()">
     <shelfy-tabs
       class="min-w-0 flex-1 py-2.5"
       panelId="home-panel"
@@ -32,7 +32,7 @@
       [label]="'home.filter_label' | translate"
       (tabSelected)="selectFilter($event)"
     />
-    <a routerLink="/explore" [queryParams]="exploreQuery()" class="v-more">
+    <a routerLink="/explore" [queryParams]="exploreQuery()" class="section-more">
       {{ exploreLabel() }}
     </a>
   </div>
@@ -59,18 +59,18 @@
                 [moreLabel]="'home.library' | translate"
                 [moreRoute]="['/collection']"
                 [moreQuery]="libraryQuery('ongoing')"
-                rail="w"
+                rail="wide"
               >
                 @for (item of ongoing(); track item.id) {
                   <shelfy-home-tile [item]="item" [art]="art" [addable]="false">
-                    <span class="v-cap2 row">
+                    <span class="caption-stack is-row">
                       <div>
                         <b>{{ item.media.title }}</b>
                         <span>{{ since(item) }}</span>
                       </div>
                       <button
                         type="button"
-                        class="v-mini-btn"
+                        class="mini-button"
                         [disabled]="finishing() === item.id"
                         [attr.aria-label]="
                           ('home.cta.done.' + verb(item) | translate) + ' · ' + item.media.title

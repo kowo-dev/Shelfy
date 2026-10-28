@@ -237,10 +237,10 @@ describe('FriendProfilePageComponent', () => {
     expect(createComponent('friend1').componentInstance.comparing()).toBe(false);
   });
 
-  it('describes each title by the friend status and its type', () => {
+  it('only sets my side of the comparison when comparing', () => {
     const component = createComponent().componentInstance;
 
-    expect(component.statusLine(item())).toContain('collection.media_type_one.movie');
+    expect(component.versusItem(item())).toBeNull();
   });
 
   it('shows an error toast when the profile fails to load for a non-404 reason', () => {

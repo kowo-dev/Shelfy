@@ -24,6 +24,7 @@ import { ButtonComponent } from '@shared/ui/button/button';
 import { IconComponent } from '@shared/ui/icon/icon';
 import { TabsComponent, type TabItem } from '@shared/ui/tabs/tabs';
 import type { IconName } from '@shared/ui/icon/icon-registry';
+import { BackLinkComponent, type BackTarget } from '@shared/ui/back-link/back-link';
 import { PageHeroComponent } from '@shared/ui/page-hero/page-hero';
 import { PageFooterComponent } from '@shared/ui/page-footer/page-footer';
 import { MEDIA_TYPE_ICON } from '@shared/utils/media-type-icon.util';
@@ -61,6 +62,7 @@ const MEDIA_ORDER: readonly MediaType[] = ['movie', 'tv_show', 'anime', 'manga',
     IconComponent,
     PageHeroComponent,
     PageFooterComponent,
+    BackLinkComponent,
     EntityMediaGridComponent,
     EntitySortComponent,
   ],
@@ -77,6 +79,7 @@ export class EntityShelfComponent {
   readonly stuck = signal(false);
 
   readonly title = input.required<string>();
+  readonly back = input<BackTarget | null>(null);
   readonly leadUrl = input<string | null>(null);
   readonly leadShape = input<'portrait' | 'logo'>('portrait');
   readonly facts = input<readonly EntityFact[]>([]);

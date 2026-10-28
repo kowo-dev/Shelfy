@@ -119,7 +119,7 @@ export class MediaPickerComponent {
   readonly primaryButton = buttonClasses({ variant: 'primary', size: 'sm' });
   readonly tile = (on: boolean) => `${FILTER_TILE} ${on ? FILTER_TILE_ON : FILTER_TILE_OFF}`;
   readonly skeletons = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-  readonly gridClass = 'v-lgrid';
+  readonly gridClass = 'poster-grid';
 
   readonly exploreQuery = signal<ExploreQuery>(EMPTY_EXPLORE_QUERY);
   readonly results = createExploreResults({

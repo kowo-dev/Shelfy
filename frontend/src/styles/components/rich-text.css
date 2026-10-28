@@ -155,20 +155,6 @@
   pointer-events: none;
 }
 
-.shelfy-note-editor .shelfy-rich-text-toolbar,
-.shelfy-note-editor > div:last-child,
-.shelfy-note-editor:focus-within > div:last-child {
-  border: 0;
-  box-shadow: none;
-  background: transparent;
-}
-
-.shelfy-note-editor .shelfy-rich-text-content {
-  padding: 0.5rem 0.875rem 1.75rem;
-  font-size: var(--text-lg);
-  line-height: 1.7;
-}
-
 .review-prose .shelfy-rich-text-content {
   padding: 0;
   font-size: var(--text-lg);

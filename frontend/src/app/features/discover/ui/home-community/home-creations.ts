@@ -36,7 +36,7 @@ const showable = (card: CreationCard): boolean =>
         [moreRoute]="['/creations']"
         [rail]="null"
       >
-        <div class="v-crea">
+        <div class="card-grid">
           @for (card of cards().slice(0, 3); track card.id) {
             <shelfy-creation-tile [list]="card.list" />
           }

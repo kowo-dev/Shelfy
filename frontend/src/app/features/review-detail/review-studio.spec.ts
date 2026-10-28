@@ -1,4 +1,3 @@
-import { Location } from '@angular/common';
 import { of } from 'rxjs';
 import { Component, input, output } from '@angular/core';
 import { vi } from 'vitest';
@@ -88,7 +87,6 @@ describe('ReviewStudioPageComponent', () => {
       navigateByUrl: vi.fn(),
       currentNavigation: () => (openedInApp ? { previousNavigation: {} } : null),
     };
-    const location = { back: vi.fn() };
     TestBed.configureTestingModule({
       imports: [ReviewStudioPageComponent],
       providers: [
@@ -103,7 +101,6 @@ describe('ReviewStudioPageComponent', () => {
           },
         },
         { provide: Router, useValue: router },
-        { provide: Location, useValue: location },
         { provide: CollectionService, useValue: collection },
         { provide: WatchLogService, useValue: watchLog },
         {
@@ -125,7 +122,7 @@ describe('ReviewStudioPageComponent', () => {
     }
     const fixture = TestBed.createComponent(ReviewStudioPageComponent);
     fixture.detectChanges();
-    return { page: fixture.componentInstance, collection, watchLog, router, location, fixture };
+    return { page: fixture.componentInstance, collection, watchLog, router, fixture };
   }
 
   const newReview = {
@@ -178,14 +175,21 @@ describe('ReviewStudioPageComponent', () => {
     expect(collection.create).not.toHaveBeenCalled();
   });
 
-  it('returns to the page it was opened from when done', () => {
-    const { page, router, location } = setup({ id: 'item-1' }, {}, null, false, true);
+  it('goes to the review, never back in history, even when opened from another page', () => {
+    const { page, router } = setup({ id: 'item-1' }, {}, null, false, true);
 
     page.onSpoiler(true);
     page.finish();
 
-    expect(location.back).toHaveBeenCalled();
-    expect(router.navigate).not.toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalledWith(['/reviews', 'item-1'], { replaceUrl: true });
+  });
+
+  it('closes a new review to its title page', () => {
+    const { page, router } = setup({}, newReview);
+
+    page.close();
+
+    expect(router.navigate).toHaveBeenCalledWith(['/media', 'game', '42'], { replaceUrl: true });
   });
 
   it('edits an existing review in place and goes back to it when done', () => {

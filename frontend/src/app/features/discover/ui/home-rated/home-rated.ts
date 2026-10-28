@@ -24,17 +24,17 @@ import { ShelfSectionComponent } from '@shared/ui/shelf-section/shelf-section';
       [band]="true"
       [rail]="null"
     >
-      <ol class="v-chart">
+      <ol class="chart">
         @for (row of rows(); track row.id) {
           <li tabindex="0" (click)="open(row.route)" (keydown.enter)="open(row.route)">
-            <span class="n">{{ row.rank }}</span>
-            <span class="cv"><img [src]="row.cover" alt="" loading="lazy" /></span>
-            <span class="t">
+            <span class="chart-rank">{{ row.rank }}</span>
+            <span class="chart-cover"><img [src]="row.cover" alt="" loading="lazy" /></span>
+            <span class="chart-text">
               <b>{{ row.title }}</b>
               <span>{{ row.meta }}</span>
             </span>
             <span
-              class="v-star"
+              class="score"
               [attr.aria-label]="'home.rated_label' | translate: { rating: row.rating }"
               ><shelfy-icon name="star" size="14" [active]="true" />{{ row.rating }}</span
             >

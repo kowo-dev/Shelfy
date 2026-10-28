@@ -77,7 +77,7 @@ describe('EpisodeRowComponent', () => {
   it('shows the episode number, title and the external score with its source', () => {
     const el: HTMLElement = render(cell(2, { tmdb: { average: 8.6, votes: 40 } })).nativeElement;
 
-    expect(el.querySelector('.v-cap b')?.textContent?.replace(/\s+/g, ' ')).toContain(
+    expect(el.querySelector('.caption b')?.textContent?.replace(/\s+/g, ' ')).toContain(
       'E2 · Episode 2',
     );
     expect(el.querySelector('shelfy-rating-value')?.textContent?.trim()).toMatch(/^4\.3\s*TMDB$/);
@@ -110,7 +110,7 @@ describe('EpisodeRowComponent', () => {
     const watched = render(cell(1, { watched: true }));
     watched.componentInstance.watchedToggled.subscribe(toggled);
     expect(toggleOf(watched.nativeElement).getAttribute('aria-pressed')).toBe('true');
-    expect(toggleOf(watched.nativeElement).classList).toContain('done');
+    expect(toggleOf(watched.nativeElement).classList).toContain('is-done');
     toggleOf(watched.nativeElement).click();
     expect(toggled).toHaveBeenLastCalledWith(false);
   });

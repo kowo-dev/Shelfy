@@ -29,7 +29,7 @@ import {
       >
         {{ verdictKey() | translate }}
       </p>
-      <div class="v-rt v-rt-desktop">
+      <div class="rating-row rating-row-desktop">
         <shelfy-rating-slider
           size="lg"
           tone="white"
@@ -38,7 +38,7 @@ import {
           (changed)="changed.emit($event)"
           (previewed)="preview.set($event)"
         />
-        <span class="v-rt-val v-rt-val-lg" [style.color]="numberColor()" aria-hidden="true">
+        <span class="rating-value is-large" [style.color]="numberColor()" aria-hidden="true">
           @for (shown of [ratingText()]; track shown) {
             <b animate.enter="animate-count-in" [class.invisible]="shownRating() === null">{{
               shown

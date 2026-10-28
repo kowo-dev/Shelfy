@@ -1,0 +1,44 @@
+.rating-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.rating-row-desktop {
+  @media (max-width: 639px) {
+    display: none;
+  }
+}
+
+.rating-value {
+  display: grid;
+  justify-items: end;
+  gap: 4px;
+  min-width: 0;
+  text-align: right;
+  transition: color 0.3s;
+
+  & b {
+    font-family: var(--font-display);
+    font-size: 46px;
+    font-weight: 800;
+    line-height: 0.85;
+    letter-spacing: -0.05em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  & span {
+    font-size: 15px;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+
+  &.is-large b {
+    font-size: 64px;
+  }
+
+  &.is-large span {
+    font-size: 16px;
+  }
+}

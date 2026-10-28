@@ -1,5 +1,5 @@
 <div
-  class="v-sh-status"
+  class="status-picker"
   role="radiogroup"
   [attr.aria-label]="'collection.status_label' | translate"
 >
@@ -16,7 +16,7 @@
       (click)="picked.emit(status)"
     >
       <shelfy-icon [name]="statusIcon(status)" [active]="active" size="28" />
-      <span class="lbl"
+      <span class="status-picker-label"
         >{{ label(status) | translate }}
         @if (active && detail(); as text) {
           <small>{{ text }}</small>

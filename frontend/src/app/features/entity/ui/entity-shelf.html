@@ -4,6 +4,9 @@
   (scroll)="onScroll()"
 >
   <shelfy-page-hero [title]="title()" [wall]="wall()">
+    @if (back(); as target) {
+      <shelfy-back-link heroBack [target]="target" />
+    }
     @if (leadUrl(); as lead) {
       <img
         heroLead
@@ -32,7 +35,7 @@
   </shelfy-page-hero>
 
   <div #barSentinel aria-hidden="true"></div>
-  <div class="v-libbar" [class.stuck]="stuck()">
+  <div class="page-bar" [class.is-stuck]="stuck()">
     @if (hasFilters()) {
       <shelfy-tabs
         class="min-w-0"
@@ -42,8 +45,8 @@
         (tabSelected)="select($event)"
       />
     }
-    <div class="v-ltools">
-      <label class="v-lsearch">
+    <div class="bar-tools">
+      <label class="bar-search">
         <shelfy-icon name="search" size="18" class="shrink-0" />
         <input
           type="search"

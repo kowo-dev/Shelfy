@@ -34,6 +34,7 @@ import { LayoutService } from '@app/core/services/layout/layout';
 import { buttonClasses } from '@shared/ui/button/button';
 import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state';
 import { IconComponent } from '@shared/ui/icon/icon';
+import { BackLinkComponent } from '@shared/ui/back-link/back-link';
 import { PageHeroComponent } from '@shared/ui/page-hero/page-hero';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner';
 import { TabsComponent, type TabItem } from '@shared/ui/tabs/tabs';
@@ -59,6 +60,7 @@ import { SeasonListComponent } from './ui/season-list';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    BackLinkComponent,
     EmptyStateComponent,
     EpisodeSheetComponent,
     IconComponent,

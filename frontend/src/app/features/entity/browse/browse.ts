@@ -15,6 +15,7 @@ import { appendDistinct } from '@shared/utils/append-distinct.util';
 import { catchAndToastError } from '@shared/utils/catch-and-toast-error.util';
 import { ToastService } from '@app/core/services/toast/toast';
 import { ErrorMessageService } from '@app/core/services/error-message/error-message';
+import { exploreBack } from '@shared/ui/back-link/back-link';
 import { EntityShelfComponent, type EntityFact } from '../ui/entity-shelf';
 
 const ANILIST_TYPES = new Set(['anime', 'manga', 'webtoon']);
@@ -49,6 +50,7 @@ interface MediaItem {
     } @else {
       <shelfy-entity-shelf
         [title]="title()"
+        [back]="back()"
         [facts]="facts()"
         [items]="cardItems()"
         [hasMore]="hasMore()"
@@ -94,6 +96,11 @@ export class BrowsePageComponent {
   );
   private readonly page = linkedSignal(() => (this.target(), 1));
   readonly title = computed(() => this.queryParams().get('name') ?? this.formatTitle());
+  readonly back = computed(() => {
+    this.translate.lang();
+    const type = this.mediaType();
+    return exploreBack(type === 'all' ? null : type, this.translate.get('nav.explore'));
+  });
   readonly cardItems = computed(() =>
     this.items().map((item) =>
       buildPreviewItem(

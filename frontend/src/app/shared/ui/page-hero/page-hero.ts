@@ -68,6 +68,7 @@ const SOLID_AFTER_PX = 24;
       <div
         class="px-gutter mx-auto w-full pt-[calc(4rem+1.75rem)] md:pt-[calc(var(--nav-bar-height)+clamp(1.75rem,6vh,4.5rem))]"
       >
+        <ng-content select="[heroBack]" />
         <div class="flex items-end gap-4 md:gap-6">
           <ng-content select="[heroLead]" />
           <div class="min-w-0 flex-1">

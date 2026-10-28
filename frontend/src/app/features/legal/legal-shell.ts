@@ -41,7 +41,7 @@ const DOCUMENTS: readonly { id: LegalDocument; path: string; label: string }[] =
       <shelfy-page-hero [title]="title()" [wall]="wall.posters()" />
 
       <div #barSentinel aria-hidden="true"></div>
-      <div class="v-libbar" [class.stuck]="stuck()">
+      <div class="page-bar" [class.is-stuck]="stuck()">
         <shelfy-tabs
           class="min-w-0"
           [navigation]="true"

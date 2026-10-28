@@ -30,7 +30,7 @@ export function entityItemKey(item: CollectionItemResponse): string {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MediaCardComponent, NgTemplateOutlet],
   template: `
-    <div class="v-lgrid" [attr.data-size]="posterSize() ? 'l' : null">
+    <div class="poster-grid" [attr.data-size]="posterSize() ? 'l' : null">
       @for (item of shownItems(); track item.id) {
         <shelfy-media-card
           [item]="displayItem(item)"
